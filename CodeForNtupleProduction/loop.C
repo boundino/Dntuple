@@ -25,10 +25,10 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi/RECO_410_1_9lJ.root", TString outfile="/export/d00/scratch/jwang/test.root", bool REAL=false, bool PbpMC=false, int startEntries=0, int nEntries=0, bool doMuonSelection=false)
+int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi/RECO_410_1_9lJ.root", TString outfile="/export/d00/scratch/jwang/test.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
-  void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Int_t REAL, Int_t PbpMC);
+  void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
   bool isDsignalGen(Int_t Dtype, Int_t j);
 
   if(REAL) cout<<"--- REAL DATA ---"<<endl;
@@ -42,7 +42,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_Tune
 
   int isDchannel[5];
   isDchannel[0] = 1; //
-  isDchannel[1] = 1; //
+  isDchannel[1] = 0; //
   isDchannel[2] = 0; //
   isDchannel[3] = 0; //
   isDchannel[4] = 0; //
@@ -53,40 +53,42 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_Tune
   TTree* ntD3 = new TTree("ntDkMpiPpiP","");    buildDBranch(ntD3);
   TTree* ntD4 = new TTree("ntDkPpiMpiM","");    buildDBranch(ntD4);
   TTree* ntD5 = new TTree("ntkMpiPpiPpiM","");  buildDBranch(ntD5);
+  TTree* ntGen = new TTree("ntGen","");         buildGenBranch(ntGen);
   cout<<"--- Building trees finished ---"<<endl;
 
   Long64_t nentries = root->GetEntries();
-  nentries = 10000;
+  //nentries = 10000;
   Long64_t nbytes = 0;
   TVector3* bP = new TVector3;
   TVector3* bVtx = new TVector3;
   TLorentzVector* b4P = new TLorentzVector;
   TLorentzVector* b4Pout = new TLorentzVector;
-  TLorentzVector* bGen;
+  TLorentzVector* bGen = new TLorentzVector;
 
-  for (Long64_t i=startEntries;i<nentries;i++)
+  Int_t itest=0;
+  for (int i=startEntries;i<nentries;i++)
     {
       nbytes += root->GetEntry(i);
-      if (i%10000==0) cout <<i<<" / "<<nentries<<endl;
+      if (i%100==0) cout <<i<<" / "<<nentries<<endl;
       Int_t Dtypesize[5]={0,0,0,0,0};
       Double_t Dbest=0;
       Int_t Dbestindex=0;
-
       for(int t=0;t<5;t++)
 	{
+	  Dsize=0;
 	  if(isDchannel[t]==1)
 	    {
 	      Dbest=-1;
 	      Dbestindex=-1;
 	      for(int j=0;j<DInfo_size;j++)
 		{
-		  if(DInfo_type[j]==1)
+		  if(DInfo_type[j]==(t+1))
 		    {
-		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL,PbpMC);
+		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL);
 		      if(Dchi2cl[Dtypesize[t]]>Dbest)
-			{
-			  Dbest = Dchi2cl[Dtypesize[t]];
-		     	  Dbestindex = Dtypesize[t];
+		      	{
+		      	  Dbest = Dchi2cl[Dtypesize[t]];
+		      	  Dbestindex = Dtypesize[t];
 		      	}
 		      Dtypesize[t]++;
 		    }
@@ -102,7 +104,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_Tune
 	      else if(t==4) ntD5->Fill();
 	    }
 	}
-      
+
       if(!REAL)
 	{
 	  Int_t gt=0,sigtype=0;
@@ -125,9 +127,11 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_Tune
 		}
 	      GisSignal[j] = sigtype;
 	    }
+	  ntGen->Fill();
 	}
     }
-  
+
+  cout<<itest<<endl;
   outf->Write();
   outf->Close();
 }
@@ -139,10 +143,10 @@ double findMass(Int_t particlePdgId)
   if(TMath::Abs(particlePdgId)==321) return KAON_MASS;
 }
 
-void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Int_t REAL, Int_t PbpMC)
+void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL)
 {
   //EvtInfo
-  RunNo = EvtInfo_RunNo+10*PbpMC;
+  RunNo = EvtInfo_RunNo;
   EvtNo = EvtInfo_EvtNo;
   Dsize = typesize+1;
   PVx = EvtInfo_PVx;
@@ -356,7 +360,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 		  else if(TMath::Abs(DInfo_rftk1_MassHypo[j])==PION_PDGID) hypo=1;
 		  if(hypo==0||hypo==1)
 		    {
-		      level=1;
+		      level=1;		      
 		      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1)
 			{
 			  if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]])==DpdgId)
@@ -471,7 +475,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 		    }
 		}
 	    }
-	  if(Dgen[typesize]==3000&&dGenIdxTk1==dGenIdxTk2)
+	  if(Dgen[typesize]==3333&&dGenIdxTk1==dGenIdxTk2)
 	    {
 	      if(DInfo_type[j]==1||DInfo_type[j]==2)
 		{
@@ -505,6 +509,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
     }//if(!real)
 }//fillDtree
 
+//
 bool isDsignalGen(Int_t Dtype, Int_t j)
 {
   bool flag=false;
