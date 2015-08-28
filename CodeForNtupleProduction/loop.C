@@ -62,14 +62,13 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_Tune
   TVector3* bP = new TVector3;
   TVector3* bVtx = new TVector3;
   TLorentzVector* b4P = new TLorentzVector;
-  TLorentzVector* b4Pout = new TLorentzVector;
   TLorentzVector* bGen = new TLorentzVector;
 
   Int_t itest=0;
   for (int i=startEntries;i<nentries;i++)
     {
       nbytes += root->GetEntry(i);
-      if (i%100==0) cout <<i<<" / "<<nentries<<endl;
+      if (i%10000==0) cout <<i<<" / "<<nentries<<endl;
       Int_t Dtypesize[5]={0,0,0,0,0};
       Double_t Dbest=0;
       Int_t Dbestindex=0;
@@ -141,6 +140,11 @@ double findMass(Int_t particlePdgId)
 {
   if(TMath::Abs(particlePdgId)==211) return PION_MASS;
   if(TMath::Abs(particlePdgId)==321) return KAON_MASS;
+  else
+    {
+      cout<<"ERROR: find particle mass falied >> Particle pdgId: "<<particlePdgId<<endl;
+      return 0;
+    }
 }
 
 void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL)
@@ -329,7 +333,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       DtktkResphi[typesize] = DInfo_tktkRes_phi[j];
     }
 
-  Int_t hypo=-1,DpdgId,level=0;
+  Int_t hypo=-1,DpdgId=0,level=0;
   if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==5) DpdgId=DZERO_PDGID;
   else if(DInfo_type[j]==3||DInfo_type[j]==4) DpdgId=DPLUS_PDGID;
   else if(DInfo_type[j]==6||DInfo_type[j]==7) DpdgId=DSUBS_PDGID;

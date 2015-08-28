@@ -13,30 +13,21 @@ CONFIGFILE="loop.C"
 TRANSFERFILE="loop.C,loop.h"
 
 ###Folder location within which files are to be run
-#DATASET=/mnt/hadoop/cms/store/user/wangj/HI_Btuple/20140319_PAMuon_HIRun2013_28Sep2013_v1_MuonMatching/*
-#DATASET=/mnt/hadoop/cms/store/user/wangj/HI_Btuple/20140309_PAMuon_HIRun2013_PromptReco_v1_MuonMatching/*
-#DATASET=/net/hisrv0001/home/tawei/twang/HI_Btuple/20140607_PAMuon_HIRun2013_PromptReco_v1/*
-#DATASET=/net/hisrv0001/home/tawei/twang/HI_Btuple/20140607_PAMuon_HIRun2013_28Sep2013_v1/*
-#DATASET=/mnt/hadoop/cms/store/user/jwang/Bfinder_BoostedMC_20140707_BuJpsiK_pPb/*
-DATASET=/mnt/hadoop/cms/store/user/twang/HI_Btuple/20140707_PAMuon_HIRun2013_28Sep2013_v1/*
+DATASET=/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi/*
 
 ###Output file location
-DESTINATION=/mnt/hadoop/cms/store/user/jwang/nt_20140708_PAMuon_HIRun2013_28Sep2013_v1_MuonMatching_EvtBase_skim
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/nt_20140708_PAMuon_HIRun2013_PromptReco_v1_MuonMatching_EvtBase_skim
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/nt_20140413_PAMuon_HIRun2013_PromptReco_v1_MuonMatching_CandBase_skim
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/nt_20140413_PAMuon_HIRun2013_28Sep2013_v1_MuonMatching_CandBase_skim
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/nt_BoostedMC_20140708_Kp_TriggerMatchingMuon_pPb_EvtBase_skim
-
+DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150828_Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi_EvtBase
+#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150828_Pyquen_test
 ###Output file name
-OUTFILE="nt_20140708_rereco_muonmatching_evtbase"
-#OUTFILE="nt_20140708_kp_pPb_evtbase"
+OUTFILE="ntD_20150828_mc_evtbase"
+#OUTFILE="ntD_20150828_mc_test"
 
 ###Maximum number of files to be run
 MAXFILES=1000
 
 ###Log file location and it's name
-LOGDIR=/export/d00/scratch/jwang/nt_20140708_rereco_evtbase_logs
-LOGNAME=log_nt_20140708_rereco_muonmatching_evtbase
+LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150828_mc_evtbase_logs
+LOGNAME=log_nt_20140828_mc_evtbase
 #LOGDIR=/export/d00/scratch/jwang/nt_20140708_kp_pPb_evtbase_logs
 #LOGNAME=log_nt_20140708_kp_pPb_evtbase
 
