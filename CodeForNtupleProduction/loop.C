@@ -25,7 +25,7 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi/RECO_150_1_vhm.root", TString outfile="comp.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KmPip_20150830/4cfff3e2677f7ce8b808cc4625d49a9e/Bfinder_PbPb_all_150_1_Yfn.root", TString outfile="comp.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -81,7 +81,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_Tune
 	      Dbestindex=-1;
 	      for(int j=0;j<DInfo_size;j++)
 		{
-		  if(DInfo_type[j]==(t+1))
+		  if(DInfo_type[j]==(t+1))//
 		    {
 		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL);
 		      if(Dchi2cl[Dtypesize[t]]>Dbest)
@@ -196,6 +196,12 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2Eta[typesize] = TrackInfo_eta[DInfo_rftk2_index[j]];
   Dtrk1Phi[typesize] = TrackInfo_phi[DInfo_rftk1_index[j]];
   Dtrk2Phi[typesize] = TrackInfo_phi[DInfo_rftk2_index[j]];
+  Dtrk1PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk1_index[j]];
+  Dtrk2PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk2_index[j]];
+  Dtrk1EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk1_index[j]];
+  Dtrk2EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk2_index[j]];
+  Dtrk1PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk1_index[j]];
+  Dtrk2PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk2_index[j]];
   trk1mass = findMass(DInfo_rftk1_MassHypo[j]);
   trk2mass = findMass(DInfo_rftk2_MassHypo[j]);
   b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk1_index[j]],TrackInfo_eta[DInfo_rftk1_index[j]],TrackInfo_phi[DInfo_rftk1_index[j]],trk1mass);
@@ -226,6 +232,12 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Eta[typesize] = -20;
       Dtrk3Phi[typesize] = -20;
       Dtrk4Phi[typesize] = -20;
+      Dtrk3PtErr[typesize] = 0;
+      Dtrk4PtErr[typesize] = 0;
+      Dtrk3EtaErr[typesize] = 0;
+      Dtrk4EtaErr[typesize] = 0;
+      Dtrk3PhiErr[typesize] = 0;
+      Dtrk4PhiErr[typesize] = 0;
       Dtrk3Y[typesize] = -1;
       Dtrk4Y[typesize] = -1;
       Dtrk3Dxy[typesize] = -1;
@@ -254,6 +266,9 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
       Dtrk3Eta[typesize] = TrackInfo_eta[DInfo_rftk3_index[j]];
       Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
+      Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
+      Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
+      Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
       trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
       b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
       Dtrk3Y[typesize] = b4P->Rapidity();
@@ -268,6 +283,9 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Pt[typesize] = -1;
       Dtrk4Eta[typesize] = -20;
       Dtrk4Phi[typesize] = -20;
+      Dtrk4PtErr[typesize] = 0;
+      Dtrk4EtaErr[typesize] = 0;
+      Dtrk4PhiErr[typesize] = 0;
       Dtrk4Y[typesize] = -1;
       Dtrk4Dxy[typesize] = -1;
       Dtrk4D0Err[typesize] = -1;
@@ -290,6 +308,12 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Eta[typesize] = TrackInfo_eta[DInfo_rftk4_index[j]];
       Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
       Dtrk4Phi[typesize] = TrackInfo_phi[DInfo_rftk4_index[j]];
+      Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
+      Dtrk4PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk4_index[j]];
+      Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
+      Dtrk4EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk4_index[j]];
+      Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
+      Dtrk4PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk4_index[j]];
       trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
       trk4mass = findMass(DInfo_rftk4_MassHypo[j]);
       b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
@@ -325,6 +349,12 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Eta[typesize] = TrackInfo_eta[DInfo_rftk4_index[j]];
       Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
       Dtrk4Phi[typesize] = TrackInfo_phi[DInfo_rftk4_index[j]];
+      Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
+      Dtrk4PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk4_index[j]];
+      Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
+      Dtrk4EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk4_index[j]];
+      Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
+      Dtrk4PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk4_index[j]];
       trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
       trk4mass = findMass(DInfo_rftk4_MassHypo[j]);
       b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
