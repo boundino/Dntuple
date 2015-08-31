@@ -25,7 +25,7 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi/RECO_410_1_9lJ.root", TString outfile="/export/d00/scratch/jwang/test.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/tawei/Dfinder/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt_20150824_kpi/RECO_150_1_vhm.root", TString outfile="comp.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -210,6 +210,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk2_index[j]];
   Dtrk1StripHit[typesize] = TrackInfo_striphit[DInfo_rftk1_index[j]];
   Dtrk2StripHit[typesize] = TrackInfo_striphit[DInfo_rftk2_index[j]];
+  Dtrk1nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk1_index[j]];
+  Dtrk2nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk2_index[j]];
+  Dtrk1nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk1_index[j]];
+  Dtrk2nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk2_index[j]];
   Dtrk1Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk1_index[j]]/TrackInfo_ndf[DInfo_rftk1_index[j]];
   Dtrk2Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
   Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j];
@@ -232,6 +236,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4PixelHit[typesize] = -1;
       Dtrk3StripHit[typesize] = -1;
       Dtrk4StripHit[typesize] = -1;
+      Dtrk1nPixelLayer[typesize] = -1;
+      Dtrk2nPixelLayer[typesize] = -1;
+      Dtrk1nStripLayer[typesize] = -1;
+      Dtrk2nStripLayer[typesize] = -1;
       Dtrk3Chi2ndf[typesize] = -1;
       Dtrk4Chi2ndf[typesize] = -1;
       Dtrk3MassHypo[typesize] = 0;
@@ -253,6 +261,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk3D0Err[typesize] = TrackInfo_d0error[DInfo_rftk3_index[j]];
       Dtrk3PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk3_index[j]];
       Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
+      Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
+      Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
       Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
       Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j];
       Dtrk4Pt[typesize] = -1;
@@ -263,6 +273,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4D0Err[typesize] = -1;
       Dtrk4PixelHit[typesize] = -1;
       Dtrk4StripHit[typesize] = -1;
+      Dtrk4nPixelLayer[typesize] = -1;
+      Dtrk4nStripLayer[typesize] = -1;
       Dtrk4Chi2ndf[typesize] = -1;
       Dtrk4MassHypo[typesize] = 0;
       DtktkResmass[typesize] = -1;
@@ -292,6 +304,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk4_index[j]];
       Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
       Dtrk4StripHit[typesize] = TrackInfo_striphit[DInfo_rftk4_index[j]];
+      Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
+      Dtrk4nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk4_index[j]];
+      Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
+      Dtrk4nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk4_index[j]];
       Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
       Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
       Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j];
