@@ -262,6 +262,8 @@ Double_t   DvtxX[MAX_XB];
 Double_t   DvtxY[MAX_XB];
 Double_t   Dd0[MAX_XB];
 Double_t   Dd0Err[MAX_XB];
+Double_t   Ddxyz[MAX_XB];
+Double_t   DdxyzErr[MAX_XB];
 Double_t   Dchi2ndf[MAX_XB];
 Double_t   Dchi2cl[MAX_XB];
 Double_t   Ddtheta[MAX_XB];
@@ -372,6 +374,8 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("DvtxY",DvtxY,"DvtxY[Dsize]/D");
   dnt->Branch("Dd0",Dd0,"Dd0[Dsize]/D");
   dnt->Branch("Dd0Err",Dd0Err,"Dd0Err[Dsize]/D");
+  dnt->Branch("Ddxyz",Ddxyz,"Ddxyz[Dsize]/D");
+  dnt->Branch("DdxyzErr",DdxyzErr,"DdxyzErr[Dsize]/D");
   dnt->Branch("Dchi2ndf",Dchi2ndf,"Dchi2ndf[Dsize]/D");
   dnt->Branch("Dchi2cl",Dchi2cl,"Dchi2cl[Dsize]/D");
   dnt->Branch("Dchi2cl",Dchi2cl,"Dchi2cl[Dsize]/D");

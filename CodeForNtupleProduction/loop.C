@@ -25,7 +25,7 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KpPim_20150830/5d741c977c01918c6417913dff2dce5a/Bfinder_PbPb_all_187_3_S2a.root", TString outfile="comp.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KmPip_20150830/4cfff3e2677f7ce8b808cc4625d49a9e/Bfinder_PbPb_all_190_2_83Q.root", TString outfile="comp0.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -65,7 +65,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0
   TLorentzVector* bGen = new TLorentzVector;
 
   Int_t itest=0;
-  for (int i=startEntries;i<nentries;i++)
+  for (Int_t i=startEntries;i<nentries;i++)
     {
       nbytes += root->GetEntry(i);
       if (i%10000==0) cout <<i<<" / "<<nentries<<endl;
@@ -81,7 +81,8 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0
 	      Dbestindex=-1;
 	      for(int j=0;j<DInfo_size;j++)
 		{
-		  if(DInfo_type[j]==(t+1))//
+		  if(DInfo_pt[j]<=2.) continue;
+		  if(DInfo_type[j]==(t+1))
 		    {
 		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL);
 		      if(Dchi2cl[Dtypesize[t]]>Dbest)
@@ -133,6 +134,8 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0
   cout<<itest<<endl;
   outf->Write();
   outf->Close();
+
+  return 1;
 }
 
 
@@ -178,6 +181,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   DvtxY[typesize] = DInfo_vtxY[j] - EvtInfo_PVy;
   Dd0[typesize] = TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy));
   Dd0Err[typesize] = TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]);
+  Ddxyz[typesize] = TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy)+(DInfo_vtxZ[j]-EvtInfo_PVz)*(DInfo_vtxZ[j]-EvtInfo_PVz));
+  DdxyzErr[typesize] = TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]+DInfo_vtxZE[j]*DInfo_vtxZE[j]);
   Dchi2ndf[typesize] = DInfo_vtxchi2[j]/DInfo_vtxdof[j];
   Dchi2cl[typesize] = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
   Ddtheta[typesize] = bP->Angle(*bVtx);
