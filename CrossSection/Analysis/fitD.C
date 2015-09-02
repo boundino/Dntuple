@@ -4,13 +4,13 @@ double luminosity=34.8*1e-3;
 double setparam0=100.;
 double setparam1=1.865;
 double setparam2=0.0109;
-double setparam3=0.1;
+double setparam3=0.;
 double fixparam1=1.865;
 
 //svmithi2
 
-TString inputdata="ntD_20150902_mc_KmPip_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2_merged.root";
-TString inputmc="ntD_20150902_mc_KmPip_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2_merged.root";
+TString inputdata="/data/dmeson/Dntuple/MC/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_All_20150830_EvtBase_PtD2_Ptsingle1p5_Lxyz2p5_v2.root";
+TString inputmc="/data/dmeson/Dntuple/MC/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_All_20150830_EvtBase_PtD2_Ptsingle1p5_Lxyz2p5_v2.root";
 
 //tk pt, chi2
 TString cut="(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/ (Dtrk2nStripLayer +Dtrk2nPixelLayer))<0.25&&Ddtheta<0.12&&(Dd0/Dd0Err)>4.07&&Dchi2cl>0.073&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1";
@@ -28,7 +28,7 @@ void clean0(TH1D *h){
   }
 }
 
-TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){   
+TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double ptmax){   
    //cout<<cut.Data()<<endl;
    static int count=0;
    count++;
@@ -38,12 +38,15 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
 
    TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
    nt->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+   nt2->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
    ntMC->Project(Form("hMC%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333||Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+   ntMC2->Project(Form("hMC%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333||Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+   
    clean0(h);
    h->Draw();
    f->SetParLimits(4,-1000,1000);
    f->SetParLimits(2,0.005,0.2);
-   f->SetParLimits(8,0.01,0.2);
+   f->SetParLimits(8,0.02,0.2);
    f->SetParLimits(7,0,1);
 //   f->SetParLimits(5,0,1000000);
 
@@ -51,6 +54,7 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
    f->SetParameter(1,setparam1);
    f->SetParameter(2,setparam2);
    f->SetParameter(8,setparam3);
+   f->SetParameter(7,0.4);
    f->FixParameter(1,fixparam1);
    f->FixParameter(3,0);
    f->FixParameter(4,0);
@@ -178,6 +182,8 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
 
   TTree *nt = (TTree*) inf->Get("ntDkMpiP");
   TTree *ntMC = (TTree*)infMC->Get("ntDkMpiP");
+  TTree *nt2 = (TTree*) inf->Get("ntDkPpiM");
+  TTree *ntMC2 = (TTree*)infMC->Get("ntDkPpiM");
   TTree *ntGen = (TTree*)infMC->Get("ntGen");
   TTree *ntGen2 = (TTree*)inf->Get("ntGen");
     
@@ -196,7 +202,7 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
 
   for (int i=0;i<nBins;i++)
     {
-      TF1 *f = fit(nt,ntMC,ptBins[i],ptBins[i+1]);
+      TF1 *f = fit(nt,nt2,ntMC,ntMC2,ptBins[i],ptBins[i+1]);
       double yield = f->Integral(1.7,2.0)/0.005;
       double yieldErr = f->Integral(1.7,2.0)/0.005*f->GetParError(0)/f->GetParameter(0);
       hPt->SetBinContent(i+1,yield/(ptBins[i+1]-ptBins[i]));
@@ -210,9 +216,13 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   hPt->Sumw2();
   hPt->Draw();
 
-
+  // Matched number of candidates
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
   nt->Project("hPtRecoTruth","Dpt",TCut(seldata.Data())&&"Dgen==23333");
+  ntMC2->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
+  nt2->Project("hPtRecoTruth","Dpt",TCut(seldata.Data())&&"Dgen==23333");
+  
+  // Gen number of D meson candidates
   ntGen->Project("hPtGen","Dpt",TCut(weight)*(TCut(selmcgen.Data())));
   ntGen2->Project("hPtGen2","Dpt",(TCut(selmcgen.Data())));
   divideBinWidth(hPtRecoTruth);
