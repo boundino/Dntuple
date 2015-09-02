@@ -82,9 +82,9 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0
 	      for(int j=0;j<DInfo_size;j++)
 		{
 		  if(DInfo_pt[j]<=2.) continue;
-		  if(TrackInfo_pt[DInfo_rftk1_index[j]]<=1.5&& (t==1||t==2)) continue;
-		  if(TrackInfo_pt[DInfo_rftk2_index[j]]<=1.5&& (t==1||t==2)) continue;
-  		  if((TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy))/(TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j])))<2.5 && (t==1||t==2)) continue;
+		  if(TrackInfo_pt[DInfo_rftk1_index[j]]<=1.5&& (t==0||t==1)) continue;
+		  if(TrackInfo_pt[DInfo_rftk2_index[j]]<=1.5&& (t==0||t==1)) continue;
+  		  if((TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy))/(TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j])))<2.5 && (t==0||t==1)) continue;
 		  
 		  if(DInfo_type[j]==(t+1))
 		    {
