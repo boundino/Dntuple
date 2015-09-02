@@ -111,7 +111,7 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
    h->SetMarkerStyle(24);
    h->SetStats(0);
    h->Draw("e");
-   h->SetXTitle("M_{B} (GeV/c^{2})");
+   h->SetXTitle("M_{D} (GeV/c^{2})");
    h->SetYTitle("Entries / (5 MeV/c^{2})");
    h->GetXaxis()->CenterTitle	();
    h->GetYaxis()->CenterTitle();
