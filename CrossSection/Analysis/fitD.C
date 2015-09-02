@@ -9,11 +9,11 @@ double fixparam1=1.865;
 
 //svmithi2
 
-TString inputdata="test.root";
-TString inputmc="test.root";
+TString inputdata="ntD_20150902_mc_KmPip_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2_merged.root";
+TString inputmc="ntD_20150902_mc_KmPip_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2_merged.root";
 
 //tk pt, chi2
-TString cut="Dd0/Dd0Err>6";
+TString cut="(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/ (Dtrk2nStripLayer +Dtrk2nPixelLayer))<0.25&&Ddtheta<0.12&&(Dd0/Dd0Err)>4.07&&Dchi2cl>0.073&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1";
 
 TString seldata=Form("%s",cut.Data());
 
@@ -159,16 +159,16 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   TFile *inf = new TFile(infname.Data());
   TFile *infMC = new TFile(inputmc.Data());
 
-  TTree *nt = (TTree*) inf->Get("ntDkPpiM");
-  TTree *ntMC = (TTree*)infMC->Get("ntDkPpiM");
+  TTree *nt = (TTree*) inf->Get("ntDkMpiP");
+  TTree *ntMC = (TTree*)infMC->Get("ntDkMpiP");
   TTree *ntGen = (TTree*)infMC->Get("ntGen");
   TTree *ntGen2 = (TTree*)inf->Get("ntGen");
     
   ntGen->AddFriend(ntMC);
   ntGen2->AddFriend(ntMC);
     
-  const int nBins = 3;
-  double ptBins[nBins+1] = {0,5,10,20};
+  const int nBins = 7;
+  double ptBins[nBins+1] = {2,3,4,5,10,15,20,50};
 
   TH1D *hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D *hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
