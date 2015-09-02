@@ -3,8 +3,8 @@
 double luminosity=34.8*1e-3;
 double setparam0=100.;
 double setparam1=1.865;
-double setparam2=0.01;
-double setparam3=0.11;
+double setparam2=0.0109;
+double setparam3=0.1;
 double fixparam1=1.865;
 
 //svmithi2
@@ -18,7 +18,7 @@ TString cut="(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&
 TString seldata=Form("%s",cut.Data());
 
 TString selmc=seldata;
-TString selmcgen="Dgen==23333";
+TString selmcgen="(Dgen==23333||Dgen==23344)";
 
 TString weight = "1";
 
@@ -38,12 +38,12 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
 
    TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
    nt->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   ntMC->Project(Form("hMC%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&Dgen==23333)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+   ntMC->Project(Form("hMC%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333||Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
    clean0(h);
    h->Draw();
    f->SetParLimits(4,-1000,1000);
    f->SetParLimits(2,0.005,0.2);
-   f->SetParLimits(8,0.01,1);
+   f->SetParLimits(8,0.01,0.2);
    f->SetParLimits(7,0,1);
 //   f->SetParLimits(5,0,1000000);
 
@@ -97,7 +97,7 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
    background->SetLineStyle(2);
    
    // function for signal shape plotting. take the fit result from f
-   TF1 *mass = new TF1(Form("fmass",count),"[0]*([3]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[3])*Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
+   TF1 *mass = new TF1(Form("fmass",count),"[0]*([3]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2]))");
    mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
    mass->SetParError(0,f->GetParError(0));
    mass->SetParError(1,f->GetParError(1));
@@ -106,6 +106,18 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
    mass->SetParError(8,f->GetParError(8));
    mass->SetLineColor(2);
    mass->SetLineStyle(2);
+
+
+   TF1 *mass2 = new TF1(Form("fmass2",count),"[0]*(1-[3])*Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4])");
+   mass2->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
+   mass2->SetParError(0,f->GetParError(0));
+   mass2->SetParError(1,f->GetParError(1));
+   mass2->SetParError(2,f->GetParError(2));
+   mass2->SetParError(7,f->GetParError(7));
+   mass2->SetParError(8,f->GetParError(8));
+   mass2->SetLineColor(2);
+   mass2->SetLineStyle(2);
+
 
 //   cout <<mass->Integral(0,1.2)<<" "<<mass->IntegralError(0,1.2)<<endl;
    h->SetMarkerStyle(24);
@@ -124,6 +136,11 @@ TF1 *fit(TTree *nt,TTree *ntMC,double ptmin,double ptmax){
    mass->SetLineStyle(2);
    mass->SetFillStyle(3004);
    mass->SetFillColor(2);
+   mass2->SetRange(1.7,2.0);
+   mass2->SetLineStyle(4);
+   mass2->SetFillStyle(3004);
+   mass2->SetFillColor(4);
+   mass2->Draw("same");
    f->Draw("same");
 
    double yield = mass->Integral(1.7,2.0)/0.005;
@@ -167,8 +184,8 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   ntGen->AddFriend(ntMC);
   ntGen2->AddFriend(ntMC);
     
-  const int nBins = 7;
-  double ptBins[nBins+1] = {2,3,4,5,10,15,20,50};
+  const int nBins = 8;
+  double ptBins[nBins+1] = {2,3,4,5,7.5,10,15,20,50};
 
   TH1D *hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D *hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
