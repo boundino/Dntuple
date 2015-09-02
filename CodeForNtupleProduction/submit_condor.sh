@@ -6,32 +6,32 @@
 
 ###Plain root .C to be run
 #CONFIGFILE="loop.C"
-CONFIGFILE="loopnew.C"
+CONFIGFILE="loop.C"
 
 ###All the header/related files needed
 #TRANSFERFILE="loop.C,loop.h"
-TRANSFERFILE="loopnew.C,loopnew.h"
+TRANSFERFILE="loop.C,loop.h"
 
 ###Folder location within which files are to be run
 #DATASET=/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KpPim_20150830/5d741c977c01918c6417913dff2dce5a/*
 DATASET=/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KmPip_20150830/4cfff3e2677f7ce8b808cc4625d49a9e/*
 
 ###Output file location
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KpPim_20150830_EvtBase
-DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KmPip_20150830_EvtBase
+#DESTINATION=/mnt/hadoop/cms/store/user/ginnocen/Dmeson/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KpPim_20150830_EvtBase_PtD2_Ptsingle1p5_Lxyz2p5_v2
+DESTINATION=/mnt/hadoop/cms/store/user/ginnocen/Dmeson/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KmPip_20150830_EvtBase_PtD2_Ptsingle1p5_Lxyz2p5_v2
 
 ###Output file name
-#OUTFILE="ntD_20150902_mc_KpPim_evtbase"
-OUTFILE="ntD_20150902_mc_KmPip_evtbase"
+#OUTFILE="ntD_20150902_mc_KpPim_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2"
+OUTFILE="ntD_20150902_mc_KmPip_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2"
 
 ###Maximum number of files to be run
 MAXFILES=1000
 
 ###Log file location and it's name
-#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150902_mc_KpPim_evtbase_logs
-LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150902_mc_KmPip_evtbase_logs
-#LOGNAME=log_ntD_20150902_mc_KpPim_evtbase
-LOGNAME=log_ntD_20150902_mc_KmPip_evtbase
+#LOGDIR=/export/d00/scratch/ginnocen/hadooplogs/ntD_20150902_mc_KpPim_evtbase_logs_PtD2_Ptsingle1p5_Lxyz2p5_v2
+LOGDIR=/export/d00/scratch/ginnocen/hadooplogs/ntD_20150902_mc_KmPip_evtbase_logs_PtD2_Ptsingle1p5_Lxyz2p5_v2
+#LOGNAME=log_ntD_20150902_mc_KpPim_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2
+LOGNAME=log_ntD_20150902_mc_KmPip_evtbase_PtD2_Ptsingle1p5_Lxyz2p5_v2 
 
 ########################## Create subfile ###############################
 dateTime=$(date +%Y%m%d%H%M)
