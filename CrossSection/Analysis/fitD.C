@@ -156,15 +156,16 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
    h->SetAxisRange(0,h->GetMaximum()*1.2,"Y");
 
    background->Draw("same");   
-   mass->SetRange(1.7,2.0);
+   mass->SetRange(1.7,2.0);	
    mass->Draw("same");
    mass->SetLineStyle(2);
    mass->SetFillStyle(3004);
    mass->SetFillColor(2);
    mass2->SetRange(1.7,2.0);
    mass2->SetLineStyle(4);
-   mass2->SetFillStyle(3004);
-   mass2->SetFillColor(4);
+   mass2->SetLineColor(kGreen+2);
+   mass2->SetFillStyle(3005);
+   mass2->SetFillColor(kGreen+2);
    mass2->Draw("same");
    f->Draw("same");
 
@@ -173,18 +174,18 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
 
 
    // Draw the legend:)   
-   TLegend *leg = myLegend(0.50,0.5,0.86,0.92);
+   TLegend *leg = myLegend(0.20,0.5,0.56,0.93);
    leg->AddEntry(h,"CMS Preliminary","");
    leg->AddEntry(h,"PbPb #sqrt{s_{NN}}= 2.76 TeV","");
    leg->AddEntry(h,Form("%.0f<p_{T}^{D}<%.0f GeV/c",ptmin,ptmax),"");
    leg->AddEntry(h,"Data","pl");
    leg->AddEntry(f,"Fit","l");
    leg->AddEntry(mass,"Signal","f");
+   leg->AddEntry(mass2,"K-#pi swapped","f");
    leg->AddEntry(background,"Combinatorial Background","l");
-//   leg->AddEntry(Bkpi,"Non-prompt J/#psi","f");
    leg->Draw();
-   TLegend *leg2 = myLegend(0.44,0.33,0.89,0.50);
-   leg2->AddEntry(h,"B meson","");
+   TLegend *leg2 = myLegend(0.45,0.77,0.9,0.94);
+   leg2->AddEntry(h,"D meson","");
    leg2->AddEntry(h,Form("M_{D}=%.2f #pm %.2f MeV/c^{2}",mass->GetParameter(1)*1000.,mass->GetParError(1)*1000.),"");
    leg2->AddEntry(h,Form("N_{D}=%.0f #pm %.0f", yield, yieldErr),"");
    leg2->Draw();
