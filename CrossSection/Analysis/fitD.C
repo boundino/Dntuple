@@ -4,7 +4,7 @@ double luminosity=34.8*1e-3;
 double setparam0=100.;
 double setparam1=1.865;
 double setparam2=0.0109;
-double setparam3=0.;
+double setparam3=0.1;
 double fixparam1=1.865;
 
 //svmithi2
@@ -34,27 +34,37 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
    count++;
    TCanvas *c= new TCanvas(Form("c%d",count),"",600,600);
    TH1D *h = new TH1D(Form("h%d",count),"",60,1.7,2.0);
-   TH1D *hMC = new TH1D(Form("hMC%d",count),"",60,1.7,2.0);
+   TH1D *hMCSignal = new TH1D(Form("hMCSignal%d",count),"",60,1.7,2.0);
+   TH1D *hMCSwapped = new TH1D(Form("hMCSwapped%d",count),"",60,1.7,2.0);
 
    TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
+   
+   // Projection for data  
    nt->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
    nt2->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   ntMC->Project(Form("hMC%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333||Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   ntMC2->Project(Form("hMC%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333||Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+
+   // Projection for signal
+   ntMC->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+   ntMC2->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+
+   // Projection for k-pi swapped signal
+   ntMC->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+   ntMC2->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
    
    clean0(h);
    h->Draw();
+   
+   // Extract Signal PDF
    f->SetParLimits(4,-1000,1000);
    f->SetParLimits(2,0.005,0.2);
    f->SetParLimits(8,0.02,0.2);
-   f->SetParLimits(7,0,1);
-//   f->SetParLimits(5,0,1000000);
+   f->SetParLimits(7,0,0);
 
    f->SetParameter(0,setparam0);
    f->SetParameter(1,setparam1);
    f->SetParameter(2,setparam2);
-   f->SetParameter(8,setparam3);
-   f->SetParameter(7,0.4);
+   f->FixParameter(8,setparam3);
+   f->FixParameter(7,1);
    f->FixParameter(1,fixparam1);
    f->FixParameter(3,0);
    f->FixParameter(4,0);
@@ -62,23 +72,34 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
    f->FixParameter(6,0);
    h->GetEntries();
 
-   hMC->Fit(Form("f%d",count),"q","",1.7,2.0);
-   hMC->Fit(Form("f%d",count),"q","",1.7,2.0);
+   hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
+   hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
    f->ReleaseParameter(1);
-   hMC->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMC->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMC->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMC->Fit(Form("f%d",count),"L m","",1.7,2.0);
+   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
+   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
+   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
 
+   // Extract k-pi Swapped PDF
    f->FixParameter(1,f->GetParameter(1));
    f->FixParameter(2,f->GetParameter(2));
-   f->FixParameter(7,f->GetParameter(7));
+   f->FixParameter(7,0);
+   f->SetParameter(8,setparam3);
+   f->ReleaseParameter(8);
+//   f->FixParameter(8,f->GetParameter(8));
+
+   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+
+   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
    f->FixParameter(8,f->GetParameter(8));
    f->ReleaseParameter(3);
    f->ReleaseParameter(4);
    f->ReleaseParameter(5);
    f->ReleaseParameter(6);
    
+   // Fit on data
    h->Fit(Form("f%d",count),"q","",1.7,2.0);
    h->Fit(Form("f%d",count),"q","",1.7,2.0);
    f->ReleaseParameter(1);
@@ -190,9 +211,11 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   ntGen->AddFriend(ntMC);
   ntGen2->AddFriend(ntMC);
     
-  const int nBins = 8;
-  double ptBins[nBins+1] = {2,3,4,5,7.5,10,15,20,50};
-
+  //const int nBins = 8;
+  //double ptBins[nBins+1] = {2,3,4,5,7.5,10,15,20,50};
+  const int nBins = 12;
+  double ptBins[nBins+1] = {1.5,2.5,3.5,4.5,5.5,7,9,11,13,16,20,28,40};
+ 
   TH1D *hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D *hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
   TH1D *hGenPtSelected = new TH1D("hGenPtSelected","",nBins,ptBins);
