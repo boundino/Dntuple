@@ -25,7 +25,7 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KmPip_20150830/4cfff3e2677f7ce8b808cc4625d49a9e/Bfinder_PbPb_all_190_2_83Q.root", TString outfile="comp0.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KpPim_20150902/Bfinder_PbPb_all_300_2_aU6.root", TString outfile="comp0.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -36,9 +36,9 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/Pyquen_D0tokaonpion_D0
   
   //File type
   TFile *f = new TFile(infile);
-  TTree *root = (TTree*)f->Get("demo/root");
+  TTree *root = (TTree*)f->Get("Dfinder/root");
   TFile *outf = new TFile(outfile,"recreate");
-  setBranch(root);
+  setDBranch(root);
 
   int isDchannel[5];
   isDchannel[0] = 1; //
@@ -178,7 +178,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	       DInfo_vtxZ[j]*0-EvtInfo_PVz*0);
   b4P->SetXYZM(DInfo_px[j],DInfo_py[j],DInfo_pz[j],DInfo_mass[j]);
   Dindex[typesize] = typesize;
-  DisGoodCand[typesize] = DInfo_isGoodCand[j];
+  //DisGoodCand[typesize] = DInfo_isGoodCand[j];
   Dmass[typesize] = DInfo_mass[j];
   Dpt[typesize] = DInfo_pt[j];
   Deta[typesize] = DInfo_eta[j];
@@ -396,7 +396,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   else if(DInfo_type[j]==3||DInfo_type[j]==4) DpdgId=DPLUS_PDGID;
   else if(DInfo_type[j]==6||DInfo_type[j]==7) DpdgId=DSUBS_PDGID;
   Dgen[typesize] = 0;//gen init
-  DgenIndex[typesize] = -1;//gen init
+  DgenIndex[typesize] = -1;
+  DgennDa[typesize] = -1;
   Dgenpt[typesize] = -1;
   Dgeneta[typesize] = -20;
   Dgenphi[typesize] = -20;
@@ -418,8 +419,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	      if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j])
 		{
 		  hypo=-1;
-		  if(TMath::Abs(DInfo_rftk1_MassHypo[j])==KAON_PDGID) hypo=0;
-		  else if(TMath::Abs(DInfo_rftk1_MassHypo[j])==PION_PDGID) hypo=1;
+		  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==KAON_PDGID) hypo=0;
+		  else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID) hypo=1;
 		  if(hypo==0||hypo==1)
 		    {
 		      level=1;		      
@@ -436,8 +437,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	      else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j] && (DInfo_type[j]==1||DInfo_type[j]==2))
 		{
 		  hypo=-1;
-                  if(TMath::Abs(DInfo_rftk2_MassHypo[j])==KAON_PDGID) hypo=0;
-                  else if(TMath::Abs(DInfo_rftk2_MassHypo[j])==PION_PDGID) hypo=1;
+                  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==KAON_PDGID) hypo=0;
+                  else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID) hypo=1;
                   if(hypo==0||hypo==1)
                     {
                       if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1)
@@ -457,9 +458,9 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	      level=0;
 	      if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j])
 		{
-		  if((hypo==0&&TMath::Abs(DInfo_rftk2_MassHypo[j])==PION_PDGID)||(hypo==1&&TMath::Abs(DInfo_rftk2_MassHypo[j])==KAON_PDGID))
+		  if((hypo==0&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID)||(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==KAON_PDGID))
 		    {
-		      if(hypo==1&&TMath::Abs(DInfo_rftk2_MassHypo[j])==KAON_PDGID) hypo=2;
+		      if(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==KAON_PDGID) hypo=2;
 		      level=1;
 		      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
                         {
@@ -470,7 +471,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
                             }
                         }
 		    }
-		  else if(hypo==1&&TMath::Abs(DInfo_rftk2_MassHypo[j])==PION_PDGID&&(DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5))
+		  else if(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID&&(DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5))
 		    {
 		      hypo=3;
 		      level=1;
@@ -486,7 +487,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 		}
 	      else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j] && (DInfo_type[j]==1||DInfo_type[j]==2))
                 {
-		  if((hypo==0&&TMath::Abs(DInfo_rftk1_MassHypo[j])==PION_PDGID)||(hypo==1&&TMath::Abs(DInfo_rftk1_MassHypo[j])==KAON_PDGID))
+		  if((hypo==0&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID)||(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==KAON_PDGID))
                     {
                       if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
                         {
@@ -511,9 +512,9 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 		  level=0;
 		  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j])
 		    {
-		      if(((hypo==0||hypo==2)&&TMath::Abs(DInfo_rftk3_MassHypo[j])==PION_PDGID)||(hypo==3&&TMath::Abs(DInfo_rftk3_MassHypo[j])==KAON_PDGID))
+		      if(((hypo==0||hypo==2)&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID)||(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==KAON_PDGID))
 			{
-			  if(hypo==3&&TMath::Abs(DInfo_rftk3_MassHypo[j])==KAON_PDGID) hypo=4;
+			  if(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==KAON_PDGID) hypo=4;
 			  level=1;
 			  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]>-1)
 			    {
@@ -523,7 +524,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 				  dGenIdxTk3=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]];
 				}
 			    }
-			  else if(hypo==3&&TMath::Abs(DInfo_rftk3_MassHypo[j])==PION_PDGID&&DInfo_type[j]==5)
+			  else if(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID&&DInfo_type[j]==5)
 			    {
 			      hypo=5;
 			      level=1;
@@ -551,7 +552,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 		      level=0;
 		      if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk4_MassHypo[j])
 			{
-			  if(((hypo==0||hypo==2||hypo==4)&&TMath::Abs(DInfo_rftk4_MassHypo[j])==PION_PDGID)||(hypo==5&&TMath::Abs(DInfo_rftk4_MassHypo[j])==KAON_PDGID))
+			  if(((hypo==0||hypo==2||hypo==4)&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID)||(hypo==5&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==KAON_PDGID))
 			    {
 			      level=1;
 			      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]]>-1)
@@ -590,6 +591,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       if(Dgen[typesize]==23333||Dgen[typesize]==23344)
 	{
 	  DgenIndex[typesize] = dGenIdxTk1;
+	  DgennDa[typesize] = GenInfo_nDa[DgenIndex[typesize]];
 	  Dgenpt[typesize] = GenInfo_pt[DgenIndex[typesize]];
 	  Dgeneta[typesize] = GenInfo_eta[DgenIndex[typesize]];
 	  Dgenphi[typesize] = GenInfo_phi[DgenIndex[typesize]];
