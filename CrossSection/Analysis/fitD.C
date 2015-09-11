@@ -4,199 +4,31 @@ double luminosity=34.8*1e-3;
 double setparam0=100.;
 double setparam1=1.865;
 double setparam2=0.0109;
-double setparam3=0.1;
+double setparam10=0.005;
+double setparam8=0.1;
 double fixparam1=1.865;
 
-//svmithi2
-
-TString inputdata="/data/dmeson/Dntuple/MC/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_All_20150830_EvtBase_PtD2_Ptsingle1p5_Lxyz2p5_v2.root";
-TString inputmc="/data/dmeson/Dntuple/MC/ntD_20150902_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_All_20150830_EvtBase_PtD2_Ptsingle1p5_Lxyz2p5_v2.root";
-
-//tk pt, chi2
-TString cut="(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/ (Dtrk2nStripLayer +Dtrk2nPixelLayer))<0.25&&Ddtheta<0.12&&(Dd0/Dd0Err)>4.07&&Dchi2cl>0.073&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1";
-
-TString seldata=Form("%s",cut.Data());
-
-TString selmc=seldata;
-TString selmcgen="(Dgen==23333||Dgen==23344)";
-
+TString inputdata="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
+TString inputmc="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
 TString weight = "1";
 
-void clean0(TH1D *h){
-  for (int i=1;i<=h->GetNbinsX();i++){
-    if (h->GetBinContent(i)==0) h->SetBinError(i,1);
-  }
-}
+/*
+const int nBins = 11;
+Double_t ptBins[nBins+1] = {2.5,3.5,4.5,5.5,7,9,11,13,16,20,28,40};
+Double_t cutschi2cl[nBins] = {0.248, 0.200, 0.191, 0.148, 0.102, 0.080, 0.073, 0.060, 0.055, 0.054, 0.043};
+Double_t cutsdxyz[nBins] =   {5.90,  5.81,  5.10,  4.62,  4.46,  4.39,  4.07,  3.88,  3.67,  3.25,  2.55};
+*/
 
-TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double ptmax){   
-   //cout<<cut.Data()<<endl;
-   static int count=0;
-   count++;
-   TCanvas *c= new TCanvas(Form("c%d",count),"",600,600);
-   TH1D *h = new TH1D(Form("h%d",count),"",60,1.7,2.0);
-   TH1D *hMCSignal = new TH1D(Form("hMCSignal%d",count),"",60,1.7,2.0);
-   TH1D *hMCSwapped = new TH1D(Form("hMCSwapped%d",count),"",60,1.7,2.0);
-
-   TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
-   
-   // Projection for data  
-   nt->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   nt2->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-
-   // Projection for signal
-   ntMC->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   ntMC2->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-
-   // Projection for k-pi swapped signal
-   ntMC->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   ntMC2->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-   
-   clean0(h);
-   h->Draw();
-   
-   // Extract Signal PDF
-   f->SetParLimits(4,-1000,1000);
-   f->SetParLimits(2,0.005,0.2);
-   f->SetParLimits(8,0.02,0.2);
-   f->SetParLimits(7,0,0);
-
-   f->SetParameter(0,setparam0);
-   f->SetParameter(1,setparam1);
-   f->SetParameter(2,setparam2);
-   f->FixParameter(8,setparam3);
-   f->FixParameter(7,1);
-   f->FixParameter(1,fixparam1);
-   f->FixParameter(3,0);
-   f->FixParameter(4,0);
-   f->FixParameter(5,0);
-   f->FixParameter(6,0);
-   h->GetEntries();
-
-   hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
-   hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
-   f->ReleaseParameter(1);
-   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
-
-   // Extract k-pi Swapped PDF
-   f->FixParameter(1,f->GetParameter(1));
-   f->FixParameter(2,f->GetParameter(2));
-   f->FixParameter(7,0);
-   f->SetParameter(8,setparam3);
-   f->ReleaseParameter(8);
-//   f->FixParameter(8,f->GetParameter(8));
-
-   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-
-   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
-   f->FixParameter(8,f->GetParameter(8));
-   f->ReleaseParameter(3);
-   f->ReleaseParameter(4);
-   f->ReleaseParameter(5);
-   f->ReleaseParameter(6);
-   
-   // Fit on data
-   h->Fit(Form("f%d",count),"q","",1.7,2.0);
-   h->Fit(Form("f%d",count),"q","",1.7,2.0);
-   f->ReleaseParameter(1);
-   h->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   h->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   h->Fit(Form("f%d",count),"L q","",1.7,2.0);
-   h->Fit(Form("f%d",count),"L m","",1.7,2.0);
-   h->SetMarkerSize(0.8);
-   h->SetMarkerStyle(20);
-   cout <<h->GetEntries()<<endl;
-
-   // function for background shape plotting. take the fit result from f
-   TF1 *background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
-   background->SetParameter(0,f->GetParameter(3));
-   background->SetParameter(1,f->GetParameter(4));
-   background->SetParameter(2,f->GetParameter(5));
-   background->SetParameter(3,f->GetParameter(6));
-   background->SetLineColor(4);
-   background->SetRange(1.7,2.0);
-   background->SetLineStyle(2);
-   
-   // function for signal shape plotting. take the fit result from f
-   TF1 *mass = new TF1(Form("fmass",count),"[0]*([3]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2]))");
-   mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
-   mass->SetParError(0,f->GetParError(0));
-   mass->SetParError(1,f->GetParError(1));
-   mass->SetParError(2,f->GetParError(2));
-   mass->SetParError(7,f->GetParError(7));
-   mass->SetParError(8,f->GetParError(8));
-   mass->SetLineColor(2);
-   mass->SetLineStyle(2);
-
-
-   TF1 *mass2 = new TF1(Form("fmass2",count),"[0]*(1-[3])*Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4])");
-   mass2->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
-   mass2->SetParError(0,f->GetParError(0));
-   mass2->SetParError(1,f->GetParError(1));
-   mass2->SetParError(2,f->GetParError(2));
-   mass2->SetParError(7,f->GetParError(7));
-   mass2->SetParError(8,f->GetParError(8));
-   mass2->SetLineColor(2);
-   mass2->SetLineStyle(2);
-
-
-//   cout <<mass->Integral(0,1.2)<<" "<<mass->IntegralError(0,1.2)<<endl;
-   h->SetMarkerStyle(24);
-   h->SetStats(0);
-   h->Draw("e");
-   h->SetXTitle("M_{D} (GeV/c^{2})");
-   h->SetYTitle("Entries / (5 MeV/c^{2})");
-   h->GetXaxis()->CenterTitle	();
-   h->GetYaxis()->CenterTitle();
-   h->SetTitleOffset(1.,"Y");
-   h->SetAxisRange(0,h->GetMaximum()*1.2,"Y");
-
-   background->Draw("same");   
-   mass->SetRange(1.7,2.0);	
-   mass->Draw("same");
-   mass->SetLineStyle(2);
-   mass->SetFillStyle(3004);
-   mass->SetFillColor(2);
-   mass2->SetRange(1.7,2.0);
-   mass2->SetLineStyle(4);
-   mass2->SetLineColor(kGreen+2);
-   mass2->SetFillStyle(3005);
-   mass2->SetFillColor(kGreen+2);
-   mass2->Draw("same");
-   f->Draw("same");
-
-   double yield = mass->Integral(1.7,2.0)/0.005;
-   double yieldErr = mass->Integral(1.7,2.0)/0.005*mass->GetParError(0)/mass->GetParameter(0);
-
-
-   // Draw the legend:)   
-   TLegend *leg = myLegend(0.20,0.5,0.56,0.93);
-   leg->AddEntry(h,"CMS Preliminary","");
-   leg->AddEntry(h,"PbPb #sqrt{s_{NN}}= 2.76 TeV","");
-   leg->AddEntry(h,Form("%.0f<p_{T}^{D}<%.0f GeV/c",ptmin,ptmax),"");
-   leg->AddEntry(h,"Data","pl");
-   leg->AddEntry(f,"Fit","l");
-   leg->AddEntry(mass,"Signal","f");
-   leg->AddEntry(mass2,"K-#pi swapped","f");
-   leg->AddEntry(background,"Combinatorial Background","l");
-   leg->Draw();
-   TLegend *leg2 = myLegend(0.45,0.77,0.9,0.94);
-   leg2->AddEntry(h,"D meson","");
-   leg2->AddEntry(h,Form("M_{D}=%.2f #pm %.2f MeV/c^{2}",mass->GetParameter(1)*1000.,mass->GetParError(1)*1000.),"");
-   leg2->AddEntry(h,Form("N_{D}=%.0f #pm %.0f", yield, yieldErr),"");
-   leg2->Draw();
-
-   c->SaveAs(Form("ResultsD0/DMass-%d.pdf",count));
-
-   return mass;
-}
+const int nBins = 1;
+Double_t ptBins[nBins+1] = {2.5,40};
+Double_t cutschi2cl[nBins] = {0.248};
+Double_t cutsdxyz[nBins] =   {5.90};
 
 void fitD(TString infname="",TString label="",bool doweight = 1)
 {
+  void clean0(TH1D *h);
+  TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double ptmax);
+
   if (doweight==0) weight="1";
   if (infname=="") infname=inputdata.Data();
   TFile *inf = new TFile(infname.Data());
@@ -211,12 +43,7 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
     
   ntGen->AddFriend(ntMC);
   ntGen2->AddFriend(ntMC);
-    
-  //const int nBins = 8;
-  //double ptBins[nBins+1] = {2,3,4,5,7.5,10,15,20,50};
-  const int nBins = 12;
-  double ptBins[nBins+1] = {1.5,2.5,3.5,4.5,5.5,7,9,11,13,16,20,28,40};
- 
+
   TH1D *hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D *hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
   TH1D *hGenPtSelected = new TH1D("hGenPtSelected","",nBins,ptBins);
@@ -232,7 +59,8 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
       hPt->SetBinContent(i+1,yield/(ptBins[i+1]-ptBins[i]));
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
     }  
-  
+
+  /*  
   TCanvas *c=  new TCanvas("cResult","",600,600);
   c->SetLogy();
   hPt->SetXTitle("D^{0} p_{T} (GeV/c)");
@@ -248,7 +76,7 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   
   // Gen number of D meson candidates
   ntGen->Project("hPtGen","Dpt",TCut(weight)*(TCut(selmcgen.Data())));
-  ntGen2->Project("hPtGen2","Dpt",(TCut(selmcgen.Data())));
+  //ntGen2->Project("hPtGen2","Dpt",(TCut(selmcgen.Data())));
   divideBinWidth(hPtRecoTruth);
   
   hPtRecoTruth->Draw("same hist");
@@ -283,12 +111,215 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   TFile *outf = new TFile(Form("ResultsD0/alphaD0%s.root",label.Data()),"recreate");
   outf->cd();
   hPt->Write();
+  */
   /*hEff->Write();
   hPtGen->Write();
   hPtCor->Write();
   hPtSigma->Write();*/
-  outf->Close();
-  delete outf;
+  //outf->Close();
+  //delete outf;
 
 }
 
+void clean0(TH1D *h)
+{
+  for (int i=1;i<=h->GetNbinsX();i++)
+    {
+      if(h->GetBinContent(i)==0) h->SetBinError(i,1);
+    }
+}
+
+TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double ptmax)
+{
+  //cout<<cut.Data()<<endl;
+  static int count=0;
+  count++;
+
+  cout<<count<<endl;
+
+  TString cut = Form("(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/(Dtrk2nStripLayer+Dtrk2nPixelLayer))<0.25&&(Dtrk1PtErr/Dtrk1Pt)<0.075&&(Dtrk2PtErr/Dtrk2Pt)<0.075&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1&&Dy>-1.&&Dy<1.&&Ddtheta<0.12&&(Ddxyz/DdxyzErr)>%f&&Dchi2cl>%f",cutsdxyz[count-1],cutschi2cl[count-1]);
+  TString seldata=Form("%s",cut.Data());
+  TString selmc=seldata;
+  TString selmcgen="(Dgen==23333||Dgen==23344)";///////////////////////////////
+  
+  TCanvas *c= new TCanvas(Form("c%d",count),"",600,600);
+  TH1D *h = new TH1D(Form("h%d",count),"",60,1.7,2.0);
+  TH1D *hMCSignal = new TH1D(Form("hMCSignal%d",count),"",60,1.7,2.0);
+  TH1D *hMCSwapped = new TH1D(Form("hMCSwapped%d",count),"",60,1.7,2.0);
+  
+  TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
+  
+  // Projection for data  
+  nt->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  nt2->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  
+  // Projection for signal
+  ntMC->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC2->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  
+  // Projection for k-pi swapped signal
+  ntMC->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC2->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  
+  clean0(h);
+  h->Draw();
+  
+  // Extract Signal PDF
+  f->SetParLimits(4,-1000,1000);
+  f->SetParLimits(10,0.001,0.02);
+  f->SetParLimits(2,0.005,0.2);
+  f->SetParLimits(8,0.02,0.2);
+  f->SetParLimits(7,0,1);
+  f->SetParLimits(9,0,1);
+  
+  f->SetParameter(0,setparam0);
+  f->SetParameter(1,setparam1);
+  f->SetParameter(2,setparam2);
+  f->SetParameter(10,setparam10);
+
+  f->FixParameter(8,setparam8);
+  f->FixParameter(7,1);
+  f->FixParameter(1,fixparam1);
+  f->FixParameter(3,0);
+  f->FixParameter(4,0);
+  f->FixParameter(5,0);
+  f->FixParameter(6,0);
+  h->GetEntries();
+  
+  hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
+  hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
+  f->ReleaseParameter(1);
+  hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  
+  // Extract k-pi Swapped PDF
+  f->FixParameter(1,f->GetParameter(1));
+  f->FixParameter(2,f->GetParameter(2));
+  f->FixParameter(10,f->GetParameter(10));
+  f->FixParameter(7,0);
+  f->SetParameter(8,setparam8);
+  f->ReleaseParameter(8);
+  f->FixParameter(8,f->GetParameter(8));
+  
+  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  
+  f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
+  //f->FixParameter(8,f->GetParameter(8));
+  f->ReleaseParameter(3);
+  f->ReleaseParameter(4);
+  f->ReleaseParameter(5);
+  f->ReleaseParameter(6);
+  
+  // Fit on data
+  h->Fit(Form("f%d",count),"q","",1.7,2.0);
+  h->Fit(Form("f%d",count),"q","",1.7,2.0);
+  f->ReleaseParameter(1);
+  h->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  h->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  h->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  h->Fit(Form("f%d",count),"L m","",1.7,2.0);
+  h->SetMarkerSize(0.8);
+  h->SetMarkerStyle(20);
+  cout <<h->GetEntries()<<endl;
+  
+  // function for background shape plotting. take the fit result from f
+  TF1 *background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
+  background->SetParameter(0,f->GetParameter(3));
+  background->SetParameter(1,f->GetParameter(4));
+  background->SetParameter(2,f->GetParameter(5));
+  background->SetParameter(3,f->GetParameter(6));
+  background->SetLineColor(4);
+  background->SetRange(1.7,2.0);
+  background->SetLineStyle(2);
+  
+  // function for signal shape plotting. take the fit result from f
+  TF1 *mass = new TF1(Form("fmass",count),"[0]*([3]*([4]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[4])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))");
+  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(9),f->GetParameter(10));
+  mass->SetParError(0,f->GetParError(0));
+  mass->SetParError(1,f->GetParError(1));
+  mass->SetParError(2,f->GetParError(2));
+  mass->SetParError(3,f->GetParError(7));
+  mass->SetParError(4,f->GetParError(9));
+  mass->SetParError(5,f->GetParError(10));
+  mass->SetLineColor(2);
+  mass->SetLineStyle(2);
+  
+  TF1 *mass2 = new TF1(Form("fmass2",count),"[0]*(1-[2])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3])");
+  mass2->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(7),f->GetParameter(8));
+  mass2->SetParError(0,f->GetParError(0));
+  mass2->SetParError(1,f->GetParError(1));
+  mass2->SetParError(2,f->GetParError(7));
+  mass2->SetParError(3,f->GetParError(8));
+  mass2->SetLineColor(2);
+  mass2->SetLineStyle(2);
+  
+  //   cout <<mass->Integral(0,1.2)<<" "<<mass->IntegralError(0,1.2)<<endl;
+  h->SetMarkerStyle(24);
+  h->SetStats(0);
+  h->Draw("e");
+  h->SetXTitle("M_{D} (GeV/c^{2})");
+  h->SetYTitle("Entries / (5 MeV/c^{2})");
+  h->GetXaxis()->CenterTitle	();
+  h->GetYaxis()->CenterTitle();
+  h->SetTitleOffset(1.,"Y");
+  h->SetAxisRange(0,h->GetMaximum()*1.2,"Y");
+  
+  background->Draw("same");   
+  mass->SetRange(1.7,2.0);	
+  mass->Draw("same");
+  mass->SetLineStyle(2);
+  mass->SetFillStyle(3004);
+  mass->SetFillColor(2);
+  mass2->SetRange(1.7,2.0);
+  mass2->SetLineStyle(4);
+  mass2->SetLineColor(kGreen+2);
+  mass2->SetFillStyle(3005);
+  mass2->SetFillColor(kGreen+2);
+  mass2->Draw("same");
+  f->Draw("same");
+  
+  double yield = mass->Integral(1.7,2.0)/0.005;
+  double yieldErr = mass->Integral(1.7,2.0)/0.005*mass->GetParError(0)/mass->GetParameter(0);
+  
+  
+  // Draw the legend:)   
+  TLegend *leg = myLegend(0.20,0.5,0.56,0.93);
+  leg->AddEntry(h,"CMS Preliminary","");
+  leg->AddEntry(h,"PbPb #sqrt{s_{NN}}= 2.76 TeV","");
+  leg->AddEntry(h,Form("%.1f<p_{T}^{D}<%.1f GeV/c",ptmin,ptmax),"");
+  leg->AddEntry(h,"Data","pl");
+  leg->AddEntry(f,"Fit","l");
+  leg->AddEntry(mass,"Signal","f");
+  leg->AddEntry(mass2,"K-#pi swapped","f");
+  leg->AddEntry(background,"Combinatorial Background","l");
+  leg->Draw();
+  TLegend *leg2 = myLegend(0.45,0.77,0.9,0.94);
+  leg2->AddEntry(h,"D meson","");
+  leg2->AddEntry(h,Form("M_{D}=%.2f #pm %.2f MeV/c^{2}",mass->GetParameter(1)*1000.,mass->GetParError(1)*1000.),"");
+  leg2->AddEntry(h,Form("N_{D}=%.0f #pm %.0f", yield, yieldErr),"");
+  leg2->Draw();
+  
+  c->SaveAs(Form("ResultsD0/DMass-%d.pdf",count));
+  
+  return mass;
+}
+
+/*
+TString cmcut = "(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/(Dtrk2nStripLayer+Dtrk2nPixelLayer))<0.25&&(Dtrk1PtErr/Dtrk1Pt)<0.075&&(Dtrk2PtErr/Dtrk2Pt)<0.075&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1&&Dy>-1.&&Dy<1.&&Ddtheta<0.12";
+TString ptcut = "((Dpt>2.5&&Dpt<3.5&&(Ddxyz/DdxyzErr)>5.90&&Dchi2cl>0.248) ||
+                  (Dpt>3.5&&Dpt<4.5&&(Ddxyz/DdxyzErr)>5.81&&Dchi2cl>0.200) ||
+                  (Dpt>4.5&&Dpt<5.5&&(Ddxyz/DdxyzErr)>5.10&&Dchi2cl>0.191) ||
+                  (Dpt>5.5&&Dpt<7.0&&(Ddxyz/DdxyzErr)>4.62&&Dchi2cl>0.148) ||
+                  (Dpt>7.0&&Dpt<9.0&&(Ddxyz/DdxyzErr)>4.46&&Dchi2cl>0.102) ||
+                  (Dpt>9.0&&Dpt<11.&&(Ddxyz/DdxyzErr)>4.39&&Dchi2cl>0.080) ||
+                  (Dpt>11.&&Dpt<13.&&(Ddxyz/DdxyzErr)>4.07&&Dchi2cl>0.073) ||
+                  (Dpt>13.&&Dpt<16.&&(Ddxyz/DdxyzErr)>3.88&&Dchi2cl>0.060) ||
+                  (Dpt>16.&&Dpt<20.&&(Ddxyz/DdxyzErr)>3.67&&Dchi2cl>0.055) ||
+                  (Dpt>20.&&Dpt<28.&&(Ddxyz/DdxyzErr)>3.25&&Dchi2cl>0.054) ||
+                  (Dpt>28.&&Dpt<40.&&(Ddxyz/DdxyzErr)>2.55&&Dchi2cl>0.043))";
+TString cut = From("%s&&%s",cmcut.Data(),ptcut.Data());
+*/
