@@ -590,6 +590,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	}//if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5)
       if(Dgen[typesize]==23333||Dgen[typesize]==23344)
 	{
+	  if((DInfo_type[j]==1||DInfo_type[j]==2)&&GenInfo_nDa[DgenIndex[typesize]]>2) Dgen[typesize]=41000;
 	  DgenIndex[typesize] = dGenIdxTk1;
 	  DgennDa[typesize] = GenInfo_nDa[DgenIndex[typesize]];
 	  Dgenpt[typesize] = GenInfo_pt[DgenIndex[typesize]];
