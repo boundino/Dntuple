@@ -82,13 +82,21 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData
 	      for(int j=0;j<DInfo_size;j++)
 		{
 
-		  if(DInfo_pt[j]<=2.) continue;
-		  if(TrackInfo_pt[DInfo_rftk1_index[j]]<=1.5&& (t==0||t==1)) continue;
-		  if(TrackInfo_pt[DInfo_rftk2_index[j]]<=1.5&& (t==0||t==1)) continue;
-		  
-		  double d03D=TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy)+(DInfo_vtxZ[j]-EvtInfo_PVz)*(DInfo_vtxZ[j]-EvtInfo_PVz));
-		  double d03Derr=TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]+DInfo_vtxZE[j]*DInfo_vtxZE[j]);
-  		  if(d03D/d03Derr<2.5 && (t==0||t==1)) continue;		  
+          double d03D=TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy)+(DInfo_vtxZ[j]-EvtInfo_PVz)*(DInfo_vtxZ[j]-EvtInfo_PVz));
+          double d03Derr=TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]+DInfo_vtxZE[j]*DInfo_vtxZE[j]);
+          
+          if(DInfo_pt[j]<3.0) continue;
+          if(DInfo_pt[j]>=3.0 && DInfo_pt[j]<5.5 && d03D/d03Derr<5. && (t==0||t==1) ) continue;
+          if(DInfo_pt[j]>=5.5 && DInfo_pt[j]<13.0 && d03D/d03Derr<4. && (t==0||t==1) ) continue;
+          if(DInfo_pt[j]>=13. && d03D/d03Derr<2.5 && (t==0||t==1) ) continue;
+          if(TrackInfo_pt[DInfo_rftk1_index[j]]<=1.0 && (t==0||t==1)) continue;
+          if(TrackInfo_pt[DInfo_rftk2_index[j]]<=1.0 && (t==0||t==1)) continue;
+          if(TrackInfo_eta[DInfo_rftk1_index[j]]>1.1 && (t==0||t==1)) continue;
+          if(TrackInfo_eta[DInfo_rftk2_index[j]]>1.1 && (t==0||t==1)) continue;
+          
+          bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
+          bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,DInfo_vtxY[j]-EvtInfo_PVy,DInfo_vtxZ[j]-EvtInfo_PVz);
+          if((bP->Angle(*bVtx)>0.15) && (t==0||t==1)) continue;
 
 		  if(DInfo_type[j]==(t+1))
 		    {
