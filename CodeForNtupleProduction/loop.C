@@ -25,7 +25,7 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_KpPim_20150902/Bfinder_PbPb_all_300_2_aU6.root", TString outfile="comp0.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/Bfinder_PbPb_all_4056_1_5oA.root", TString outfile="compdata.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -81,14 +81,15 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	      Dbestindex=-1;
 	      for(int j=0;j<DInfo_size;j++)
 		{
+
 		  if(DInfo_pt[j]<=2.) continue;
 		  if(TrackInfo_pt[DInfo_rftk1_index[j]]<=1.5&& (t==0||t==1)) continue;
 		  if(TrackInfo_pt[DInfo_rftk2_index[j]]<=1.5&& (t==0||t==1)) continue;
 		  
 		  double d03D=TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy)+(DInfo_vtxZ[j]-EvtInfo_PVz)*(DInfo_vtxZ[j]-EvtInfo_PVz));
 		  double d03Derr=TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]+DInfo_vtxZE[j]*DInfo_vtxZE[j]);
-  		  if(d03D/d03Derr<2.5 && (t==0||t==1)) continue;
-		  
+  		  if(d03D/d03Derr<2.5 && (t==0||t==1)) continue;		  
+
 		  if(DInfo_type[j]==(t+1))
 		    {
 		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL);
@@ -172,10 +173,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   PVnchi2 = EvtInfo_PVnchi2;
   PVchi2 = EvtInfo_PVchi2;
   //DInfo
-  bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]*0);
+  bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
   bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,
 	       DInfo_vtxY[j]-EvtInfo_PVy,
-	       DInfo_vtxZ[j]*0-EvtInfo_PVz*0);
+	       DInfo_vtxZ[j]-EvtInfo_PVz);
   b4P->SetXYZM(DInfo_px[j],DInfo_py[j],DInfo_pz[j],DInfo_mass[j]);
   Dindex[typesize] = typesize;
   //DisGoodCand[typesize] = DInfo_isGoodCand[j];
@@ -590,8 +591,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	}//if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5)
       if(Dgen[typesize]==23333||Dgen[typesize]==23344)
 	{
-	  if((DInfo_type[j]==1||DInfo_type[j]==2)&&GenInfo_nDa[DgenIndex[typesize]]>2) Dgen[typesize]=41000;
 	  DgenIndex[typesize] = dGenIdxTk1;
+	  if((DInfo_type[j]==1||DInfo_type[j]==2)&&GenInfo_nDa[DgenIndex[typesize]]>2) Dgen[typesize]=41000;
 	  DgennDa[typesize] = GenInfo_nDa[DgenIndex[typesize]];
 	  Dgenpt[typesize] = GenInfo_pt[DgenIndex[typesize]];
 	  Dgeneta[typesize] = GenInfo_eta[DgenIndex[typesize]];
