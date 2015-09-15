@@ -4,22 +4,24 @@
 double luminosity=34.8*1e-3;
 double setparam0=100.;
 double setparam1=1.865;
-double setparam2=0.0109;
+double setparam2=0.03;
 double setparam10=0.005;
 double setparam8=0.1;
+double setparam9=0.1;
 double fixparam1=1.865;
 
 TString inputdata="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
 TString inputmc="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
 TString weight = "1";
 
-const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
-//const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,9,11,13,16,20,28,40};
+//const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
+const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,9,11,13,16,20,28,40};
 
 TString cut = cuts[binsIndex];
 TString seldata = Form("%s",cut.Data());
 TString selmc = seldata;
-TString selmcgen = "GisSignal";
+//TString selmcgen = "(GisSignal==1||GisSignal==2)&&Gy>-1.&&Gy<1.";
+TString selmcgen = "GisSignal==1||GisSignal==2";
 
 void fitD(TString infname="",TString label="",bool doweight = 1)
 {
@@ -36,15 +38,17 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   TTree *nt2 = (TTree*) inf->Get("ntDkPpiM");
   TTree *ntMC2 = (TTree*)infMC->Get("ntDkPpiM");
 
-  //TTree *ntGen = (TTree*)infMC->Get("ntGen");
-  //TTree *ntGen2 = (TTree*)inf->Get("ntGen");
-  //ntGen->AddFriend(ntMC);
-  //ntGen2->AddFriend(ntMC);
+  TTree *ntGen = (TTree*)infMC->Get("ntGen");
+  TTree *ntGen2 = (TTree*)inf->Get("ntGen");
+  ntGen->AddFriend(ntMC);
+  ntGen2->AddFriend(ntMC);
 
   TH1D *hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D *hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
+  TH1D *hPtRecoTruth2 = new TH1D("hPtRecoTruth2","",nBins,ptBins);
   TH1D *hGenPtSelected = new TH1D("hGenPtSelected","",nBins,ptBins);
   TH1D *hPtMC = new TH1D("hPtMC","",nBins,ptBins);
+  TH1D *hPtMC2 = new TH1D("hPtMC2","",nBins,ptBins);
   TH1D *hPtGen = new TH1D("hPtGen","",nBins,ptBins);
   TH1D *hPtGen2 = new TH1D("hPtGen2","",nBins,ptBins);
 
@@ -57,7 +61,6 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
     }  
 
-  /*  
   TCanvas *c=  new TCanvas("cResult","",600,600);
   c->SetLogy();
   hPt->SetXTitle("D^{0} p_{T} (GeV/c)");
@@ -67,13 +70,15 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
 
   // Matched number of candidates
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
+  ntMC2->Project("hPtMC2","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
+  hPtMC->Add(hPtMC2);
   nt->Project("hPtRecoTruth","Dpt",TCut(seldata.Data())&&"Dgen==23333");
-  ntMC2->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
-  nt2->Project("hPtRecoTruth","Dpt",TCut(seldata.Data())&&"Dgen==23333");
-  
+  nt2->Project("hPtRecoTruth2","Dpt",TCut(seldata.Data())&&"Dgen==23333");
+  hPtRecoTruth->Add(hPtRecoTruth2);
+
   // Gen number of D meson candidates
   ntGen->Project("hPtGen","Dpt",TCut(weight)*(TCut(selmcgen.Data())));
-  //ntGen2->Project("hPtGen2","Dpt",(TCut(selmcgen.Data())));
+  ntGen2->Project("hPtGen2","Dpt",(TCut(selmcgen.Data())));
   divideBinWidth(hPtRecoTruth);
   
   hPtRecoTruth->Draw("same hist");
@@ -108,7 +113,7 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   TFile *outf = new TFile(Form("ResultsD0/alphaD0%s.root",label.Data()),"recreate");
   outf->cd();
   hPt->Write();
-  */
+
   /*hEff->Write();
   hPtGen->Write();
   hPtCor->Write();
@@ -157,15 +162,13 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
   ntMC2->Project(Form("hMCSwapped2-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
   hMCSwapped->Add(hMCSwapped2);
 
-  cout<<"== nCand: "<<h->GetEntries()<<endl;
-  
   clean0(h);
   h->Draw();
   
   // Extract Signal PDF
   f->SetParLimits(4,-1000,1000);
   f->SetParLimits(10,0.001,0.02);
-  f->SetParLimits(2,0.01,0.2);
+  f->SetParLimits(2,0.01,0.1);
   f->SetParLimits(8,0.02,0.2);
   f->SetParLimits(7,0,1);
   f->SetParLimits(9,0,1);
@@ -174,6 +177,7 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
   f->SetParameter(1,setparam1);
   f->SetParameter(2,setparam2);
   f->SetParameter(10,setparam10);
+  f->SetParameter(9,setparam9);
 
   f->FixParameter(8,setparam8);
   f->FixParameter(7,1);
@@ -189,24 +193,24 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
   f->ReleaseParameter(1);
   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSignal->Fit(Form("f%d",count),"L m","",1.7,2.0);
   
   // Extract k-pi Swapped PDF
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
   f->FixParameter(10,f->GetParameter(10));
+  f->FixParameter(9,f->GetParameter(9));
   f->FixParameter(7,0);
-  f->SetParameter(8,setparam8);
   f->ReleaseParameter(8);
-  f->FixParameter(8,f->GetParameter(8));
+  f->SetParameter(8,setparam8);
   
   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
   hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
+  hMCSwapped->Fit(Form("f%d",count),"L m","",1.7,2.0);
   
   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
-  //f->FixParameter(8,f->GetParameter(8));
+  f->FixParameter(8,f->GetParameter(8));
   f->ReleaseParameter(3);
   f->ReleaseParameter(4);
   f->ReleaseParameter(5);
