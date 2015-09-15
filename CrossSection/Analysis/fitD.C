@@ -1,4 +1,5 @@
 #include "utilities.h"
+#include "fitD.h"
 
 double luminosity=34.8*1e-3;
 double setparam0=100.;
@@ -12,17 +13,13 @@ TString inputdata="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root
 TString inputmc="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
 TString weight = "1";
 
-/*
-const int nBins = 11;
-Double_t ptBins[nBins+1] = {2.5,3.5,4.5,5.5,7,9,11,13,16,20,28,40};
-Double_t cutschi2cl[nBins] = {0.248, 0.200, 0.191, 0.148, 0.102, 0.080, 0.073, 0.060, 0.055, 0.054, 0.043};
-Double_t cutsdxyz[nBins] =   {5.90,  5.81,  5.10,  4.62,  4.46,  4.39,  4.07,  3.88,  3.67,  3.25,  2.55};
-*/
+const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
+//const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,9,11,13,16,20,28,40};
 
-const int nBins = 1;
-Double_t ptBins[nBins+1] = {2.5,40};
-Double_t cutschi2cl[nBins] = {0.248};
-Double_t cutsdxyz[nBins] =   {5.90};
+TString cut = cuts[binsIndex];
+TString seldata = Form("%s",cut.Data());
+TString selmc = seldata;
+TString selmcgen = "GisSignal";
 
 void fitD(TString infname="",TString label="",bool doweight = 1)
 {
@@ -38,11 +35,11 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   TTree *ntMC = (TTree*)infMC->Get("ntDkMpiP");
   TTree *nt2 = (TTree*) inf->Get("ntDkPpiM");
   TTree *ntMC2 = (TTree*)infMC->Get("ntDkPpiM");
-  TTree *ntGen = (TTree*)infMC->Get("ntGen");
-  TTree *ntGen2 = (TTree*)inf->Get("ntGen");
-    
-  ntGen->AddFriend(ntMC);
-  ntGen2->AddFriend(ntMC);
+
+  //TTree *ntGen = (TTree*)infMC->Get("ntGen");
+  //TTree *ntGen2 = (TTree*)inf->Get("ntGen");
+  //ntGen->AddFriend(ntMC);
+  //ntGen2->AddFriend(ntMC);
 
   TH1D *hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D *hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
@@ -137,29 +134,30 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
 
   cout<<count<<endl;
 
-  TString cut = Form("(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/(Dtrk2nStripLayer+Dtrk2nPixelLayer))<0.25&&(Dtrk1PtErr/Dtrk1Pt)<0.075&&(Dtrk2PtErr/Dtrk2Pt)<0.075&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1&&Dy>-1.&&Dy<1.&&Ddtheta<0.12&&(Ddxyz/DdxyzErr)>%f&&Dchi2cl>%f",cutsdxyz[count-1],cutschi2cl[count-1]);
-  TString seldata=Form("%s",cut.Data());
-  TString selmc=seldata;
-  TString selmcgen="(Dgen==23333||Dgen==23344)";///////////////////////////////
-  
   TCanvas *c= new TCanvas(Form("c%d",count),"",600,600);
-  TH1D *h = new TH1D(Form("h%d",count),"",60,1.7,2.0);
-  TH1D *hMCSignal = new TH1D(Form("hMCSignal%d",count),"",60,1.7,2.0);
-  TH1D *hMCSwapped = new TH1D(Form("hMCSwapped%d",count),"",60,1.7,2.0);
+  TH1D *h = new TH1D(Form("h-%d",count),"",60,1.7,2.0);
+  TH1D *h2 = new TH1D(Form("h2-%d",count),"",60,1.7,2.0);
+  TH1D *hMCSignal = new TH1D(Form("hMCSignal-%d",count),"",60,1.7,2.0);
+  TH1D *hMCSignal2 = new TH1D(Form("hMCSignal2-%d",count),"",60,1.7,2.0);
+  TH1D *hMCSwapped = new TH1D(Form("hMCSwapped-%d",count),"",60,1.7,2.0);
+  TH1D *hMCSwapped2 = new TH1D(Form("hMCSwapped2-%d",count),"",60,1.7,2.0);
   
   TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
   
   // Projection for data  
-  nt->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  nt2->Project(Form("h%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  
+  nt->Project(Form("h-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  nt2->Project(Form("h2-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  h->Add(h2);
   // Projection for signal
-  ntMC->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  ntMC2->Project(Form("hMCSignal%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  
+  ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC2->Project(Form("hMCSignal2-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  hMCSignal->Add(hMCSignal2);
   // Projection for k-pi swapped signal
-  ntMC->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  ntMC2->Project(Form("hMCSwapped%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC2->Project(Form("hMCSwapped2-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  hMCSwapped->Add(hMCSwapped2);
+
+  cout<<"== nCand: "<<h->GetEntries()<<endl;
   
   clean0(h);
   h->Draw();
@@ -167,7 +165,7 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
   // Extract Signal PDF
   f->SetParLimits(4,-1000,1000);
   f->SetParLimits(10,0.001,0.02);
-  f->SetParLimits(2,0.005,0.2);
+  f->SetParLimits(2,0.01,0.2);
   f->SetParLimits(8,0.02,0.2);
   f->SetParLimits(7,0,1);
   f->SetParLimits(9,0,1);
@@ -303,23 +301,7 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
   leg2->AddEntry(h,Form("N_{D}=%.0f #pm %.0f", yield, yieldErr),"");
   leg2->Draw();
   
-  c->SaveAs(Form("ResultsD0/DMass-%d.pdf",count));
+  c->SaveAs(Form("../ResultsD0/DMass-%d.pdf",count));
   
   return mass;
 }
-
-/*
-TString cmcut = "(Dtrk1PixelHit+Dtrk1StripHit)>11&&(Dtrk2PixelHit+Dtrk2StripHit)>11&&(Dtrk1Chi2ndf/(Dtrk1nStripLayer+Dtrk1nPixelLayer))<0.25&&(Dtrk2Chi2ndf/(Dtrk2nStripLayer+Dtrk2nPixelLayer))<0.25&&(Dtrk1PtErr/Dtrk1Pt)<0.075&&(Dtrk2PtErr/Dtrk2Pt)<0.075&&Dtrk1Eta<1.1&&Dtrk2Eta<1.1&&Dy>-1.&&Dy<1.&&Ddtheta<0.12";
-TString ptcut = "((Dpt>2.5&&Dpt<3.5&&(Ddxyz/DdxyzErr)>5.90&&Dchi2cl>0.248) ||
-                  (Dpt>3.5&&Dpt<4.5&&(Ddxyz/DdxyzErr)>5.81&&Dchi2cl>0.200) ||
-                  (Dpt>4.5&&Dpt<5.5&&(Ddxyz/DdxyzErr)>5.10&&Dchi2cl>0.191) ||
-                  (Dpt>5.5&&Dpt<7.0&&(Ddxyz/DdxyzErr)>4.62&&Dchi2cl>0.148) ||
-                  (Dpt>7.0&&Dpt<9.0&&(Ddxyz/DdxyzErr)>4.46&&Dchi2cl>0.102) ||
-                  (Dpt>9.0&&Dpt<11.&&(Ddxyz/DdxyzErr)>4.39&&Dchi2cl>0.080) ||
-                  (Dpt>11.&&Dpt<13.&&(Ddxyz/DdxyzErr)>4.07&&Dchi2cl>0.073) ||
-                  (Dpt>13.&&Dpt<16.&&(Ddxyz/DdxyzErr)>3.88&&Dchi2cl>0.060) ||
-                  (Dpt>16.&&Dpt<20.&&(Ddxyz/DdxyzErr)>3.67&&Dchi2cl>0.055) ||
-                  (Dpt>20.&&Dpt<28.&&(Ddxyz/DdxyzErr)>3.25&&Dchi2cl>0.054) ||
-                  (Dpt>28.&&Dpt<40.&&(Ddxyz/DdxyzErr)>2.55&&Dchi2cl>0.043))";
-TString cut = From("%s&&%s",cmcut.Data(),ptcut.Data());
-*/
