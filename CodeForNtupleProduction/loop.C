@@ -25,7 +25,7 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/Bfinder_PbPb_all_4056_1_5oA.root", TString outfile="compdata.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_331_1_LWC.root", TString outfile="comp.root", bool REAL=false, int startEntries=0)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -81,15 +81,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData
 	      Dbestindex=-1;
 	      for(int j=0;j<DInfo_size;j++)
 		{
-
 		  if(DInfo_pt[j]<=2.) continue;
-		  if(TrackInfo_pt[DInfo_rftk1_index[j]]<=1.5&& (t==0||t==1)) continue;
-		  if(TrackInfo_pt[DInfo_rftk2_index[j]]<=1.5&& (t==0||t==1)) continue;
-		  
-		  double d03D=TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy)+(DInfo_vtxZ[j]-EvtInfo_PVz)*(DInfo_vtxZ[j]-EvtInfo_PVz));
-		  double d03Derr=TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]+DInfo_vtxZE[j]*DInfo_vtxZE[j]);
-  		  if(d03D/d03Derr<2.5 && (t==0||t==1)) continue;		  
-
 		  if(DInfo_type[j]==(t+1))
 		    {
 		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL);
@@ -196,6 +188,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Ddtheta[typesize] = bP->Angle(*bVtx);
   Dlxy[typesize] = ((DInfo_vtxX[j]-EvtInfo_PVx)*DInfo_px[j] + (DInfo_vtxY[j]-EvtInfo_PVy)*DInfo_py[j])/DInfo_pt[j];
   Disbestchi2[typesize] = false;
+  Dalpha[typesize] = DInfo_alpha[j];
+  DsvpvDistance[typesize] = DInfo_svpvDistance[j];
+  DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
+  DMaxDoca[typesize] = DInfo_MaxDoca[j];
   //DInfo.b4fitInfo
   Db4fit_mass[typesize] = DInfo_b4fit_mass[j];
   Db4fit_pt[typesize] = DInfo_b4fit_pt[j];

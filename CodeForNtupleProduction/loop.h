@@ -252,7 +252,6 @@ void buildBBranch(TTree* bnt)
 
 //DInfo
 Int_t      Dindex[MAX_XB];
-//Int_t      DisGoodCand[MAX_XB];
 Double_t   Dmass[MAX_XB];
 Double_t   Dpt[MAX_XB];
 Double_t   Deta[MAX_XB];
@@ -269,6 +268,11 @@ Double_t   Dchi2cl[MAX_XB];
 Double_t   Ddtheta[MAX_XB];
 Double_t   Dlxy[MAX_XB];
 Bool_t     Disbestchi2[MAX_XB];
+Double_t   Dalpha[MAX_XB];
+Double_t   DsvpvDistance[MAX_XB];
+Double_t   DsvpvDisErr[MAX_XB];
+Double_t   DMaxDoca[MAX_XB];
+
 //DInfo.b4fitInfo
 Double_t   Db4fit_mass[MAX_XB];
 Double_t   Db4fit_pt[MAX_XB];
@@ -383,6 +387,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("Ddtheta",Ddtheta,"Ddtheta[Dsize]/D");
   dnt->Branch("Dlxy",Dlxy,"Dlxy[Dsize]/D");
   dnt->Branch("Disbestchi2",Disbestchi2,"Disbestchi2[Dsize]/O");
+  dnt->Branch("Dalpha",Dalpha,"Dalpha[Dsize]/D");
+  dnt->Branch("DsvpvDistance",DsvpvDistance,"DsvpvDistance[Dsize]/D");
+  dnt->Branch("DsvpvDisErr",DsvpvDisErr,"DsvpvDisErr[Dsize]/D");
+  dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/D");
   //DInfo.b4fitInfo
   dnt->Branch("Db4fit_mass",Db4fit_mass,"Db4fit_mass[Dsize]/D");
   dnt->Branch("Db4fit_pt",Db4fit_pt,"Db4fit_pt[Dsize]/D");
@@ -710,6 +718,10 @@ Double_t        DInfo_phi[MAX_XB];
 Double_t        DInfo_px[MAX_XB];
 Double_t        DInfo_py[MAX_XB];
 Double_t        DInfo_pz[MAX_XB];
+Double_t        DInfo_alpha[MAX_XB];
+Double_t        DInfo_svpvDistance[MAX_XB];
+Double_t        DInfo_svpvDisErr[MAX_XB];
+Double_t        DInfo_MaxDoca[MAX_XB];
 Double_t        DInfo_vtxX[MAX_XB];
 Double_t        DInfo_vtxY[MAX_XB];
 Double_t        DInfo_vtxZ[MAX_XB];
@@ -854,6 +866,10 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.px",DInfo_px);
   root->SetBranchAddress("DInfo.py",DInfo_py);
   root->SetBranchAddress("DInfo.pz",DInfo_pz);
+  root->SetBranchAddress("DInfo.alpha",DInfo_alpha);
+  root->SetBranchAddress("DInfo.svpvDistance",DInfo_svpvDistance);
+  root->SetBranchAddress("DInfo.svpvDisErr",DInfo_svpvDisErr);
+  root->SetBranchAddress("DInfo.MaxDoca",DInfo_MaxDoca);
   root->SetBranchAddress("DInfo.vtxX",DInfo_vtxX);
   root->SetBranchAddress("DInfo.vtxY",DInfo_vtxY);
   root->SetBranchAddress("DInfo.vtxZ",DInfo_vtxZ);
