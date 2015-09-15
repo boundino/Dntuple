@@ -24,8 +24,7 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_331_1_LWC.root", TString outfile="comp.root", bool REAL=false, int startEntries=0)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_331_1_LWC.root", TString outfile="comp1.root", bool REAL=false, int startEntries=0, bool skim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -81,7 +80,13 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	      Dbestindex=-1;
 	      for(int j=0;j<DInfo_size;j++)
 		{
-		  if(DInfo_pt[j]<=2.) continue;
+		  if(skim)
+		    {
+		      if(DInfo_alpha[j]>0.15) continue;
+		      if((DInfo_pt[j]>=13.&&(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.5)||
+			 (DInfo_pt[j]>=5.5&&DInfo_pt[j]<13.&&(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<4.)||
+			 (DInfo_pt[j]<5.5&&(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<5.)) continue;
+		    }
 		  if(DInfo_type[j]==(t+1))
 		    {
 		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t],REAL);
