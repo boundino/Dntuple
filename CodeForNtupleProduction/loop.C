@@ -24,7 +24,7 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_331_1_LWC.root", TString outfile="comp1.root", bool REAL=false, int startEntries=0, bool skim=true)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_331_1_LWC.root", TString outfile="comp1.root", bool REAL=false, int startEntries=0, bool skim=false)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -121,8 +121,9 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	      Gphi[j] = GenInfo_phi[j];
 	      GpdgId[j] = GenInfo_pdgId[j];
 	      bGen->SetPtEtaPhiM(GenInfo_pt[j],GenInfo_eta[j],GenInfo_phi[j],GenInfo_mass[j]);
+	      Gy[j] = bGen->Rapidity();
 	      sigtype=0;
-	      for(gt=0;gt<5;gt++)
+	      for(gt=1;gt<5;gt++)
 		{
 		  if(isDsignalGen(gt,j))
 		    {
