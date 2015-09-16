@@ -1,7 +1,7 @@
 #include "utilities.h"
 #include "fitD.h"
 
-double luminosity=34.8*1e-3;
+double luminosity=150.;
 double setparam0=100.;
 double setparam1=1.865;
 double setparam2=0.03;
@@ -10,8 +10,10 @@ double setparam8=0.1;
 double setparam9=0.1;
 double fixparam1=1.865;
 
-TString inputdata="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
-TString inputmc="/export/d00/scratch/jwang/Dmeson/ntD_merge_withoutweight.root";
+//TString inputdata="/mnt/hadoop/cms/store/user/ginnocen/Dntuple/nt_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_alpha0p15_lxyz2p5_eta1p1_pt1_filtered_20150915.root";
+//TString inputmc="/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_merge_withoutweight.root";
+TString inputdata="/afs/cern.ch/work/g/ginnocen/public/FilesDmeson/Dntuple/nt_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_alpha0p15_lxyz2p5_eta1p1_pt1_ptfiltered.root";
+TString inputmc="/afs/cern.ch/work/g/ginnocen/public/FilesDmeson/Dntuple/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_PthatAll_TuneZ2_Unquenched_2760GeV_20150912_EvtBase_alpha0p15.root";
 TString weight = "1";
 
 //const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
@@ -77,8 +79,8 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   hPtRecoTruth->Add(hPtRecoTruth2);
 
   // Gen number of D meson candidates
-  ntGen->Project("hPtGen","Dpt",TCut(weight)*(TCut(selmcgen.Data())));
-  ntGen2->Project("hPtGen2","Dpt",(TCut(selmcgen.Data())));
+  ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
+  ntGen2->Project("hPtGen2","Gpt",(TCut(selmcgen.Data())));
   divideBinWidth(hPtRecoTruth);
   
   hPtRecoTruth->Draw("same hist");
@@ -101,7 +103,7 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   hPtGen2->Draw("same hist");
 
   TH1D *hPtSigma= (TH1D*)hPtCor->Clone("hPtSigma");
-  double BRchain=6.09604e-5;
+  double BRchain=0.0388;
 
   hPtSigma->Scale(1./(2*luminosity*BRchain));
   hPtSigma->SetYTitle("d#sigma (D^{0})/dp_{T}");
@@ -110,16 +112,17 @@ void fitD(TString infname="",TString label="",bool doweight = 1)
   cSigma->SetLogy();
   hPtSigma->Draw();
 
-  TFile *outf = new TFile(Form("ResultsD0/alphaD0%s.root",label.Data()),"recreate");
+  TFile *outf = new TFile(Form("../ResultsMIT/alphaD0%s.root",label.Data()),"recreate");
   outf->cd();
   hPt->Write();
 
-  /*hEff->Write();
+  hEff->Write();
   hPtGen->Write();
+  hPtMC->Write();
   hPtCor->Write();
-  hPtSigma->Write();*/
-  //outf->Close();
-  //delete outf;
+  hPtSigma->Write();
+  outf->Close();
+  delete outf;
 
 }
 
@@ -305,7 +308,7 @@ TF1 *fit(TTree *nt, TTree *nt2, TTree *ntMC, TTree *ntMC2,double ptmin,double pt
   leg2->AddEntry(h,Form("N_{D}=%.0f #pm %.0f", yield, yieldErr),"");
   leg2->Draw();
   
-  c->SaveAs(Form("../ResultsD0/DMass-%d.pdf",count));
+  c->SaveAs(Form("../ResultsMIT/DMass-%d.pdf",count));
   
   return mass;
 }
