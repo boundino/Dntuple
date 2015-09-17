@@ -39,24 +39,22 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
   TFile *outf = new TFile(outfile,"recreate");
   setDBranch(root);
 
-  int isDchannel[5];
-  isDchannel[0] = 1; //
-  isDchannel[1] = 1; //
-  isDchannel[2] = 0; //
-  isDchannel[3] = 0; //
-  isDchannel[4] = 0; //
+  int isDchannel[6];
+  isDchannel[0] = 1; //k+pi-
+  isDchannel[1] = 1; //k-pi+
+  isDchannel[2] = 0; //k-pi+pi+
+  isDchannel[3] = 0; //k+pi-pi-
+  isDchannel[4] = 0; //k-pi-pi+pi+
+  isDchannel[5] = 0; //k+pi+pi-pi-
 
   cout<<"--- Building trees ---"<<endl;
-  TTree* ntD1 = new TTree("ntDkPpiM","");       buildDBranch(ntD1);
-  TTree* ntD2 = new TTree("ntDkMpiP","");       buildDBranch(ntD2);
-  TTree* ntD3 = new TTree("ntDkMpiPpiP","");    buildDBranch(ntD3);
-  TTree* ntD4 = new TTree("ntDkPpiMpiM","");    buildDBranch(ntD4);
-  TTree* ntD5 = new TTree("ntkMpiPpiPpiM","");  buildDBranch(ntD5);
-  TTree* ntGen = new TTree("ntGen","");         buildGenBranch(ntGen);
+  TTree* ntD1 = new TTree("ntDkpi","");       buildDBranch(ntD1);
+  TTree* ntD2 = new TTree("ntDkpipi","");     buildDBranch(ntD2);
+  TTree* ntD3 = new TTree("ntDkpipipi","");   buildDBranch(ntD3);
+  TTree* ntGen = new TTree("ntGen","");       buildGenBranch(ntGen);
   cout<<"--- Building trees finished ---"<<endl;
 
   Long64_t nentries = root->GetEntries();
-  //nentries = 10000;
   Long64_t nbytes = 0;
   TVector3* bP = new TVector3;
   TVector3* bVtx = new TVector3;
@@ -82,7 +80,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 		{
 		  if(skim)
 		    {
-		      if(DInfo_alpha[j]>0.15) continue;
+		      if(DInfo_alpha[j]>0.13) continue;
 		      if((DInfo_pt[j]>=13.&&(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.5)||
 			 (DInfo_pt[j]>=5.5&&DInfo_pt[j]<13.&&(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<4.)||
 			 (DInfo_pt[j]<5.5&&(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<5.)) continue;
@@ -102,11 +100,12 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	      	{
 	      	  Disbestchi2[Dbestindex] = true;
 	      	}
-	      if(t==0) ntD1->Fill();
-	      else if(t==1) ntD2->Fill();
-	      else if(t==2) ntD3->Fill();
-	      else if(t==3) ntD4->Fill();
-	      else if(t==4) ntD5->Fill();
+	      if(t==0)      ntD1->Fill();
+	      else if(t==1) ntD1->Fill();
+	      else if(t==2) ntD2->Fill();
+	      else if(t==3) ntD2->Fill();
+	      else if(t==4) ntD3->Fill();
+	      else if(t==5) ntD3->Fill();
 	    }
 	}
 
@@ -177,7 +176,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 	       DInfo_vtxZ[j]-EvtInfo_PVz);
   b4P->SetXYZM(DInfo_px[j],DInfo_py[j],DInfo_pz[j],DInfo_mass[j]);
   Dindex[typesize] = typesize;
-  //DisGoodCand[typesize] = DInfo_isGoodCand[j];
+  Dtype[typesize] = DInfo_type[j];
   Dmass[typesize] = DInfo_mass[j];
   Dpt[typesize] = DInfo_pt[j];
   Deta[typesize] = DInfo_eta[j];
@@ -237,8 +236,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk2_index[j]];
   Dtrk1Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk1_index[j]]/TrackInfo_ndf[DInfo_rftk1_index[j]];
   Dtrk2Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
-  Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j];
-  Dtrk2MassHypo[typesize] = DInfo_rftk2_MassHypo[j];
+  Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j]*TrackInfo_charge[DInfo_rftk1_index[j]];
+  Dtrk2MassHypo[typesize] = DInfo_rftk2_MassHypo[j]*TrackInfo_charge[DInfo_rftk2_index[j]];
   if(DInfo_type[j]==1||DInfo_type[j]==2)
     {
       Dtrk3Pt[typesize] = -1;
@@ -294,7 +293,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
       Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
       Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
-      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j];
+      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
       Dtrk4Pt[typesize] = -1;
       Dtrk4Eta[typesize] = -20;
       Dtrk4Phi[typesize] = -20;
@@ -315,7 +314,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       DtktkReseta[typesize] = -20;
       DtktkResphi[typesize] = -20;
     }
-  else if(DInfo_type[j]==5)
+  else if(DInfo_type[j]==5||DInfo_type[j]==6)
     {
       Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
       Dtrk4Pt[typesize] = TrackInfo_pt[DInfo_rftk4_index[j]];
@@ -349,14 +348,14 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk4_index[j]];
       Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
       Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
-      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j];
-      Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j];
+      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
+      Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
       DtktkResphi[typesize] = -20;
     }
-  else if(DInfo_type[j]==6||DInfo_type[j]==7)
+  else if(DInfo_type[j]==7||DInfo_type[j]==8)
     {
       Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
       Dtrk4Pt[typesize] = TrackInfo_pt[DInfo_rftk4_index[j]];
@@ -386,8 +385,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4StripHit[typesize] = TrackInfo_striphit[DInfo_rftk4_index[j]];
       Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
       Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
-      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j];
-      Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j];
+      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
+      Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = DInfo_tktkRes_mass[j];
       DtktkRespt[typesize] = DInfo_tktkRes_pt[j];
       DtktkReseta[typesize] = DInfo_tktkRes_eta[j];
@@ -405,16 +404,16 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dgeneta[typesize] = -20;
   Dgenphi[typesize] = -20;
   Dgeny[typesize] = -1;
-  Int_t rGenIdxTk1 = -1;
-  Int_t rGenIdxTk2 = -1;
+  //Int_t rGenIdxTk1 = -1;
+  //Int_t rGenIdxTk2 = -1;
   Int_t dGenIdxTk1 = -1;
   Int_t dGenIdxTk2 = -1;
   Int_t dGenIdxTk3 = -1;
   Int_t dGenIdxTk4 = -1;
-  Int_t dGenIdxRes = -1;
+  //Int_t dGenIdxRes = -1;
   if(!REAL)
     {
-      if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5)
+      if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5||DInfo_type[j]==6)
 	{
 	  if(TrackInfo_geninfo_index[DInfo_rftk1_index[j]]>-1)
 	    {
@@ -474,7 +473,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
                             }
                         }
 		    }
-		  else if(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID&&(DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5))
+		  else if(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID&&(DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5||DInfo_type[j]==6))
 		    {
 		      hypo=3;
 		      level=1;
@@ -527,7 +526,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 				  dGenIdxTk3=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]];
 				}
 			    }
-			  else if(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID&&DInfo_type[j]==5)
+			  else if(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID&&(DInfo_type[j]==5||DInfo_type[j]==6))
 			    {
 			      hypo=5;
 			      level=1;
@@ -609,10 +608,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 }//fillDtree
 
 //
-bool isDsignalGen(Int_t Dtype, Int_t j)
+bool isDsignalGen(Int_t dmesontype, Int_t j)
 {
   bool flag=false;
-  if(Dtype==1||Dtype==2)
+  if(dmesontype==1||dmesontype==2)
     {
       if(abs(GenInfo_pdgId[j])==DZERO_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
 	{

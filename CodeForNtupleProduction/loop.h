@@ -252,6 +252,7 @@ void buildBBranch(TTree* bnt)
 
 //DInfo
 Int_t      Dindex[MAX_XB];
+Int_t      Dtype[MAX_XB];
 Double_t   Dmass[MAX_XB];
 Double_t   Dpt[MAX_XB];
 Double_t   Deta[MAX_XB];
@@ -370,6 +371,7 @@ void buildDBranch(TTree* dnt)
   //DInfo
   dnt->Branch("Dindex",Dindex,"Dindex[Dsize]/I");
   //dnt->Branch("DisGoodCand",DisGoodCand,"DisGoodCand[Dsize]/I");
+  dnt->Branch("Dtype",Dtype,"Dtype[Dsize]/I");
   dnt->Branch("Dmass",Dmass,"Dmass[Dsize]/D");
   dnt->Branch("Dpt",Dpt,"Dpt[Dsize]/D");
   dnt->Branch("Deta",Deta,"Deta[Dsize]/D");

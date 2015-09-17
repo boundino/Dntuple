@@ -11,40 +11,36 @@ CONFIGFILE="loop.C"
 TRANSFERFILE="loop.C,loop.h"
 
 ###Folder location within which files are to be run
-#DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/*
+DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/*
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat15_TuneZ2_Unquenched_2760GeV_20150912/*
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat30_TuneZ2_Unquenched_2760GeV_20150912/*
-DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912/*
+#DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912/*
 
 ###Output file location
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat15_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat30_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
-#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
-DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912_EvtBase_alpha0p15
+DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150916_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
+#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150916_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat15_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
+#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150916_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat30_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
+#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150916_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912_EvtBase
 
 ###Output file name
-#OUTFILE="ntD_20150914_mc_pthat0_20150912_evtbase"
-#OUTFILE="ntD_20150914_mc_pthat15_20150912_evtbase"
-#OUTFILE="ntD_20150914_mc_pthat30_20150912_evtbase"
-#OUTFILE="ntD_20150914_mc_pthat50_20150912_evtbase"
-OUTFILE="ntD_20150914_mc_pthat50_20150912_evtbase_alpha0p15"
+OUTFILE="ntD_20150916_mc_pthat0_20150912_evtbase"
+#OUTFILE="ntD_20150916_mc_pthat15_20150912_evtbase"
+#OUTFILE="ntD_20150916_mc_pthat30_20150912_evtbase"
+#OUTFILE="ntD_20150916_mc_pthat50_20150912_evtbase"
 
 ###Maximum number of files to be run
 MAXFILES=1000
 
 ###Log file location and it's name
-#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150914_mc_pthat0_20150912_EvtBase
-#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150914_mc_pthat15_20150912_EvtBase
-#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150914_mc_pthat30_20150912_EvtBase
-#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150914_mc_pthat50_20150912_EvtBase
-LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150914_mc_pthat50_20150912_EvtBase_alpha0p15
+LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150916_mc_pthat0_20150912_EvtBase
+#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150916_mc_pthat15_20150912_EvtBase
+#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150916_mc_pthat30_20150912_EvtBase
+#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150916_mc_pthat50_20150912_EvtBase
 
-#LOGNAME=log_ntD_20150914_mc_pthat0_20150912_EvtBase
-#LOGNAME=log_ntD_20150914_mc_pthat15_20150912_EvtBase
-#LOGNAME=log_ntD_20150914_mc_pthat30_20150912_EvtBase
-#LOGNAME=log_ntD_20150914_mc_pthat50_20150912_EvtBase
-LOGNAME=log_ntD_20150914_mc_pthat50_20150912_EvtBase_alpha0p15
+LOGNAME=log_ntD_20150916_mc_pthat0_20150912_EvtBase
+#LOGNAME=log_ntD_20150916_mc_pthat15_20150912_EvtBase
+#LOGNAME=log_ntD_20150916_mc_pthat30_20150912_EvtBase
+#LOGNAME=log_ntD_20150916_mc_pthat50_20150912_EvtBase
 
 ########################## Create subfile ###############################
 dateTime=$(date +%Y%m%d%H%M)
