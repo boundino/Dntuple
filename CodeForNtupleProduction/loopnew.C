@@ -10,7 +10,7 @@
 #include <TLorentzVector.h>
 #include <iostream>
 #include <cmath>
-#include "loop.h"
+#include "loopnew.h"
 
 #define MUON_MASS   0.10565837
 #define PION_MASS   0.13957018
@@ -26,7 +26,7 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_32_1_4sg.root", TString outfile="comp0.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=true)
+int loopnew(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919/Bfinder_PbPb_all_277_1_8bj.root", TString outfile="comp0.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=true)
 //int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/Bfinder_PbPb_all_1000_1_n8E.root", TString outfile="comp1.root", Bool_t REAL=true, Int_t startEntries=0, Bool_t skim=true)
 {
   double findMass(Int_t particlePdgId);
@@ -40,10 +40,12 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
   TFile *f = new TFile(infile);
   TTree *root = (TTree*)f->Get("Dfinder/root");
   TTree *hltroot = (TTree*)f->Get("hltanalysis/HltTree");
+  TTree *hitreeroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   TFile *outf = new TFile(outfile,"recreate");
   setDBranch(root);
-  if(REAL) SetDataHLTBranch(hltroot);
-  else SetMCHLTBranch(hltroot);
+  //if(REAL) SetDataHLTBranch(hltroot);
+  //else SetMCHLTBranch(hltroot);
+  SetHiTreeBranch(hitreeroot);
 
   int isDchannel[6];
   isDchannel[0] = 1; //k+pi-
@@ -70,6 +72,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
   for(Int_t i=startEntries;i<nentries;i++)
     {
       nbytes+=root->GetEntry(i);
+      /*
       flagEvt=0;
       while(flagEvt==0)
 	{
@@ -77,6 +80,8 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	  if(Df_HLT_Event==EvtInfo_EvtNo&&Df_HLT_Run==EvtInfo_RunNo) flagEvt=1;
 	  else offsetHltTree++;
 	}
+      */
+      hitreeroot->GetEntry(i);
       if (i%10000==0) cout<<i<<" / "<<nentries<<"   offset HLT:"<<offsetHltTree<<endl;
       Int_t Dtypesize[3]={0,0,0};
       Int_t Ndbc=0;
@@ -186,6 +191,11 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   PVzE = EvtInfo_PVzE;
   PVnchi2 = EvtInfo_PVnchi2;
   PVchi2 = EvtInfo_PVchi2;
+  Npart = Df_HiTree_Npart;
+  Ncoll = Df_HiTree_Ncoll;
+  Nhard = Df_HiTree_Nhard;
+  hiBin = Df_HiTree_hiBin;
+  /*
   //HltInfo
   if(REAL)
     {      
@@ -197,6 +207,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       HLT_HIMinBiasHfOrBSC_v4 = Df_HLT_HIMinBiasHfOrBSC_v4;
       HLT_HIMinBiasHfOrBSC_v4_Prescl = Df_HLT_HIMinBiasHfOrBSC_v4_Prescl;
     }
+  */
   //DInfo
   bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
   bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,
