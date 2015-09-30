@@ -26,7 +26,7 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-int loopnew(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919/Bfinder_PbPb_all_277_1_8bj.root", TString outfile="comp0.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=true)
+int loopnew(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927/Bfinder_PbPb_all_561_1_DwE.root", TString outfile="comp1.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 //int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/Bfinder_PbPb_all_1000_1_n8E.root", TString outfile="comp1.root", Bool_t REAL=true, Int_t startEntries=0, Bool_t skim=true)
 {
   double findMass(Int_t particlePdgId);
@@ -135,16 +135,18 @@ int loopnew(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC
       if(!REAL)
 	{
 	  Int_t gt=0,sigtype=0;
-	  Gsize = GenInfo_size;
+	  Int_t gsize=0;
+	  Gsize = 0;
 	  for(int j=0;j<GenInfo_size;j++)
 	    {
-	      //if(skim&&abs(GenInfo_pdgId[j])!=DZERO_PDGID) continue;
-	      Gpt[j] = GenInfo_pt[j];
-	      Geta[j] = GenInfo_eta[j];
-	      Gphi[j] = GenInfo_phi[j];
-	      GpdgId[j] = GenInfo_pdgId[j];
+	      if(TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID&&gskim) continue;
+	      Gsize = gsize+1;
+	      Gpt[gsize] = GenInfo_pt[j];
+	      Geta[gsize] = GenInfo_eta[j];
+	      Gphi[gsize] = GenInfo_phi[j];
+	      GpdgId[gsize] = GenInfo_pdgId[j];
 	      bGen->SetPtEtaPhiM(GenInfo_pt[j],GenInfo_eta[j],GenInfo_phi[j],GenInfo_mass[j]);
-	      Gy[j] = bGen->Rapidity();
+	      Gy[gsize] = bGen->Rapidity();
 	      sigtype=0;
 	      for(gt=1;gt<5;gt++)
 		{
@@ -154,7 +156,8 @@ int loopnew(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC
 		      break;
 		    }
 		}
-	      GisSignal[j] = sigtype;
+	      GisSignal[gsize] = sigtype;
+	      gsize++;
 	    }
 	  ntGen->Fill();
 	}
@@ -661,7 +664,7 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
   bool flag=false;
   if(dmesontype==1||dmesontype==2)
     {
-      if(abs(GenInfo_pdgId[j])==DZERO_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
+      if(TMath::Abs(GenInfo_pdgId[j])==DZERO_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
 	{
 	  if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID) || 
 	     (TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID))
