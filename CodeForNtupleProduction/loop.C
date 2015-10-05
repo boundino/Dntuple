@@ -26,7 +26,7 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_32_1_4sg.root", TString outfile="comp0.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=false)
+int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat0_TuneZ2_Unquenched_2760GeV_20150912/Bfinder_PbPb_all_32_1_4sg.root", TString outfile="comp0.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 //int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/Bfinder_PbPb_all_1000_1_n8E.root", TString outfile="comp1.root", Bool_t REAL=true, Int_t startEntries=0, Bool_t skim=true)
 {
   double findMass(Int_t particlePdgId);
@@ -87,6 +87,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	    {
 	      for(int j=0;j<DInfo_size;j++)
 		{
+		  if(DInfo_pt[j]<3.||TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])<0.05||(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.) continue;
 		  if(skim)
 		    {
 		      if(DInfo_alpha[j]>0.13) continue;
