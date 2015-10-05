@@ -87,7 +87,7 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	    {
 	      for(int j=0;j<DInfo_size;j++)
 		{
-		  if(DInfo_pt[j]<3.||TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])<0.05||(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.) continue;
+		  //if(DInfo_pt[j]<3.||TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])<0.05||(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.) continue;
 		  if(skim)
 		    {
 		      if(DInfo_alpha[j]>0.13) continue;
