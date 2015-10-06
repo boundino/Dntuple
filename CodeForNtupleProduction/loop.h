@@ -266,16 +266,32 @@ void buildDBranch(TTree* dnt)
 }
 
 //GenInfo
-Int_t Gsize;
+Int_t    Gsize;
+Int_t    GHLT_HIMinBiasHfOrBSC_v1;
+Int_t    GHLT_HIMinBiasHfOrBSC_v1_Prescl;
 Double_t Gy[MAX_GEN];
 Double_t Geta[MAX_GEN];
 Double_t Gphi[MAX_GEN];
 Double_t Gpt[MAX_GEN];
 Double_t GpdgId[MAX_GEN];
-Int_t GisSignal[MAX_GEN];
+Int_t    GisSignal[MAX_GEN];
 
 void buildGenBranch(TTree* nt)
 {
+  //EvtInfo
+  nt->Branch("RunNo",&RunNo);
+  nt->Branch("EvtNo",&EvtNo);
+  nt->Branch("Dsize",&Dsize);
+  nt->Branch("PVx",&PVx);
+  nt->Branch("PVy",&PVy);
+  nt->Branch("PVz",&PVz);
+  nt->Branch("PVxE",&PVxE);
+  nt->Branch("PVyE",&PVyE);
+  nt->Branch("PVzE",&PVzE);
+  nt->Branch("PVnchi2",&PVnchi2);
+  nt->Branch("PVchi2",&PVchi2);
+  nt->Branch("HLT_HIMinBiasHfOrBSC_v4",&GHLT_HIMinBiasHfOrBSC_v4);
+  nt->Branch("HLT_HIMinBiasHfOrBSC_v4_Prescl",&GHLT_HIMinBiasHfOrBSC_v4_Prescl);
   nt->Branch("Gsize",&Gsize);
   nt->Branch("Gy",Gy,"Gy[Gsize]/D");
   nt->Branch("Geta",Geta,"Geta[Gsize]/D");

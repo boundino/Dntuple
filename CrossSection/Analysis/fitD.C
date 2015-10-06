@@ -12,20 +12,18 @@ Double_t setparam8=0.1;
 Double_t setparam9=0.1;
 Double_t fixparam1=1.865;
 
-TString inputdata="/export/d00/scratch/jwang/Dmeson/ntD_20150916_MC_merge_withoutweight.root";
-TString inputmc="/export/d00/scratch/jwang/Dmeson/ntD_20150916_MC_merge_withoutweight.root";
-//TString inputdata="/mnt/hadoop/cms/store/user/ginnocen/Dntuple/nt_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_alpha0p15_lxyz2p5_eta1p1_pt1_filtered_20150915.root";
-//TString inputdata="/afs/cern.ch/work/g/ginnocen/public/FilesDmeson/Dntuple/nt_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_alpha0p15_lxyz2p5_eta1p1_pt1_ptfiltered.root";
-//TString inputmc="/afs/cern.ch/work/g/ginnocen/public/FilesDmeson/Dntuple/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_PthatAll_TuneZ2_Unquenched_2760GeV_20150912_EvtBase_alpha0p15.root";
+TString inputdata="/mnt/hadoop/cms/store/user/jwang/Dmeson/skim/ntD_20150924_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_EvtBase_skim.root";
+//TString inputdata="/mnt/hadoop/cms/store/user/jwang/Dmeson/skim/ntD_20150924_MC_merge_withoutweight_skim.root";
+TString inputmc="/mnt/hadoop/cms/store/user/jwang/Dmeson/skim/ntD_20150924_MC_merge_withoutweight_skim.root";
 TString weight = "1";
 
-const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
-//const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,9,11,13,16,20,28,40};
+//const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
+const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,9,11,13,16,20,28,40};
 
 TString cut = cuts[binsIndex];
 TString seldata = Form("%s",cut.Data());
 TString selmc = seldata;
-TString selmcgen = "GisSignal==1||GisSignal==2&&Gy>-1.&&Gy>1.";
+TString selmcgen = "(GisSignal==1||GisSignal==2)&&Gy>-1.&&Gy>1.";
 
 void fitD(TString infname="", TString label="", Bool_t doweight=true)
 {
@@ -289,3 +287,6 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   
   return mass;
 }
+//TString inputdata="/mnt/hadoop/cms/store/user/ginnocen/Dntuple/nt_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_alpha0p15_lxyz2p5_eta1p1_pt1_filtered_20150915.root";
+//TString inputdata="/afs/cern.ch/work/g/ginnocen/public/FilesDmeson/Dntuple/nt_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_alpha0p15_lxyz2p5_eta1p1_pt1_ptfiltered.root";
+//TString inputmc="/afs/cern.ch/work/g/ginnocen/public/FilesDmeson/Dntuple/ntD_20150914_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_PthatAll_TuneZ2_Unquenched_2760GeV_20150912_EvtBase_alpha0p15.root";

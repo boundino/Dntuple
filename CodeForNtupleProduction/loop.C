@@ -135,6 +135,8 @@ int loop(TString infile="/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/Dinde
 	  for(int j=0;j<GenInfo_size;j++)
 	    {
 	      if(gskim&&TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID) continue;
+	      GHLT_HIMinBiasHfOrBSC_v4 = Df_HLT_HIMinBiasHfOrBSC_v4;
+	      GHLT_HIMinBiasHfOrBSC_v4_Prescl = Df_HLT_HIMinBiasHfOrBSC_v4_Prescl;
 	      Gsize = gsize+1;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];

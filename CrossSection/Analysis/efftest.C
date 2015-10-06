@@ -30,9 +30,9 @@ void efftest()
   TH1D* hmcPUDrecoMat = new TH1D("hmcPUDrecoMat","",BIN_NUM,ptbins);
   TH1D* hmcPUDgen = new TH1D("hmcPUDgen","",BIN_NUM,ptbins);
 
-  ntdataMITreco->Project("hdataMITreco","Dpt",Form("%s",cut1.Data()));
-  ntmcMITreco->Project("hmcMITreco","Dpt",Form("%s",cut1.Data()));
-  ntmcMITreco->Project("hmcMITrecoMat","Dpt",Form("%s&&Dgen==23333",cut1.Data()));
+  ntdataMITreco->Project("hdataMITreco","Dpt",Form("%s&&HLT_HIMinBiasHfOrBSC_v1",cut1.Data()));
+  ntmcMITreco->Project("hmcMITreco","Dpt",Form("%s&&HLT_HIMinBiasHfOrBSC_v4",cut1.Data()));
+  ntmcMITreco->Project("hmcMITrecoMat","Dpt",Form("%s&&HLT_HIMinBiasHfOrBSC_v4&&Dgen==23333",cut1.Data()));
   ntmcMITgen->Project("hmcMITgen","Gpt","(GisSignal==1||GisSignal==2)&&Gy>-1.&&Gy<1.");
   ntdataPUDreco->Project("hdataPUDreco","dcandpt",Form("%s",cutpurdue1.Data()));
   ntmcPUDreco->Project("hmcPUDreco","dcandpt",Form("%s",cutpurdue1.Data()));
@@ -85,6 +85,7 @@ void efftest()
   ceff->SaveAs("../ResultsTest/ceff.pdf");
 
   TCanvas* craw = new TCanvas("craw","",500,500);
+  craw->SetLogy();
   hdataMITreco->SetTitle(";p_{T} (GeV/c);raw data (opt cuts)");
   hdataMITreco->Draw();
   hdataPUDreco->SetMarkerSize(0.8);
@@ -94,6 +95,7 @@ void efftest()
   craw->SaveAs("../ResultsTest/craw.pdf");
 
   TCanvas* ccorr = new TCanvas("ccorr","",500,500);
+  ccorr->SetLogy();
   hdataMITcorr->SetTitle(";p_{T} (GeV/c);corrected data (opt cuts)");
   hdataMITcorr->Draw();
   hdataPUDcorr->SetMarkerSize(0.8);
