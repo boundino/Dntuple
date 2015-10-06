@@ -179,7 +179,6 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("DdxyzErr",DdxyzErr,"DdxyzErr[Dsize]/D");
   dnt->Branch("Dchi2ndf",Dchi2ndf,"Dchi2ndf[Dsize]/D");
   dnt->Branch("Dchi2cl",Dchi2cl,"Dchi2cl[Dsize]/D");
-  dnt->Branch("Dchi2cl",Dchi2cl,"Dchi2cl[Dsize]/D");
   dnt->Branch("Ddtheta",Ddtheta,"Ddtheta[Dsize]/D");
   dnt->Branch("Dlxy",Dlxy,"Dlxy[Dsize]/D");
   dnt->Branch("Dalpha",Dalpha,"Dalpha[Dsize]/D");
