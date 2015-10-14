@@ -1,15 +1,6 @@
 #include <TTree.h>
 #include <TFile.h>
-#include <TChain.h>
-#include <TH1F.h>
-#include <TH2F.h>
-#include <TMath.h>
-#include <TString.h>
-#include <TNtuple.h>
-#include <TVector3.h>
-#include <TLorentzVector.h>
 #include <iostream>
-#include <cmath>
 #include "evtmatching.h"
 
 int evtmatching(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.root")
