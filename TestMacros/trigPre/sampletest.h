@@ -1,6 +1,7 @@
 #include <TTree.h>
 #define MAX_XB 16384
 #define MAX_GEN 8192
+Int_t DZERO_PDGID = 421;
 
 Int_t      Dsize;
 Int_t      hiBin;

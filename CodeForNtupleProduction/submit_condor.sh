@@ -5,10 +5,10 @@
 ###Checking condor jobs status: condor_q <username> 
 
 ###Plain root .C to be run
-CONFIGFILE="loopnew.C"
+CONFIGFILE="loophlt.C"
 
 ###All the header/related files needed
-TRANSFERFILE="loopnew.C,loopnew.h"
+TRANSFERFILE="loophlt.C,loophlt.h"
 
 ###Folder location within which files are to be run
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/*
@@ -17,7 +17,8 @@ TRANSFERFILE="loopnew.C,loopnew.h"
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat30_TuneZ2_Unquenched_2760GeV_20150912/*
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple/DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912/*
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919/*
-DATASET=/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927/*
+#DATASET=/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927/*
+DATASET=/mnt/hadoop/cms/store/user/twang/HI_DfinderNtuple_HLTemulation/DinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010/*
 
 ###Output file location
 #DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150924_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_EvtBase_skim
@@ -26,7 +27,8 @@ DATASET=/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DinderMC_richard-HydjetMB502
 #DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150924_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat30_TuneZ2_Unquenched_2760GeV_20150912_EvtBase_skim
 #DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150924_DinderMC_Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV_20150912_EvtBase_skim
 #DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20150924_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919_EvtBase
-DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim
+#DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim
+DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20151012_HLTemulation_DinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010_EvtBase
 
 ###Output file name
 #OUTFILE="ntD_20150924_data_20150912_evtbase_skim"
@@ -35,7 +37,8 @@ DESTINATION=/mnt/hadoop/cms/store/user/jwang/Dmeson/ntD_20151001_DinderMC_richar
 #OUTFILE="ntD_20150924_mc_pthat30_20150912_evtbase_skim"
 #OUTFILE="ntD_20150924_mc_pthat50_20150912_evtbase_skim"
 #OUTFILE="ntD_20150924_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919_EvtBase"
-OUTFILE="ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim"
+#OUTFILE="ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim"
+OUTFILE="ntD_20151012_HLTemulation_DinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010_EvtBase"
 
 ###Maximum number of files to be run
 MAXFILES=6000
@@ -47,7 +50,8 @@ MAXFILES=6000
 #LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150924_mc_pthat30_20150912_EvtBase_skim
 #LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150924_mc_pthat50_20150912_EvtBase_skim
 #LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20150924_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919_EvtBase
-LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim
+#LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim
+LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20151012_HLTemulation_DinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010_EvtBase
 
 #LOGNAME=log_ntD_20150924_data_20150912_EvtBase_skim
 #LOGNAME=log_ntD_20150924_mc_pthat0_20150912_EvtBase_skim
@@ -55,7 +59,8 @@ LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_20151001_DinderMC_richard-Hydjet
 #LOGNAME=log_ntD_20150924_mc_pthat30_20150912_EvtBase_skim
 #LOGNAME=log_ntD_20150924_mc_pthat50_20150912_EvtBase_skim
 #LOGNAME=log_ntD_20150924_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_20150919_EvtBase
-LOGNAME=log_ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim
+#LOGNAME=log_ntD_20151001_DinderMC_richard-HydjetMB5020_750_75X_mcRun2_centrality30_100_20150927_EvtBase_skim
+LOGNAME=log_ntD_20151012_HLTemulation_DinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010_EvtBase
 
 ########################## Create subfile ###############################
 dateTime=$(date +%Y%m%d%H%M)
