@@ -35,7 +35,6 @@ int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.r
   if(REAL) cout<<"--- REAL DATA ---"<<endl;
   else cout<<"--- MC ---"<<endl;
   
-  //File type
   TFile *f = new TFile(infile);
   TTree *root = (TTree*)f->Get("Dfinder/root");
   TTree *hltroot = (TTree*)f->Get("hltbitanalysis/HltTree");
@@ -151,6 +150,22 @@ int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.r
 	      GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
 	      GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
 	      GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;	      
+	      GL1_SingleS1Jet8_BptxAND = Df_L1_SingleS1Jet8_BptxAND;
+	      GL1_SingleS1Jet16_BptxAND = Df_L1_SingleS1Jet16_BptxAND;
+	      GL1_SingleS1Jet28_BptxAND = Df_L1_SingleS1Jet28_BptxAND;
+	      GL1_SingleS1Jet40_BptxAND = Df_L1_SingleS1Jet40_BptxAND;
+	      GL1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
+	      GL1_SingleS1Jet56_BptxAND = Df_L1_SingleS1Jet56_BptxAND;
+	      GL1_SingleJet92_BptxAND = Df_L1_SingleJet92_BptxAND;
+	      GHLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
+	      GHLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
+	      GHLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
+	      GHLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
+	      GHLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
+	      GHLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
+	      GHLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
+	      GHLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
+	      GHLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];
 	      Gphi[gsize] = GenInfo_phi[j];
@@ -233,6 +248,22 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
   HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
   HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;
+  L1_SingleS1Jet8_BptxAND = Df_L1_SingleS1Jet8_BptxAND;
+  L1_SingleS1Jet16_BptxAND = Df_L1_SingleS1Jet16_BptxAND;
+  L1_SingleS1Jet28_BptxAND = Df_L1_SingleS1Jet28_BptxAND;
+  L1_SingleS1Jet40_BptxAND = Df_L1_SingleS1Jet40_BptxAND;
+  L1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
+  L1_SingleS1Jet56_BptxAND = Df_L1_SingleS1Jet56_BptxAND;
+  L1_SingleJet92_BptxAND = Df_L1_SingleJet92_BptxAND;
+  HLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
+  HLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
+  HLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
+  HLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
+  HLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
+  HLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
+  HLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
+  HLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
+  HLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
 
   //DInfo
   bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
