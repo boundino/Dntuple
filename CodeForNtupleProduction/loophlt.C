@@ -26,7 +26,8 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+//int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DinderMC_20151015_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010.root", TString outfile="/export/d00/scratch/jwang/Dmeson/nt_20151016_DinderMC_20151015_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -38,12 +39,10 @@ int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.r
   TFile *f = new TFile(infile);
   TTree *root = (TTree*)f->Get("Dfinder/root");
   TTree *hltroot = (TTree*)f->Get("hltbitanalysis/HltTree");
-  //TTree *hitreeroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   TFile *outf = new TFile(outfile,"recreate");
   setDBranch(root);
   if(REAL) SetDataHLTBranch(hltroot);
   else SetMCHLTBranch(hltroot);
-  //SetHiTreeBranch(hitreeroot);
 
   int isDchannel[6];
   isDchannel[0] = 1; //k+pi-
@@ -77,7 +76,6 @@ int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.r
 	  if((Int_t)Df_HLT_Event==EvtInfo_EvtNo&&Df_HLT_Run==EvtInfo_RunNo) flagEvt=1;
 	  else offsetHltTree++;
 	}
-      //hitreeroot->GetEntry(i);
       if (i%10000==0) cout<<i<<" / "<<nentries<<"   offset HLT:"<<offsetHltTree<<endl;
       Int_t Dtypesize[3]={0,0,0};
       Int_t Ndbc=0;
@@ -219,25 +217,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   PVzE = EvtInfo_PVzE;
   PVnchi2 = EvtInfo_PVnchi2;
   PVchi2 = EvtInfo_PVchi2;
-  /*
-  Npart = Df_HiTree_Npart;
-  Ncoll = Df_HiTree_Ncoll;
-  Nhard = Df_HiTree_Nhard;
-  hiBin = Df_HiTree_hiBin;
-  */
   //HltInfo
-  /*
-  if(REAL)
-    {      
-      HLT_HIMinBiasHfOrBSC_v1 = Df_HLT_HIMinBiasHfOrBSC_v1;
-      HLT_HIMinBiasHfOrBSC_v1_Prescl = Df_HLT_HIMinBiasHfOrBSC_v1_Prescl;
-    }
-  else
-    {     
-      HLT_HIMinBiasHfOrBSC_v4 = Df_HLT_HIMinBiasHfOrBSC_v4;
-      HLT_HIMinBiasHfOrBSC_v4_Prescl = Df_HLT_HIMinBiasHfOrBSC_v4_Prescl;
-    }
-  */
   HLT_DmesonTrackingGlobalPt8_Dpt20_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1;
   HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl;
   HLT_DmesonTrackingGlobalPt8_Dpt60_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1;
