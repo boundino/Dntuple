@@ -5,8 +5,9 @@
 #include <fstream>
 #include "evtmatching.h"
 
+Float_t pthat = 15;
 //int evtmatching(TString infdfinder="openHLT_HF_100_1_OYu.root", TString infhlt="openHLT_HF_100_1_OYu.root",TString outfile="comp1.root")
-int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/DfinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", TString infhlt="/export/d00/scratch/jwang/Dmeson/openHLT_HF_HLTHeavyFlavour_MVA_V13_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_1016_MBseed_fix.root",TString outfile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151017_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root")
+int evtmatchingFix(TString infdfinder=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root",pthat,pthat), TString infhlt=Form("/export/d00/scratch/jwang/Dmeson/openHLT_HF_HLTHeavyFlavour_MVA_V13_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_1016_MBseed_fix.root",pthat,pthat),TString outfile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root",pthat,pthat))
 {
   TFile* fdfinder = new TFile(infdfinder);
   TFile* fhlt = new TFile(infhlt);
@@ -26,37 +27,30 @@ int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/DfinderMC_P
   Long64_t nentries = root->GetEntries();
   Int_t hltmatching[nentries];
 
-  ofstream fout("evtmatchingResult/evtmatching.dat");
+  ifstream fin(Form("evtmatchingResult/evtmatching_pthat%.0f.dat",pthat));
   cout<<"---- Event matching"<<endl;
   for(Int_t ievt=0;ievt<nentries;ievt++)
     {
-      if(ievt%1000==0) cout<<ievt<<" / "<<nentries<<endl;
-      hltmatching[ievt] = -1;
-      root->GetEntry(ievt);
-      for(Int_t jevt=0;jevt<nentries;jevt++)
-	{
-	  hltroot->GetEntry(jevt);
-	  if(RecoRunNo==HltRun&&RecoEvtNo==(Int_t)HltEvent&&RecoLumiNo==HltLumiBlock)
-	    {
-	      hltmatching[ievt] = jevt;
-	      break;
-	    }
-	}
-      fout<<hltmatching[ievt]<<endl;
-    }
-  
+      fin>>hltmatching[ievt];
+    }  
   cout<<"---- Event matching done"<<endl;
   cout<<"---- Writing hlt tree"<<endl;
   for(Int_t i=0;i<nentries;i++)
     {
-      if (i%1000==0) cout<<i<<" / "<<nentries<<"   HLT index:"<<hltmatching[i]<<endl;
       if(hltmatching[i]<0) continue;
       root->GetEntry(i);
       hltroot->GetEntry(hltmatching[i]);
+      if (i%10000==0) cout<<i<<" / "<<nentries<<"   HLT index:"<<hltmatching[i]<<endl;
       ntReco->Fill();
       ntHlt->Fill();
     }
   outf->Write();
+  /*
+  droot->cd();
+  ntReco->Write();
+  dhltroot->cd();
+  ntHlt->Write();
+  */
   cout<<"---- Writing hlt tree done"<<endl;
   outf->Close();
 
