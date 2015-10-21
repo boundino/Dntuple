@@ -27,7 +27,8 @@ Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
 //int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
-int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DinderMC_20151015_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010.root", TString outfile="/export/d00/scratch/jwang/Dmeson/nt_20151016_DinderMC_20151015_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151010.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151020_DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151020_DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -66,27 +67,40 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DinderMC_20151015_E
   TVector3* bVtx = new TVector3;
   TLorentzVector* b4P = new TLorentzVector;
   TLorentzVector* bGen = new TLorentzVector;
+  cout<<root->GetEntries()<<"  "<<hltroot->GetEntries()<<endl;
   for(Int_t i=startEntries;i<nentries;i++)
     {
       nbytes+=root->GetEntry(i);
-      flagEvt=0;
-      while(flagEvt==0)
+      hltroot->GetEntry(i);
+      if(i%10000==0) cout<<i<<" / "<<nentries<<endl;
+      if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo)
 	{
-	  hltroot->GetEntry(i+offsetHltTree);
-	  if((Int_t)Df_HLT_Event==EvtInfo_EvtNo&&Df_HLT_Run==EvtInfo_RunNo) flagEvt=1;
-	  else offsetHltTree++;
+	  cout<<"Error: not matched "<<i<<endl;
+	  continue;
 	}
-      if (i%10000==0) cout<<i<<" / "<<nentries<<"   offset HLT:"<<offsetHltTree<<endl;
       Int_t Dtypesize[3]={0,0,0};
       Int_t Ndbc=0;
+      Int_t ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
+      Double_t pttem=0,ptMatchedtem=0,probtem=0,probMatchedtem=0;
       for(Int_t t=0;t<6;t++)
 	{
-	  if(t%2==0) Dsize=0;
+	  if(t%2==0)
+	    {
+	      Dsize = 0;
+	      ptflag = -1;
+	      pttem = 0;
+	      ptMatchedflag = -1;
+	      ptMatchedtem = 0;
+	      probflag = -1;
+	      probtem = 0;
+	      probMatchedflag = -1;
+	      probMatchedtem = 0;
+	    }
 	  if(isDchannel[t]==1)
 	    {
 	      for(int j=0;j<DInfo_size;j++)
 		{
-                  if(DInfo_pt[j]<3.||TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])<0.05||(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.) continue;
+                  //if(DInfo_pt[j]<3.||TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])<0.05||(DInfo_svpvDistance[j]/DInfo_svpvDisErr[j])<2.) continue;
 		  if(skim)
 		    {
 		      if(DInfo_alpha[j]>0.13) continue;
@@ -118,7 +132,37 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DinderMC_20151015_E
 				}
 			    }
 			}
+		      if(DInfo_pt[j]>pttem)
+			{
+			  ptflag = Dtypesize[t/2];
+			  pttem = DInfo_pt[j];
+			}
+		      if(TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])>probtem)
+			{
+			  probflag = Dtypesize[t/2];
+			  probtem = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
+			}
+		      if(!REAL&&(Dgen[Dtypesize[t/2]]==23333||Dgen[Dtypesize[t/2]]==23344))
+			{
+			  if(DInfo_pt[j]>ptMatchedtem)
+			    {
+			      ptMatchedflag = Dtypesize[t/2];
+			      ptMatchedtem = DInfo_pt[j];
+			    }
+			  if(TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j])>probMatchedtem)
+			    {
+			      probMatchedflag = Dtypesize[t/2];
+			      probMatchedtem = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
+			    }
+			}
 		      Dtypesize[t/2]++;
+		    }
+		  if(t%2==1)
+		    {
+		      if(ptflag>=0) Dmaxpt[ptflag] = true;
+		      if(probflag>=0) Dmaxprob[probflag] = true;
+		      if(ptMatchedflag>=0) DmaxptMatched[ptMatchedflag] = true;
+		      if(probMatchedflag>=0) DmaxprobMatched[probMatchedflag] = true;
 		    }
 		}
 	      if(t==1)      ntD1->Fill();
@@ -144,10 +188,10 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DinderMC_20151015_E
 	      GHLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt40_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl;
-	      GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1;
-	      GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
-	      GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
-	      GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;	      
+	      //GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1;
+	      //GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
+	      //GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
+	      //GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;	      
 	      GL1_SingleS1Jet8_BptxAND = Df_L1_SingleS1Jet8_BptxAND;
 	      GL1_SingleS1Jet16_BptxAND = Df_L1_SingleS1Jet16_BptxAND;
 	      GL1_SingleS1Jet28_BptxAND = Df_L1_SingleS1Jet28_BptxAND;
@@ -155,15 +199,15 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DinderMC_20151015_E
 	      GL1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
 	      GL1_SingleS1Jet56_BptxAND = Df_L1_SingleS1Jet56_BptxAND;
 	      GL1_SingleJet92_BptxAND = Df_L1_SingleJet92_BptxAND;
-	      GHLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
-	      GHLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
-	      GHLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
-	      GHLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
-	      GHLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
-	      GHLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
-	      GHLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
-	      GHLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
-	      GHLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
+	      //GHLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
+	      //GHLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
+	      //GHLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
+	      //GHLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
+	      //GHLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
+	      //GHLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
+	      //GHLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
+	      //GHLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
+	      //GHLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];
 	      Gphi[gsize] = GenInfo_phi[j];
@@ -224,10 +268,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl;
   HLT_DmesonTrackingGlobalPt8_Dpt40_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1;
   HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl;
-  HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1;
-  HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
-  HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
-  HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;
+  //HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1;
+  //HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
+  //HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
+  //HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;
   L1_SingleS1Jet8_BptxAND = Df_L1_SingleS1Jet8_BptxAND;
   L1_SingleS1Jet16_BptxAND = Df_L1_SingleS1Jet16_BptxAND;
   L1_SingleS1Jet28_BptxAND = Df_L1_SingleS1Jet28_BptxAND;
@@ -235,15 +279,15 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   L1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
   L1_SingleS1Jet56_BptxAND = Df_L1_SingleS1Jet56_BptxAND;
   L1_SingleJet92_BptxAND = Df_L1_SingleJet92_BptxAND;
-  HLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
-  HLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
-  HLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
-  HLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
-  HLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
-  HLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
-  HLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
-  HLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
-  HLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
+  //HLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
+  //HLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
+  //HLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
+  //HLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
+  //HLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
+  //HLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
+  //HLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
+  //HLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
+  //HLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
 
   //DInfo
   bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
@@ -273,6 +317,11 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
   DMaxDoca[typesize] = DInfo_MaxDoca[j];
   Ddbc[typesize] = 0;
+  Dmaxpt[typesize] = false;
+  Dmaxprob[typesize] = false;
+  DmaxptMatched[typesize] = false;
+  DmaxprobMatched[typesize] = false;
+
   //DInfo.b4fitInfo
   Db4fit_mass[typesize] = DInfo_b4fit_mass[j];
   Db4fit_pt[typesize] = DInfo_b4fit_pt[j];
@@ -316,6 +365,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
   Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j]*TrackInfo_charge[DInfo_rftk1_index[j]];
   Dtrk2MassHypo[typesize] = DInfo_rftk2_MassHypo[j]*TrackInfo_charge[DInfo_rftk2_index[j]];
+  Dtrkminpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
+  Dtrkmaxpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
+  Dtrkminptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
+  Dtrkmaxptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
   if(DInfo_type[j]==1||DInfo_type[j]==2)
     {
       Dtrk3Idx[typesize] = -1;

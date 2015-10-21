@@ -84,6 +84,10 @@ Double_t   DsvpvDistance[MAX_XB];
 Double_t   DsvpvDisErr[MAX_XB];
 Double_t   DMaxDoca[MAX_XB];
 Int_t      Ddbc[MAX_XB];
+Bool_t     Dmaxpt[MAX_XB];
+Bool_t     Dmaxprob[MAX_XB];
+Bool_t     DmaxptMatched[MAX_XB];
+Bool_t     DmaxprobMatched[MAX_XB];
 
 //DInfo.b4fitInfo
 Double_t   Db4fit_mass[MAX_XB];
@@ -155,6 +159,10 @@ Double_t   Dtrk1MassHypo[MAX_XB];
 Double_t   Dtrk2MassHypo[MAX_XB];
 Double_t   Dtrk3MassHypo[MAX_XB];
 Double_t   Dtrk4MassHypo[MAX_XB];
+Double_t   Dtrkminpt[MAX_XB];
+Double_t   Dtrkmaxpt[MAX_XB];
+Int_t      Dtrkminptindex[MAX_XB];
+Int_t      Dtrkmaxptindex[MAX_XB];
 //DInfo.tktkResInfo
 Double_t   DtktkResmass[MAX_XB];
 Double_t   DtktkRespt[MAX_XB];
@@ -196,10 +204,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl",&HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl);
   dnt->Branch("HLT_DmesonTrackingGlobalPt8_Dpt60_v1",&HLT_DmesonTrackingGlobalPt8_Dpt60_v1);
   dnt->Branch("HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl",&HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl);
-  dnt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
-  dnt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
-  dnt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
-  dnt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
+  //dnt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
+  //dnt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
+  //dnt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
+  //dnt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
   dnt->Branch("L1_SingleS1Jet8_BptxAND",&L1_SingleS1Jet8_BptxAND);
   dnt->Branch("L1_SingleS1Jet16_BptxAND",&L1_SingleS1Jet16_BptxAND);
   dnt->Branch("L1_SingleS1Jet28_BptxAND",&L1_SingleS1Jet28_BptxAND);
@@ -207,15 +215,15 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("L1_SingleJet44_BptxAND",&L1_SingleJet44_BptxAND);
   dnt->Branch("L1_SingleS1Jet56_BptxAND",&L1_SingleS1Jet56_BptxAND);
   dnt->Branch("L1_SingleJet92_BptxAND",&L1_SingleJet92_BptxAND);
-  dnt->Branch("HLT_HIFullTrack12_v1",&HLT_HIFullTrack12_v1);
-  dnt->Branch("HLT_HIFullTrack30_L1Centrality010_v1",&HLT_HIFullTrack30_L1Centrality010_v1);
-  dnt->Branch("HLT_HIFullTrack30_L1Centrality1030_v1",&HLT_HIFullTrack30_L1Centrality1030_v1);
-  dnt->Branch("HLT_HIFullTrack30_L1Centrality3050_v1",&HLT_HIFullTrack30_L1Centrality3050_v1);
-  dnt->Branch("HLT_HIFullTrack30_L1Centrality50100_v1",&HLT_HIFullTrack30_L1Centrality50100_v1);
-  dnt->Branch("HLT_HIFullTrack45_L1Centrality010_v1",&HLT_HIFullTrack45_L1Centrality010_v1);
-  dnt->Branch("HLT_HIFullTrack45_L1Centrality1030_v1",&HLT_HIFullTrack45_L1Centrality1030_v1);
-  dnt->Branch("HLT_HIFullTrack45_L1Centrality3050_v1",&HLT_HIFullTrack45_L1Centrality3050_v1);
-  dnt->Branch("HLT_HIFullTrack45_L1Centrality50100_v1",&HLT_HIFullTrack45_L1Centrality50100_v1);
+  //dnt->Branch("HLT_HIFullTrack12_v1",&HLT_HIFullTrack12_v1);
+  //dnt->Branch("HLT_HIFullTrack30_L1Centrality010_v1",&HLT_HIFullTrack30_L1Centrality010_v1);
+  //dnt->Branch("HLT_HIFullTrack30_L1Centrality1030_v1",&HLT_HIFullTrack30_L1Centrality1030_v1);
+  //dnt->Branch("HLT_HIFullTrack30_L1Centrality3050_v1",&HLT_HIFullTrack30_L1Centrality3050_v1);
+  //dnt->Branch("HLT_HIFullTrack30_L1Centrality50100_v1",&HLT_HIFullTrack30_L1Centrality50100_v1);
+  //dnt->Branch("HLT_HIFullTrack45_L1Centrality010_v1",&HLT_HIFullTrack45_L1Centrality010_v1);
+  //dnt->Branch("HLT_HIFullTrack45_L1Centrality1030_v1",&HLT_HIFullTrack45_L1Centrality1030_v1);
+  //dnt->Branch("HLT_HIFullTrack45_L1Centrality3050_v1",&HLT_HIFullTrack45_L1Centrality3050_v1);
+  //dnt->Branch("HLT_HIFullTrack45_L1Centrality50100_v1",&HLT_HIFullTrack45_L1Centrality50100_v1);
 
   //DInfo
   dnt->Branch("Dindex",Dindex,"Dindex[Dsize]/I");
@@ -240,6 +248,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("DsvpvDisErr",DsvpvDisErr,"DsvpvDisErr[Dsize]/D");
   dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/D");
   dnt->Branch("Ddbc",Ddbc,"Ddbc[Dsize]/I");
+  dnt->Branch("Dmaxpt",Dmaxpt,"Dmaxpt[Dsize]/O");
+  dnt->Branch("Dmaxprob",Dmaxprob,"Dmaxprob[Dsize]/O");
+  dnt->Branch("DmaxptMatched",DmaxptMatched,"DmaxptMatched[Dsize]/O");
+  dnt->Branch("DmaxprobMatched",DmaxprobMatched,"DmaxprobMatched[Dsize]/O");
   //DInfo.b4fitInfo
   dnt->Branch("Db4fit_mass",Db4fit_mass,"Db4fit_mass[Dsize]/D");
   dnt->Branch("Db4fit_pt",Db4fit_pt,"Db4fit_pt[Dsize]/D");
@@ -310,6 +322,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("Dtrk2MassHypo",Dtrk2MassHypo,"Dtrk2MassHypo[Dsize]/D");
   dnt->Branch("Dtrk3MassHypo",Dtrk3MassHypo,"Dtrk3MassHypo[Dsize]/D");
   dnt->Branch("Dtrk4MassHypo",Dtrk4MassHypo,"Dtrk4MassHypo[Dsize]/D");
+  dnt->Branch("Dtrkminpt",Dtrkminpt,"Dtrkminpt[Dsize]/D");
+  dnt->Branch("Dtrkmaxpt",Dtrkmaxpt,"Dtrkmaxpt[Dsize]/D");
+  dnt->Branch("Dtrkminptindex",Dtrkminptindex,"Dtrkminptindex[Dsize]/I");
+  dnt->Branch("Dtrkmaxptindex",Dtrkmaxptindex,"Dtrkmaxptindex[Dsize]/I");
   //DInfo.tktkResInfo
   dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/D");
   dnt->Branch("DtktkRespt",DtktkRespt,"DtktkRespt[Dsize]/D");
@@ -372,10 +388,10 @@ void buildGenBranch(TTree* nt)
   nt->Branch("HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl",&GHLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl);
   nt->Branch("HLT_DmesonTrackingGlobalPt8_Dpt40_v1",&GHLT_DmesonTrackingGlobalPt8_Dpt40_v1);
   nt->Branch("HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl",&GHLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl);
-  nt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
-  nt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
-  nt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
-  nt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
+  //nt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
+  //nt->Branch("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
+  //nt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
+  //nt->Branch("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
   nt->Branch("L1_SingleS1Jet8_BptxAND",&GL1_SingleS1Jet8_BptxAND);
   nt->Branch("L1_SingleS1Jet16_BptxAND",&GL1_SingleS1Jet16_BptxAND);
   nt->Branch("L1_SingleS1Jet28_BptxAND",&GL1_SingleS1Jet28_BptxAND);
@@ -383,15 +399,15 @@ void buildGenBranch(TTree* nt)
   nt->Branch("L1_SingleJet44_BptxAND",&GL1_SingleJet44_BptxAND);
   nt->Branch("L1_SingleS1Jet56_BptxAND",&GL1_SingleS1Jet56_BptxAND);
   nt->Branch("L1_SingleJet92_BptxAND",&GL1_SingleJet92_BptxAND);
-  nt->Branch("HLT_HIFullTrack12_v1",&GHLT_HIFullTrack12_v1);
-  nt->Branch("HLT_HIFullTrack30_L1Centrality010_v1",&GHLT_HIFullTrack30_L1Centrality010_v1);
-  nt->Branch("HLT_HIFullTrack30_L1Centrality1030_v1",&GHLT_HIFullTrack30_L1Centrality1030_v1);
-  nt->Branch("HLT_HIFullTrack30_L1Centrality3050_v1",&GHLT_HIFullTrack30_L1Centrality3050_v1);
-  nt->Branch("HLT_HIFullTrack30_L1Centrality50100_v1",&GHLT_HIFullTrack30_L1Centrality50100_v1);
-  nt->Branch("HLT_HIFullTrack45_L1Centrality010_v1",&GHLT_HIFullTrack45_L1Centrality010_v1);
-  nt->Branch("HLT_HIFullTrack45_L1Centrality1030_v1",&GHLT_HIFullTrack45_L1Centrality1030_v1);
-  nt->Branch("HLT_HIFullTrack45_L1Centrality3050_v1",&GHLT_HIFullTrack45_L1Centrality3050_v1);
-  nt->Branch("HLT_HIFullTrack45_L1Centrality50100_v1",&GHLT_HIFullTrack45_L1Centrality50100_v1);
+  //nt->Branch("HLT_HIFullTrack12_v1",&GHLT_HIFullTrack12_v1);
+  //nt->Branch("HLT_HIFullTrack30_L1Centrality010_v1",&GHLT_HIFullTrack30_L1Centrality010_v1);
+  //nt->Branch("HLT_HIFullTrack30_L1Centrality1030_v1",&GHLT_HIFullTrack30_L1Centrality1030_v1);
+  //nt->Branch("HLT_HIFullTrack30_L1Centrality3050_v1",&GHLT_HIFullTrack30_L1Centrality3050_v1);
+  //nt->Branch("HLT_HIFullTrack30_L1Centrality50100_v1",&GHLT_HIFullTrack30_L1Centrality50100_v1);
+  //nt->Branch("HLT_HIFullTrack45_L1Centrality010_v1",&GHLT_HIFullTrack45_L1Centrality010_v1);
+  //nt->Branch("HLT_HIFullTrack45_L1Centrality1030_v1",&GHLT_HIFullTrack45_L1Centrality1030_v1);
+  //nt->Branch("HLT_HIFullTrack45_L1Centrality3050_v1",&GHLT_HIFullTrack45_L1Centrality3050_v1);
+  //nt->Branch("HLT_HIFullTrack45_L1Centrality50100_v1",&GHLT_HIFullTrack45_L1Centrality50100_v1);
   nt->Branch("Gsize",&Gsize);
   nt->Branch("Gy",Gy,"Gy[Gsize]/D");
   nt->Branch("Geta",Geta,"Geta[Gsize]/D");
@@ -695,6 +711,7 @@ void setDBranch(TTree *root)
 //HltInfo
 Int_t           Df_HLT_Run;
 ULong64_t       Df_HLT_Event;
+Int_t           Df_HLT_LumiBlock;
 Int_t           Df_HLT_HIMinBiasHfOrBSC_v1;
 Int_t           Df_HLT_HIMinBiasHfOrBSC_v1_Prescl;
 Int_t           Df_HLT_HIMinBiasHfOrBSC_v4;
@@ -730,6 +747,7 @@ void SetDataHLTBranch(TTree* hltroot)
 {
   hltroot->SetBranchAddress("Run",&Df_HLT_Run);
   hltroot->SetBranchAddress("Event",&Df_HLT_Event);
+  hltroot->SetBranchAddress("LumiBlock",&Df_HLT_LumiBlock);
   hltroot->SetBranchAddress("HLT_HIMinBiasHfOrBSC_v1",&Df_HLT_HIMinBiasHfOrBSC_v1);
   hltroot->SetBranchAddress("HLT_HIMinBiasHfOrBSC_v1_Prescl",&Df_HLT_HIMinBiasHfOrBSC_v1_Prescl);
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt20_v1",&Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1);
@@ -738,10 +756,10 @@ void SetDataHLTBranch(TTree* hltroot)
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl",&Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl);
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt40_v1",&Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1);
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl",&Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
   hltroot->SetBranchAddress("L1_SingleS1Jet8_BptxAND",&Df_L1_SingleS1Jet8_BptxAND);
   hltroot->SetBranchAddress("L1_SingleS1Jet16_BptxAND",&Df_L1_SingleS1Jet16_BptxAND);
   hltroot->SetBranchAddress("L1_SingleS1Jet28_BptxAND",&Df_L1_SingleS1Jet28_BptxAND);
@@ -749,20 +767,21 @@ void SetDataHLTBranch(TTree* hltroot)
   hltroot->SetBranchAddress("L1_SingleJet44_BptxAND",&Df_L1_SingleJet44_BptxAND);
   hltroot->SetBranchAddress("L1_SingleS1Jet56_BptxAND",&Df_L1_SingleS1Jet56_BptxAND);
   hltroot->SetBranchAddress("L1_SingleJet92_BptxAND",&Df_L1_SingleJet92_BptxAND);
-  hltroot->SetBranchAddress("HLT_HIFullTrack12_v1",&Df_HLT_HIFullTrack12_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality010_v1",&Df_HLT_HIFullTrack30_L1Centrality010_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality1030_v1",&Df_HLT_HIFullTrack30_L1Centrality1030_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality3050_v1",&Df_HLT_HIFullTrack30_L1Centrality3050_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality50100_v1",&Df_HLT_HIFullTrack30_L1Centrality50100_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality010_v1",&Df_HLT_HIFullTrack45_L1Centrality010_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality1030_v1",&Df_HLT_HIFullTrack45_L1Centrality1030_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality3050_v1",&Df_HLT_HIFullTrack45_L1Centrality3050_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality50100_v1",&Df_HLT_HIFullTrack45_L1Centrality50100_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack12_v1",&Df_HLT_HIFullTrack12_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality010_v1",&Df_HLT_HIFullTrack30_L1Centrality010_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality1030_v1",&Df_HLT_HIFullTrack30_L1Centrality1030_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality3050_v1",&Df_HLT_HIFullTrack30_L1Centrality3050_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality50100_v1",&Df_HLT_HIFullTrack30_L1Centrality50100_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality010_v1",&Df_HLT_HIFullTrack45_L1Centrality010_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality1030_v1",&Df_HLT_HIFullTrack45_L1Centrality1030_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality3050_v1",&Df_HLT_HIFullTrack45_L1Centrality3050_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality50100_v1",&Df_HLT_HIFullTrack45_L1Centrality50100_v1);
 }
 void SetMCHLTBranch(TTree* hltroot)
 {
   hltroot->SetBranchAddress("Run",&Df_HLT_Run);
   hltroot->SetBranchAddress("Event",&Df_HLT_Event);
+  hltroot->SetBranchAddress("LumiBlock",&Df_HLT_LumiBlock);
   //hltroot->SetBranchAddress("HLT_HIMinBiasHfOrBSC_v4",&Df_HLT_HIMinBiasHfOrBSC_v4);
   //hltroot->SetBranchAddress("HLT_HIMinBiasHfOrBSC_v4_Prescl",&Df_HLT_HIMinBiasHfOrBSC_v4_Prescl);
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt20_v1",&Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1);
@@ -771,10 +790,10 @@ void SetMCHLTBranch(TTree* hltroot)
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl",&Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl);
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt40_v1",&Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1);
   hltroot->SetBranchAddress("HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl",&Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
-  hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1);
+  //hltroot->SetBranchAddress("HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl",&Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl);
   hltroot->SetBranchAddress("L1_SingleS1Jet8_BptxAND",&Df_L1_SingleS1Jet8_BptxAND);
   hltroot->SetBranchAddress("L1_SingleS1Jet16_BptxAND",&Df_L1_SingleS1Jet16_BptxAND);
   hltroot->SetBranchAddress("L1_SingleS1Jet28_BptxAND",&Df_L1_SingleS1Jet28_BptxAND);
@@ -782,15 +801,15 @@ void SetMCHLTBranch(TTree* hltroot)
   hltroot->SetBranchAddress("L1_SingleJet44_BptxAND",&Df_L1_SingleJet44_BptxAND);
   hltroot->SetBranchAddress("L1_SingleS1Jet56_BptxAND",&Df_L1_SingleS1Jet56_BptxAND);
   hltroot->SetBranchAddress("L1_SingleJet92_BptxAND",&Df_L1_SingleJet92_BptxAND);
-  hltroot->SetBranchAddress("HLT_HIFullTrack12_v1",&Df_HLT_HIFullTrack12_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality010_v1",&Df_HLT_HIFullTrack30_L1Centrality010_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality1030_v1",&Df_HLT_HIFullTrack30_L1Centrality1030_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality3050_v1",&Df_HLT_HIFullTrack30_L1Centrality3050_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality50100_v1",&Df_HLT_HIFullTrack30_L1Centrality50100_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality010_v1",&Df_HLT_HIFullTrack45_L1Centrality010_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality1030_v1",&Df_HLT_HIFullTrack45_L1Centrality1030_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality3050_v1",&Df_HLT_HIFullTrack45_L1Centrality3050_v1);
-  hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality50100_v1",&Df_HLT_HIFullTrack45_L1Centrality50100_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack12_v1",&Df_HLT_HIFullTrack12_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality010_v1",&Df_HLT_HIFullTrack30_L1Centrality010_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality1030_v1",&Df_HLT_HIFullTrack30_L1Centrality1030_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality3050_v1",&Df_HLT_HIFullTrack30_L1Centrality3050_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack30_L1Centrality50100_v1",&Df_HLT_HIFullTrack30_L1Centrality50100_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality010_v1",&Df_HLT_HIFullTrack45_L1Centrality010_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality1030_v1",&Df_HLT_HIFullTrack45_L1Centrality1030_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality3050_v1",&Df_HLT_HIFullTrack45_L1Centrality3050_v1);
+  //hltroot->SetBranchAddress("HLT_HIFullTrack45_L1Centrality50100_v1",&Df_HLT_HIFullTrack45_L1Centrality50100_v1);
 }
 
 //hiEvtInfo
