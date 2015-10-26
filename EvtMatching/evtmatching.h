@@ -1,13 +1,5 @@
 #include <TTree.h>
 
-#define MAX_XB 16384
-#define MAX_MUON 512
-#define MAX_TRACK 4096
-#define MAX_GEN 8192
-#define MAX_BX 128
-#define MAX_Vertices 4096
-#define N_TRIGGER_BOOKINGS 5842
-
 Int_t           RecoRunNo;
 Int_t           RecoLumiNo;
 Int_t           RecoEvtNo;
@@ -26,4 +18,13 @@ void setEvtHLTBranch(TTree* hltroot)
   hltroot->SetBranchAddress("Run",&HltRun);
   hltroot->SetBranchAddress("Event",&HltEvent);
   hltroot->SetBranchAddress("LumiBlock",&HltLumiBlock);
+}
+Int_t           HiRun;
+Int_t           HiEvt;
+Int_t           HiLumi;
+void setEvtHIBranch(TTree* hiroot)
+{
+  hiroot->SetBranchAddress("run",&HiRun);
+  hiroot->SetBranchAddress("evt",&HiEvt);
+  hiroot->SetBranchAddress("lumi",&HiLumi);
 }
