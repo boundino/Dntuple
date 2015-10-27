@@ -82,6 +82,8 @@ Double_t   Dlxy[MAX_XB];
 Double_t   Dalpha[MAX_XB];
 Double_t   DsvpvDistance[MAX_XB];
 Double_t   DsvpvDisErr[MAX_XB];
+Double_t   DsvpvDistance_2D[MAX_XB];
+Double_t   DsvpvDisErr_2D[MAX_XB];
 Double_t   DMaxDoca[MAX_XB];
 Int_t      Ddbc[MAX_XB];
 Bool_t     Dmaxpt[MAX_XB];
@@ -163,6 +165,14 @@ Double_t   Dtrkminpt[MAX_XB];
 Double_t   Dtrkmaxpt[MAX_XB];
 Int_t      Dtrkminptindex[MAX_XB];
 Int_t      Dtrkmaxptindex[MAX_XB];
+Double_t   Dtrk1MVAVal[MAX_XB];
+Double_t   Dtrk2MVAVal[MAX_XB];
+Double_t   Dtrk3MVAVal[MAX_XB];
+Double_t   Dtrk4MVAVal[MAX_XB];
+Int_t      Dtrk1Algo[MAX_XB];
+Int_t      Dtrk2Algo[MAX_XB];
+Int_t      Dtrk3Algo[MAX_XB];
+Int_t      Dtrk4Algo[MAX_XB];
 //DInfo.tktkResInfo
 Double_t   DtktkResmass[MAX_XB];
 Double_t   DtktkRespt[MAX_XB];
@@ -190,10 +200,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("PVyE",&PVyE);
   dnt->Branch("PVzE",&PVzE);
   dnt->Branch("PVnchi2",&PVnchi2);
-  //dnt->Branch("Npart",&Npart);
-  //dnt->Branch("Ncoll",&Ncoll);
-  //dnt->Branch("Nhard",&Nhard);
-  //dnt->Branch("hiBin",&hiBin);
+  dnt->Branch("Npart",&Npart);
+  dnt->Branch("Ncoll",&Ncoll);
+  dnt->Branch("Nhard",&Nhard);
+  dnt->Branch("hiBin",&hiBin);
   //dnt->Branch("HLT_HIMinBiasHfOrBSC_v1",&HLT_HIMinBiasHfOrBSC_v1);
   //dnt->Branch("HLT_HIMinBiasHfOrBSC_v1_Prescl",&HLT_HIMinBiasHfOrBSC_v1_Prescl);
   //dnt->Branch("HLT_HIMinBiasHfOrBSC_v4",&HLT_HIMinBiasHfOrBSC_v4);
@@ -246,6 +256,8 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("Dalpha",Dalpha,"Dalpha[Dsize]/D");
   dnt->Branch("DsvpvDistance",DsvpvDistance,"DsvpvDistance[Dsize]/D");
   dnt->Branch("DsvpvDisErr",DsvpvDisErr,"DsvpvDisErr[Dsize]/D");
+  dnt->Branch("DsvpvDistance_2D",DsvpvDistance_2D,"DsvpvDistance_2D[Dsize]/D");
+  dnt->Branch("DsvpvDisErr_2D",DsvpvDisErr_2D,"DsvpvDisErr_2D[Dsize]/D");
   dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/D");
   dnt->Branch("Ddbc",Ddbc,"Ddbc[Dsize]/I");
   dnt->Branch("Dmaxpt",Dmaxpt,"Dmaxpt[Dsize]/O");
@@ -326,6 +338,15 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("Dtrkmaxpt",Dtrkmaxpt,"Dtrkmaxpt[Dsize]/D");
   dnt->Branch("Dtrkminptindex",Dtrkminptindex,"Dtrkminptindex[Dsize]/I");
   dnt->Branch("Dtrkmaxptindex",Dtrkmaxptindex,"Dtrkmaxptindex[Dsize]/I");
+  dnt->Branch("Dtrk1MVAVal",Dtrk1MVAVal,"Dtrk1MVAVal[Dsize]/D");
+  dnt->Branch("Dtrk2MVAVal",Dtrk2MVAVal,"Dtrk2MVAVal[Dsize]/D");
+  dnt->Branch("Dtrk3MVAVal",Dtrk3MVAVal,"Dtrk3MVAVal[Dsize]/D");
+  dnt->Branch("Dtrk4MVAVal",Dtrk4MVAVal,"Dtrk4MVAVal[Dsize]/D");
+  dnt->Branch("Dtrk1Algo",Dtrk1Algo,"Dtrk1Algo[Dsize]/I");
+  dnt->Branch("Dtrk2Algo",Dtrk2Algo,"Dtrk2Algo[Dsize]/I");
+  dnt->Branch("Dtrk3Algo",Dtrk3Algo,"Dtrk3Algo[Dsize]/I");
+  dnt->Branch("Dtrk4Algo",Dtrk4Algo,"Dtrk4Algo[Dsize]/I");
+
   //DInfo.tktkResInfo
   dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/D");
   dnt->Branch("DtktkRespt",DtktkRespt,"DtktkRespt[Dsize]/D");
@@ -466,6 +487,9 @@ Double_t        TrackInfo_dxyPV[MAX_TRACK];
 Int_t           TrackInfo_geninfo_index[MAX_TRACK];
 Int_t           TrackInfo_trackQuality[MAX_TRACK];
 Bool_t          TrackInfo_highPurity[MAX_TRACK];
+Double_t        TrackInfo_trkMVAVal[MAX_TRACK];
+Int_t           TrackInfo_trkAlgo[MAX_TRACK];
+
 //DInfo
 Int_t           DInfo_size;
 Int_t           DInfo_index[MAX_XB];
@@ -505,6 +529,8 @@ Double_t        DInfo_pz[MAX_XB];
 Double_t        DInfo_alpha[MAX_XB];
 Double_t        DInfo_svpvDistance[MAX_XB];
 Double_t        DInfo_svpvDisErr[MAX_XB];
+Double_t        DInfo_svpvDistance_2D[MAX_XB];
+Double_t        DInfo_svpvDisErr_2D[MAX_XB];
 Double_t        DInfo_MaxDoca[MAX_XB];
 Double_t        DInfo_vtxX[MAX_XB];
 Double_t        DInfo_vtxY[MAX_XB];
@@ -610,6 +636,8 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("TrackInfo.geninfo_index",TrackInfo_geninfo_index);
   root->SetBranchAddress("TrackInfo.trackQuality",TrackInfo_trackQuality);
   root->SetBranchAddress("TrackInfo.highPurity",TrackInfo_highPurity);
+  root->SetBranchAddress("TrackInfo.trkMVAVal",TrackInfo_trkMVAVal);
+  root->SetBranchAddress("TrackInfo.trkAlgo",TrackInfo_trkAlgo);
   //DInfo
   root->SetBranchAddress("DInfo.size",&DInfo_size);
   root->SetBranchAddress("DInfo.index",DInfo_index);
@@ -649,6 +677,8 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.alpha",DInfo_alpha);
   root->SetBranchAddress("DInfo.svpvDistance",DInfo_svpvDistance);
   root->SetBranchAddress("DInfo.svpvDisErr",DInfo_svpvDisErr);
+  root->SetBranchAddress("DInfo.svpvDistance_2D",DInfo_svpvDistance_2D);
+  root->SetBranchAddress("DInfo.svpvDisErr_2D",DInfo_svpvDisErr_2D);
   root->SetBranchAddress("DInfo.MaxDoca",DInfo_MaxDoca);
   root->SetBranchAddress("DInfo.vtxX",DInfo_vtxX);
   root->SetBranchAddress("DInfo.vtxY",DInfo_vtxY);
@@ -813,13 +843,19 @@ void SetMCHLTBranch(TTree* hltroot)
 }
 
 //hiEvtInfo
+Int_t           Df_HiTree_Run;
+Int_t           Df_HiTree_Evt;
+Int_t           Df_HiTree_Lumi;
 Float_t         Df_HiTree_Npart;
 Float_t         Df_HiTree_Ncoll;
 Float_t         Df_HiTree_Nhard;
 Int_t           Df_HiTree_hiBin;
 
-void SetHiTreeBranch(TTree* hitreeroot)
+void setHiTreeBranch(TTree* hitreeroot)
 {
+  hitreeroot->SetBranchAddress("run",&Df_HiTree_Run);
+  hitreeroot->SetBranchAddress("evt",&Df_HiTree_Evt);
+  hitreeroot->SetBranchAddress("lumi",&Df_HiTree_Lumi);
   hitreeroot->SetBranchAddress("Npart",&Df_HiTree_Npart);
   hitreeroot->SetBranchAddress("Ncoll",&Df_HiTree_Ncoll);
   hitreeroot->SetBranchAddress("Nhard",&Df_HiTree_Nhard);

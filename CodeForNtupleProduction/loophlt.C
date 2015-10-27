@@ -26,9 +26,8 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-//int loophlt(TString infile="openHLT_HF_100_1_OYu.root", TString outfile="comp1.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
-//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151020_DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
-int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151020_DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151027_DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151027_DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -40,8 +39,10 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_
   TFile *f = new TFile(infile);
   TTree *root = (TTree*)f->Get("Dfinder/root");
   TTree *hltroot = (TTree*)f->Get("hltbitanalysis/HltTree");
+  TTree *hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   TFile *outf = new TFile(outfile,"recreate");
   setDBranch(root);
+  setHiTreeBranch(hiroot);
   if(REAL) SetDataHLTBranch(hltroot);
   else SetMCHLTBranch(hltroot);
 
@@ -61,19 +62,20 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_
   cout<<"--- Building trees finished ---"<<endl;
 
   Long64_t nentries = root->GetEntries();
-  Long64_t nbytes = 0;
   Int_t flagEvt=0, offsetHltTree=0;
   TVector3* bP = new TVector3;
   TVector3* bVtx = new TVector3;
   TLorentzVector* b4P = new TLorentzVector;
   TLorentzVector* bGen = new TLorentzVector;
-  cout<<root->GetEntries()<<"  "<<hltroot->GetEntries()<<endl;
+  cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries()<<endl;
   for(Int_t i=startEntries;i<nentries;i++)
     {
-      nbytes+=root->GetEntry(i);
+      root->GetEntry(i);
       hltroot->GetEntry(i);
+      hiroot->GetEntry(i);
       if(i%10000==0) cout<<i<<" / "<<nentries<<endl;
-      if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo)
+      if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo ||
+	 Df_HiTree_Evt!=EvtInfo_EvtNo||Df_HiTree_Run!=EvtInfo_RunNo||Df_HiTree_Lumi!=EvtInfo_LumiNo)
 	{
 	  cout<<"Error: not matched "<<i<<endl;
 	  continue;
@@ -180,18 +182,12 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_
 	    {
 	      if(TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID&&gskim) continue;
 	      Gsize = gsize+1;
-	      //GHLT_HIMinBiasHfOrBSC_v4 = Df_HLT_HIMinBiasHfOrBSC_v4;
-	      //GHLT_HIMinBiasHfOrBSC_v4_Prescl = Df_HLT_HIMinBiasHfOrBSC_v4_Prescl;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt20_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt60_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt40_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1;
 	      GHLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl;
-	      //GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1;
-	      //GHLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
-	      //GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
-	      //GHLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;	      
 	      GL1_SingleS1Jet8_BptxAND = Df_L1_SingleS1Jet8_BptxAND;
 	      GL1_SingleS1Jet16_BptxAND = Df_L1_SingleS1Jet16_BptxAND;
 	      GL1_SingleS1Jet28_BptxAND = Df_L1_SingleS1Jet28_BptxAND;
@@ -199,15 +195,6 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_
 	      GL1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
 	      GL1_SingleS1Jet56_BptxAND = Df_L1_SingleS1Jet56_BptxAND;
 	      GL1_SingleJet92_BptxAND = Df_L1_SingleJet92_BptxAND;
-	      //GHLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
-	      //GHLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
-	      //GHLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
-	      //GHLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
-	      //GHLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
-	      //GHLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
-	      //GHLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
-	      //GHLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
-	      //GHLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];
 	      Gphi[gsize] = GenInfo_phi[j];
@@ -261,6 +248,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   PVzE = EvtInfo_PVzE;
   PVnchi2 = EvtInfo_PVnchi2;
   PVchi2 = EvtInfo_PVchi2;
+  Npart = Df_HiTree_Npart;
+  Ncoll = Df_HiTree_Ncoll;
+  Nhard = Df_HiTree_Nhard;
+  hiBin[typesize] = Df_HiTree_hiBin;
   //HltInfo
   HLT_DmesonTrackingGlobalPt8_Dpt20_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1;
   HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl;
@@ -268,10 +259,6 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt60_v1_Prescl;
   HLT_DmesonTrackingGlobalPt8_Dpt40_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1;
   HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt40_v1_Prescl;
-  //HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1;
-  //HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet80Eta2p3_ForDmesons_v1_Prescl;
-  //HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1 = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1;
-  //HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl = Df_HLT_PuAK4CaloJet60Eta2p3_ForDmesons_v1_Prescl;
   L1_SingleS1Jet8_BptxAND = Df_L1_SingleS1Jet8_BptxAND;
   L1_SingleS1Jet16_BptxAND = Df_L1_SingleS1Jet16_BptxAND;
   L1_SingleS1Jet28_BptxAND = Df_L1_SingleS1Jet28_BptxAND;
@@ -279,16 +266,6 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   L1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
   L1_SingleS1Jet56_BptxAND = Df_L1_SingleS1Jet56_BptxAND;
   L1_SingleJet92_BptxAND = Df_L1_SingleJet92_BptxAND;
-  //HLT_HIFullTrack12_v1 = Df_HLT_HIFullTrack12_v1;
-  //HLT_HIFullTrack30_L1Centrality010_v1 = Df_HLT_HIFullTrack30_L1Centrality010_v1;
-  //HLT_HIFullTrack30_L1Centrality1030_v1 = Df_HLT_HIFullTrack30_L1Centrality1030_v1;
-  //HLT_HIFullTrack30_L1Centrality3050_v1 = Df_HLT_HIFullTrack30_L1Centrality3050_v1;
-  //HLT_HIFullTrack30_L1Centrality50100_v1 = Df_HLT_HIFullTrack30_L1Centrality50100_v1;
-  //HLT_HIFullTrack45_L1Centrality010_v1 = Df_HLT_HIFullTrack45_L1Centrality010_v1;
-  //HLT_HIFullTrack45_L1Centrality1030_v1 = Df_HLT_HIFullTrack45_L1Centrality1030_v1;
-  //HLT_HIFullTrack45_L1Centrality3050_v1 = Df_HLT_HIFullTrack45_L1Centrality3050_v1;
-  //HLT_HIFullTrack45_L1Centrality50100_v1 = Df_HLT_HIFullTrack45_L1Centrality50100_v1;
-
   //DInfo
   bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
   bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,
@@ -315,6 +292,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dalpha[typesize] = DInfo_alpha[j];
   DsvpvDistance[typesize] = DInfo_svpvDistance[j];
   DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
+  DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
+  DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
   DMaxDoca[typesize] = DInfo_MaxDoca[j];
   Ddbc[typesize] = 0;
   Dmaxpt[typesize] = false;
@@ -365,6 +344,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
   Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j]*TrackInfo_charge[DInfo_rftk1_index[j]];
   Dtrk2MassHypo[typesize] = DInfo_rftk2_MassHypo[j]*TrackInfo_charge[DInfo_rftk2_index[j]];
+  Dtrk1MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk1_index[j]];
+  Dtrk2MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk2_index[j]];
+  Dtrk1Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk1_index[j]];
+  Dtrk2Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk2_index[j]];
   Dtrkminpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
   Dtrkmaxpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
   Dtrkminptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
@@ -403,6 +386,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Chi2ndf[typesize] = -1;
       Dtrk3MassHypo[typesize] = 0;
       Dtrk4MassHypo[typesize] = 0;
+      Dtrk3MVAVal[typesize] = -100;
+      Dtrk4MVAVal[typesize] = -100;
+      Dtrk3Algo[typesize] = 0;
+      Dtrk4Algo[typesize] = 0;
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -428,6 +415,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
       Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
       Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
+      Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
+      Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
       Dtrk4Idx[typesize] = -1;
       Dtrk4Pt[typesize] = -1;
       Dtrk4Eta[typesize] = -20;
@@ -444,6 +433,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4nStripLayer[typesize] = -1;
       Dtrk4Chi2ndf[typesize] = -1;
       Dtrk4MassHypo[typesize] = 0;
+      Dtrk4MVAVal[typesize] = -100;
+      Dtrk4Algo[typesize] = 0;
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -487,6 +478,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
       Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
       Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
+      Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
+      Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
+      Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
+      Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -526,6 +521,10 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
       Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
       Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
+      Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
+      Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
+      Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
+      Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = DInfo_tktkRes_mass[j];
       DtktkRespt[typesize] = DInfo_tktkRes_pt[j];
       DtktkReseta[typesize] = DInfo_tktkRes_eta[j];
