@@ -251,7 +251,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Npart = Df_HiTree_Npart;
   Ncoll = Df_HiTree_Ncoll;
   Nhard = Df_HiTree_Nhard;
-  hiBin[typesize] = Df_HiTree_hiBin;
+  hiBin = Df_HiTree_hiBin;
   //HltInfo
   HLT_DmesonTrackingGlobalPt8_Dpt20_v1 = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1;
   HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl = Df_HLT_DmesonTrackingGlobalPt8_Dpt20_v1_Prescl;
@@ -292,8 +292,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dalpha[typesize] = DInfo_alpha[j];
   DsvpvDistance[typesize] = DInfo_svpvDistance[j];
   DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
-  DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
-  DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
+  //DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
+  //DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
   DMaxDoca[typesize] = DInfo_MaxDoca[j];
   Ddbc[typesize] = 0;
   Dmaxpt[typesize] = false;
