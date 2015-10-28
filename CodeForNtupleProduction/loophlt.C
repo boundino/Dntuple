@@ -27,8 +27,8 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
-int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -351,6 +351,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk2_index[j]];
   Dtrk1Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk1_index[j]];
   Dtrk2Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk2_index[j]];
+  Dtrk1highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk1_index[j]];
+  Dtrk2highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk2_index[j]];
   Dtrkminpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
   Dtrkmaxpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
   Dtrkminptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
@@ -391,8 +393,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4MassHypo[typesize] = 0;
       Dtrk3MVAVal[typesize] = -100;
       Dtrk4MVAVal[typesize] = -100;
-      Dtrk3Algo[typesize] = 0;
-      Dtrk4Algo[typesize] = 0;
+      Dtrk3highPurity[typesize] = false;
+      Dtrk4highPurity[typesize] = false;
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -420,6 +422,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
       Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
       Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
+      Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
       Dtrk4Idx[typesize] = -1;
       Dtrk4Pt[typesize] = -1;
       Dtrk4Eta[typesize] = -20;
@@ -438,6 +441,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4MassHypo[typesize] = 0;
       Dtrk4MVAVal[typesize] = -100;
       Dtrk4Algo[typesize] = 0;
+      Dtrk4highPurity[typesize] = false;
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -485,6 +489,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
       Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
       Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
+      Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
+      Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -528,6 +534,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
       Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
       Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
+      Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
+      Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = DInfo_tktkRes_mass[j];
       DtktkRespt[typesize] = DInfo_tktkRes_pt[j];
       DtktkReseta[typesize] = DInfo_tktkRes_eta[j];
