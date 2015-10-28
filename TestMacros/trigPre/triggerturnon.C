@@ -9,55 +9,72 @@
 #include <TMath.h>
 #include <TEfficiency.h>
 
-TString prefilter = "(Dgen==23333||Dgen==23344)&&Dmaxpt&&Dtrk1Pt>8.&&Dtrk2Pt>8.&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95";
-Float_t pthat = 35;
-void triggerturnon(TString infname=Form("/mnt/hadoop/cms/store/user/jwang/Dmeson/5p02TeV/ntD_20151020_DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root",pthat,pthat))
+TString mvatk = "(Dtrk1MVAVal>0.&&Dtrk2MVAVal>0.)";
+//TString mvatk = "((Dtrk1Algo==4&&Dtrk1MVAVal>-0.77)||(Dtrk1Algo==5&&Dtrk1MVAVal>0.35)||(Dtrk1Algo==6&&Dtrk1MVAVal>0.77)||(Dtrk1Algo==7&&Dtrk1MVAVal>-0.09))&&((Dtrk2Algo==4&&Dtrk2MVAVal>-0.77)||(Dtrk2Algo==5&&Dtrk2MVAVal>0.35)||(Dtrk2Algo==6&&Dtrk2MVAVal>0.77)||(Dtrk2Algo==7&&Dtrk2MVAVal>-0.09))";
+TString prefilter = Form("(Dgen==23333||Dgen==23344)&&Dmaxpt&&Dtrk1Pt>10.&&Dtrk2Pt>10.&&TMath::Abs(Dtrk1Eta)<1.2&&TMath::Abs(Dtrk2Eta)<1.2&&Dchi2cl>0.05&&TMath::Abs(Dy)<1.&&%s",mvatk.Data());
+TString decaylength = "(DsvpvDistance/DsvpvDisErr)>2.5";
+TString cosalpha = "TMath::Cos(Dalpha)>0.95";
+Float_t pthat = 15;
+void triggerturnon(TString infname=Form("/mnt/hadoop/cms/store/user/jwang/Dmeson/5p02TeV/backup/ntD_20151026_DfinderMC_20151026_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151025.root",pthat,pthat))
 {
   void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
   void plotTurnOnNL1seed(TTree* inttree, TString triggerpass, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80,Form("&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80,Form("&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80,Form("&&%s&&%s",decaylength.Data(),cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dy","y","y",10,-4,4,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dy","y","y",10,-4,4,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dy","y","y",10,-4,4,"&&Dpt>60.");
+  /*
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","hiBin/2.","cent","Centrality",10,0,100,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","hiBin/2.","cent","Centrality",10,0,100,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","hiBin/2.","cent","Centrality",10,0,100,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Deta","eta","#eta",10,-4,4,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Deta","eta","#eta",10,-4,4,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Deta","eta","#eta",10,-4,4,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","DsvpvDistance/DsvpvDisErr","ffls3d","3D decay length sig",10,0,20,Form("&&Dpt>20.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","DsvpvDistance/DsvpvDisErr","ffls3d","3D decay length sig",10,0,20,Form("&&Dpt>40.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","DsvpvDistance/DsvpvDisErr","ffls3d","3D decay length sig",10,0,20,Form("&&Dpt>60.&&%s",cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dphi","phi","#phi",10,-4,4,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dphi","phi","#phi",10,-4,4,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dphi","phi","#phi",10,-4,4,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Ddxyz/DdxyzErr","ffls3dapp","~ 3D decay length sig",10,0,20,Form("&&Dpt>20.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Ddxyz/DdxyzErr","ffls3dapp","~ 3D decay length sig",10,0,20,Form("&&Dpt>40.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Ddxyz/DdxyzErr","ffls3dapp","~ 3D decay length sig",10,0,20,Form("&&Dpt>60.&&%s",cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk1Pt","maxtrkpt","Higher track p_{T} (GeV/c)",10,8,80,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk1Pt","maxtrkpt","Higher track p_{T} (GeV/c)",10,8,80,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk1Pt","maxtrkpt","Higher track p_{T} (GeV/c)",10,8,80,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dd0/Dd0Err","ffls2d","~ 2D decay length sig",10,0,20,Form("&&Dpt>20.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dd0/Dd0Err","ffls2d","~ 2D decay length sig",10,0,20,Form("&&Dpt>40.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dd0/Dd0Err","ffls2d","~ 2D decay length sig",10,0,20,Form("&&Dpt>60.&&%s",cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk2Pt","mintrkpt","Lower track p_{T} (GeV/c)",10,8,80,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk2Pt","mintrkpt","Lower track p_{T} (GeV/c)",10,8,80,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk2Pt","mintrkpt","Lower track p_{T} (GeV/c)",10,8,80,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","DsvpvDistance","3Dd0","3D decay length",10,0,10,Form("&&Dpt>20.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","DsvpvDistance","3Dd0","3D decay length",10,0,10,Form("&&Dpt>40.&&%s",cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","DsvpvDistance","3Dd0","3D decay length",10,0,10,Form("&&Dpt>60.&&%s",cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk1Eta","maxtrketa","Higher-p_{T} track #eta",10,-3,3,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk1Eta","maxtrketa","Higher-p_{T} track #eta",10,-3,3,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk1Eta","maxtrketa","Higher-p_{T} track #eta",10,-3,3,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","TMath::Cos(Dalpha)","cosalpha","cos#alpha",10,0.9,1,Form("&&Dpt>20.&&%s",decaylength.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","TMath::Cos(Dalpha)","cosalpha","cos#alpha",10,0.9,1,Form("&&Dpt>40.&&%s",decaylength.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","TMath::Cos(Dalpha)","cosalpha","cos#alpha",10,0.9,1,Form("&&Dpt>60.&&%s",decaylength.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk2Eta","mintrketa","Lower-p_{T} track #eta",10,-3,3,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk2Eta","mintrketa","Lower-p_{T} track #eta",10,-3,3,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk2Eta","mintrketa","Lower-p_{T} track #eta",10,-3,3,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Deta","eta","#eta",6,-3,3,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Deta","eta","#eta",6,-3,3,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Deta","eta","#eta",6,-3,3,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","DsvpvDistance/DsvpvDisErr","ffls3d","3D decay length significance",10,0,20,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","DsvpvDistance/DsvpvDisErr","ffls3d","3D decay length significance",10,0,20,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","DsvpvDistance/DsvpvDisErr","ffls3d","3D decay length significance",10,0,20,"&&Dpt>60.");
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dphi","phi","#phi",6,-3,3,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dphi","phi","#phi",6,-3,3,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dphi","phi","#phi",6,-3,3,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dd0/Dd0Err","ffls2d","2D decay length significance",10,0,20,"&&Dpt>20.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dd0/Dd0Err","ffls2d","2D decay length significance",10,0,20,"&&Dpt>40.");
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dd0/Dd0Err","ffls2d","2D decay length significance",10,0,20,"&&Dpt>60.");
-  
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk1Pt","maxtrkpt","Higher track p_{T} (GeV/c)",10,8,80,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk1Pt","maxtrkpt","Higher track p_{T} (GeV/c)",10,8,80,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk1Pt","maxtrkpt","Higher track p_{T} (GeV/c)",10,8,80,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk2Pt","mintrkpt","Lower track p_{T} (GeV/c)",10,8,80,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk2Pt","mintrkpt","Lower track p_{T} (GeV/c)",10,8,80,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk2Pt","mintrkpt","Lower track p_{T} (GeV/c)",10,8,80,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk1Eta","maxtrketa","Higher-p_{T} track #eta",6,-3,3,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk1Eta","maxtrketa","Higher-p_{T} track #eta",6,-3,3,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk1Eta","maxtrketa","Higher-p_{T} track #eta",6,-3,3,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dtrk2Eta","mintrketa","Lower-p_{T} track #eta",6,-3,3,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dtrk2Eta","mintrketa","Lower-p_{T} track #eta",6,-3,3,Form("&&Dpt>40.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dtrk2Eta","mintrketa","Lower-p_{T} track #eta",6,-3,3,Form("&&Dpt>60.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  */
   /*
   plotTurnOnNL1seed(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1",8,0,80);
   plotTurnOnNL1seed(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1",8,0,80);
@@ -89,7 +106,6 @@ void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString v
   inttree->Project(Form("h%s_MBseed_%s",triggerpass.Data(),varname.Data()),variable,Form("%s%s&&%s",prefilter.Data(),addcut.Data(),triggerpass.Data()));
   hMBseed->Sumw2();
   TEfficiency* pEffMBseed = new TEfficiency(*hMBseed,*hinclusive);
-  //pEffMBseed->SetTitle(Form(";Matched reco D^{0} %s;Pass efficiency (MB seed)",varlatex.Data()));
   TCanvas* cMBseed = new TCanvas(Form("c%s_MBseed_%s",triggerpass.Data(),varname.Data()),"",500,500);
   hempty->Draw();
   pEffMBseed->Draw("PSAME");
