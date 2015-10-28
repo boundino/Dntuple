@@ -9,6 +9,7 @@
 #include <TVector3.h>
 #include <TLorentzVector.h>
 #include <iostream>
+#include <iomanip>
 #include <cmath>
 #include "loophlt.h"
 
@@ -26,15 +27,15 @@ Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
 
-int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151027_DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
-//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151027_DfinderMC_20151027_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151026.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
   bool isDsignalGen(Int_t Dtype, Int_t j);
 
-  if(REAL) cout<<"--- REAL DATA ---"<<endl;
-  else cout<<"--- MC ---"<<endl;
+  if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
+  else cout<<"--- Processing - MC"<<endl;
   
   TFile *f = new TFile(infile);
   TTree *root = (TTree*)f->Get("Dfinder/root");
@@ -54,12 +55,12 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_
   isDchannel[4] = 0; //k-pi-pi+pi+
   isDchannel[5] = 0; //k+pi+pi-pi-
 
-  cout<<"--- Building trees ---"<<endl;
+  cout<<"--- Building trees"<<endl;
   TTree* ntD1 = new TTree("ntDkpi","");       buildDBranch(ntD1);
   TTree* ntD2 = new TTree("ntDkpipi","");     buildDBranch(ntD2);
   TTree* ntD3 = new TTree("ntDkpipipi","");   buildDBranch(ntD3);
   TTree* ntGen = new TTree("ntGen","");       buildGenBranch(ntGen);
-  cout<<"--- Building trees finished ---"<<endl;
+  cout<<"--- Building trees finished"<<endl;
 
   Long64_t nentries = root->GetEntries();
   Int_t flagEvt=0, offsetHltTree=0;
@@ -67,13 +68,15 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_
   TVector3* bVtx = new TVector3;
   TLorentzVector* b4P = new TLorentzVector;
   TLorentzVector* bGen = new TLorentzVector;
+  cout<<"--- Check the number of events for three trees"<<endl;
   cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries()<<endl;
+  cout<<"--- Processing events"<<endl;
   for(Int_t i=startEntries;i<nentries;i++)
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
       hiroot->GetEntry(i);
-      if(i%10000==0) cout<<i<<" / "<<nentries<<endl;
+      if(i%10000==0) cout<<setw(7)<<i<<" / "<<nentries<<endl;
       if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo ||
 	 Df_HiTree_Evt!=EvtInfo_EvtNo||Df_HiTree_Run!=EvtInfo_RunNo||Df_HiTree_Lumi!=EvtInfo_LumiNo)
 	{
@@ -216,8 +219,8 @@ int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151027_
 	  ntGen->Fill();
 	}
     }
-
   outf->Write();
+  cout<<"--- Writing finished"<<endl;
   outf->Close();
 
   return 1;
@@ -292,8 +295,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dalpha[typesize] = DInfo_alpha[j];
   DsvpvDistance[typesize] = DInfo_svpvDistance[j];
   DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
-  //DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
-  //DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
+  DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
+  DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
   DMaxDoca[typesize] = DInfo_MaxDoca[j];
   Ddbc[typesize] = 0;
   Dmaxpt[typesize] = false;

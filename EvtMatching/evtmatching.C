@@ -2,12 +2,12 @@
 #include <TFile.h>
 #include <TDirectory.h>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include "evtmatching.h"
 
-//int evtmatching(TString infdfinder="openHLT_HF_100_1_OYu.root", TString infhlt="openHLT_HF_100_1_OYu.root",TString outfile="comp1.root")
-int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/DfinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151025.root", TString infhlt="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/openHLT_HF_HLTHeavyFlavour_MVA_V13_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_1016_MBseed_fix.root",TString outfile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151026_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151025.root")
-//int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/DfinderMC_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151025.root", TString infhlt="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/openHLT_HF_HLTHeavyFlavour_MVA_V13_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_1016_MBseed_fix.root",TString outfile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151026_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151025.root")
+//int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/DfinderMC_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString infhlt="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/openHLT_HF_HLTHeavyFlavour_MVA_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_1026.root",TString outfile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root")
+int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/DfinderMC_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString infhlt="/export/d00/scratch/jwang/Dmeson/evtmatchingInput/openHLT_HF_HLTHeavyFlavour_MVA_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_1026.root",TString outfile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root")
 {
   TFile* fdfinder = new TFile(infdfinder);
   TFile* fhlt = new TFile(infhlt);
@@ -29,7 +29,7 @@ int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatching
   setEvtDBranch(root);
   setEvtHLTBranch(hltroot);
   setEvtHIBranch(hiroot);
-  cout<<"---- Check evt no. for two trees"<<endl;
+  cout<<"---- Check evt no. for three trees"<<endl;
   cout<<root->GetEntries()<<", "<<hltroot->GetEntries()<<", "<<hiroot->GetEntries()<<endl;
   Long64_t nentriesReco = root->GetEntries();
   Long64_t nentriesHlt = hltroot->GetEntries();
@@ -43,7 +43,7 @@ int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatching
     {
       if(i%1000==0) 
 	{
-	  cout<<i<<" / "<<nentriesMax<<endl;
+	  cout<<setw(7)<<i<<" / "<<nentriesMax<<endl;
 	}
       if(i<nentriesReco)
 	{
@@ -73,7 +73,7 @@ int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatching
   cout<<"---- Event matching"<<endl;
   for(Int_t ievt=0;ievt<nentriesReco;ievt++)
     {
-      if(ievt%10000==0) cout<<ievt<<" / "<<nentriesReco<<endl;
+      if(ievt%10000==0) cout<<setw(7)<<ievt<<" / "<<nentriesReco<<endl;
       hltmatching[ievt] = -1;
       himatching[ievt] = -1;
       for(Int_t jevt=0;jevt<nentriesHlt;jevt++)
@@ -98,16 +98,19 @@ int evtmatching(TString infdfinder="/export/d00/scratch/jwang/Dmeson/evtmatching
   cout<<"---- Writing hlt tree"<<endl;
   for(Int_t i=0;i<nentriesReco;i++)
     {
-      if (i%1000==0) cout<<i<<" / "<<nentriesReco<<"  HI index:"<<himatching[i]<<"   HLT index:"<<hltmatching[i]<<endl;
+      if (i%1000==0) cout<<setw(7)<<i<<" / "<<nentriesReco<<"  HI index:"<<setiosflags(ios::left)<<setw(7)<<himatching[i]<<" HLT index:"<<hltmatching[i]<<endl;
       if(hltmatching[i]<0)
 	{
 	  continue;
 	}
       root->GetEntry(i);
-      hiroot->GetEntry(himatching[i]);
-      hltroot->GetEntry(hltmatching[i]);
+      droot->cd();
       ntReco->Fill();
+      hiroot->GetEntry(himatching[i]);
+      dhiroot->cd();
       ntHi->Fill();
+      hltroot->GetEntry(hltmatching[i]);
+      dhltroot->cd();
       ntHlt->Fill();
     }
   outf->Write();
