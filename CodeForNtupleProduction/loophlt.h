@@ -1,4 +1,31 @@
 #include <TTree.h>
+#include <TFile.h>
+#include <TChain.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TMath.h>
+#include <TString.h>
+#include <TNtuple.h>
+#include <TVector3.h>
+#include <TLorentzVector.h>
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include "loophlt.h"
+
+#define MUON_MASS   0.10565837
+#define PION_MASS   0.13957018
+#define KAON_MASS   0.493677
+#define KSHORT_MASS 0.497614
+#define KSTAR_MASS  0.89594
+#define PHI_MASS    1.019455
+#define JPSI_MASS   3.096916
+
+Int_t PION_PDGID = 211;
+Int_t KAON_PDGID = 321;
+Int_t DZERO_PDGID = 421;
+Int_t DPLUS_PDGID = 411;
+Int_t DSUBS_PDGID = 431;
 
 #define MAX_XB 16384
 #define MAX_MUON 512

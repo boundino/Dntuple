@@ -1,34 +1,7 @@
-#include <TTree.h>
-#include <TFile.h>
-#include <TChain.h>
-#include <TH1F.h>
-#include <TH2F.h>
-#include <TMath.h>
-#include <TString.h>
-#include <TNtuple.h>
-#include <TVector3.h>
-#include <TLorentzVector.h>
-#include <iostream>
-#include <iomanip>
-#include <cmath>
 #include "loophlt.h"
 
-#define MUON_MASS   0.10565837
-#define PION_MASS   0.13957018
-#define KAON_MASS   0.493677
-#define KSHORT_MASS 0.497614
-#define KSTAR_MASS  0.89594
-#define PHI_MASS    1.019455
-#define JPSI_MASS   3.096916
-
-Int_t PION_PDGID = 211;
-Int_t KAON_PDGID = 321;
-Int_t DZERO_PDGID = 421;
-Int_t DPLUS_PDGID = 411;
-Int_t DSUBS_PDGID = 431;
-
-int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt15p0_Pthat15_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
-//int loophlt(TString infile="/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", TString outfile="/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt35p0_Pthat35_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root", Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+Float_t pthat = 15;
+int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
