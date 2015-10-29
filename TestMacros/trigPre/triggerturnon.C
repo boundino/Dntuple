@@ -9,22 +9,37 @@
 #include <TMath.h>
 #include <TEfficiency.h>
 
-TString mvatk = "(Dtrk1MVAVal>0.&&Dtrk2MVAVal>0.)";
-//TString mvatk = "((Dtrk1Algo==4&&Dtrk1MVAVal>-0.77)||(Dtrk1Algo==5&&Dtrk1MVAVal>0.35)||(Dtrk1Algo==6&&Dtrk1MVAVal>0.77)||(Dtrk1Algo==7&&Dtrk1MVAVal>-0.09))&&((Dtrk2Algo==4&&Dtrk2MVAVal>-0.77)||(Dtrk2Algo==5&&Dtrk2MVAVal>0.35)||(Dtrk2Algo==6&&Dtrk2MVAVal>0.77)||(Dtrk2Algo==7&&Dtrk2MVAVal>-0.09))";
-TString prefilter = Form("(Dgen==23333||Dgen==23344)&&Dmaxpt&&Dtrk1Pt>10.&&Dtrk2Pt>10.&&TMath::Abs(Dtrk1Eta)<1.2&&TMath::Abs(Dtrk2Eta)<1.2&&Dchi2cl>0.05&&TMath::Abs(Dy)<1.&&%s",mvatk.Data());
-TString decaylength = "(DsvpvDistance/DsvpvDisErr)>2.5";
-TString cosalpha = "TMath::Cos(Dalpha)>0.95";
+//TString mvatk = "(Dtrk1MVAVal>0.&&Dtrk2MVAVal>0.)";
+TString mvatk = "((Dtrk1Algo==4&&Dtrk1MVAVal>-0.77)||(Dtrk1Algo==5&&Dtrk1MVAVal>0.35)||(Dtrk1Algo==6&&Dtrk1MVAVal>0.77)||(Dtrk1Algo==7&&Dtrk1MVAVal>-0.09))&&((Dtrk2Algo==4&&Dtrk2MVAVal>-0.77)||(Dtrk2Algo==5&&Dtrk2MVAVal>0.35)||(Dtrk2Algo==6&&Dtrk2MVAVal>0.77)||(Dtrk2Algo==7&&Dtrk2MVAVal>-0.09))";
+TString prefilter = Form("(Dgen==23333||Dgen==23344)&&Dmaxpt&&Dtrk1Pt>8.&&Dtrk2Pt>8.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
+Bool_t isPbPb = false;
 Float_t pthat = 15;
-void triggerturnon(TString infname=Form("/mnt/hadoop/cms/store/user/jwang/Dmeson/5p02TeV/backup/ntD_20151026_DfinderMC_20151026_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151025.root",pthat,pthat))
+
+void triggerturnon()
 {
   void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
   void plotTurnOnNL1seed(TTree* inttree, TString triggerpass, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
+  TString infname;
+  if(!isPbPb) infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151029_DfinderMC_20151029_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151027.root",pthat,pthat);
+  else infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat);
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
 
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80,Form("&&%s&&%s",decaylength.Data(),cosalpha.Data()));
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80,Form("&&%s&&%s",decaylength.Data(),cosalpha.Data()));
-  plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80,Form("&&%s&&%s",decaylength.Data(),cosalpha.Data()));
+  if(!isPbPb)
+    {
+      plotTurnOn(root,"HLT_DmesonTrackingGlobal_Dpt10_pp_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobal_Dpt20_pp_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobal_Dpt30_pp_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobal_Dpt40_pp_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobal_Dpt50_pp_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobal_Dpt60_pp_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+    }
+  else
+    {
+      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+    }
 
   /*
   plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","hiBin/2.","cent","Centrality",10,0,100,Form("&&Dpt>20.&&%s&&%s",decaylength.Data(),cosalpha.Data()));
