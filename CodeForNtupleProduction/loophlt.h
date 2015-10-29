@@ -204,6 +204,10 @@ Bool_t     Dtrk1highPurity[MAX_XB];
 Bool_t     Dtrk2highPurity[MAX_XB];
 Bool_t     Dtrk3highPurity[MAX_XB];
 Bool_t     Dtrk4highPurity[MAX_XB];
+Int_t      Dtrk1Quality[MAX_XB];
+Int_t      Dtrk2Quality[MAX_XB];
+Int_t      Dtrk3Quality[MAX_XB];
+Int_t      Dtrk4Quality[MAX_XB];
 //DInfo.tktkResInfo
 Double_t   DtktkResmass[MAX_XB];
 Double_t   DtktkRespt[MAX_XB];
@@ -381,6 +385,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("Dtrk2highPurity",Dtrk2highPurity,"Dtrk2highPurity[Dsize]/O");
   dnt->Branch("Dtrk3highPurity",Dtrk3highPurity,"Dtrk3highPurity[Dsize]/O");
   dnt->Branch("Dtrk4highPurity",Dtrk4highPurity,"Dtrk4highPurity[Dsize]/O");
+  dnt->Branch("Dtrk1Quality",Dtrk1Quality,"Dtrk1Quality[Dsize]/I");
+  dnt->Branch("Dtrk2Quality",Dtrk2Quality,"Dtrk2Quality[Dsize]/I");
+  dnt->Branch("Dtrk3Quality",Dtrk3Quality,"Dtrk3Quality[Dsize]/I");
+  dnt->Branch("Dtrk4Quality",Dtrk4Quality,"Dtrk4Quality[Dsize]/I");
 
   //DInfo.tktkResInfo
   dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/D");

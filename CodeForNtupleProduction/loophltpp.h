@@ -1,4 +1,31 @@
 #include <TTree.h>
+#include <TFile.h>
+#include <TChain.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TMath.h>
+#include <TString.h>
+#include <TNtuple.h>
+#include <TVector3.h>
+#include <TLorentzVector.h>
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include "loophltpp.h"
+
+#define MUON_MASS   0.10565837
+#define PION_MASS   0.13957018
+#define KAON_MASS   0.493677
+#define KSHORT_MASS 0.497614
+#define KSTAR_MASS  0.89594
+#define PHI_MASS    1.019455
+#define JPSI_MASS   3.096916
+
+Int_t PION_PDGID = 211;
+Int_t KAON_PDGID = 321;
+Int_t DZERO_PDGID = 421;
+Int_t DPLUS_PDGID = 411;
+Int_t DSUBS_PDGID = 431;
 
 #define MAX_XB 16384
 #define MAX_MUON 512
@@ -171,6 +198,10 @@ Bool_t     Dtrk1highPurity[MAX_XB];
 Bool_t     Dtrk2highPurity[MAX_XB];
 Bool_t     Dtrk3highPurity[MAX_XB];
 Bool_t     Dtrk4highPurity[MAX_XB];
+Int_t      Dtrk1Quality[MAX_XB];
+Int_t      Dtrk2Quality[MAX_XB];
+Int_t      Dtrk3Quality[MAX_XB];
+Int_t      Dtrk4Quality[MAX_XB];
 //DInfo.tktkResInfo
 Double_t   DtktkResmass[MAX_XB];
 Double_t   DtktkRespt[MAX_XB];
@@ -340,6 +371,10 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("Dtrk2highPurity",Dtrk2highPurity,"Dtrk2highPurity[Dsize]/O");
   dnt->Branch("Dtrk3highPurity",Dtrk3highPurity,"Dtrk3highPurity[Dsize]/O");
   dnt->Branch("Dtrk4highPurity",Dtrk4highPurity,"Dtrk4highPurity[Dsize]/O");
+  dnt->Branch("Dtrk1Quality",Dtrk1Quality,"Dtrk1Quality[Dsize]/I");
+  dnt->Branch("Dtrk2Quality",Dtrk2Quality,"Dtrk2Quality[Dsize]/I");
+  dnt->Branch("Dtrk3Quality",Dtrk3Quality,"Dtrk3Quality[Dsize]/I");
+  dnt->Branch("Dtrk4Quality",Dtrk4Quality,"Dtrk4Quality[Dsize]/I");
 
   //DInfo.tktkResInfo
   dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/D");

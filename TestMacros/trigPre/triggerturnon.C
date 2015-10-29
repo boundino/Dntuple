@@ -9,8 +9,9 @@
 #include <TMath.h>
 #include <TEfficiency.h>
 
-//TString mvatk = "(Dtrk1MVAVal>0.&&Dtrk2MVAVal>0.)";
-TString mvatk = "((Dtrk1Algo==4&&Dtrk1MVAVal>-0.77)||(Dtrk1Algo==5&&Dtrk1MVAVal>0.35)||(Dtrk1Algo==6&&Dtrk1MVAVal>0.77)||(Dtrk1Algo==7&&Dtrk1MVAVal>-0.09))&&((Dtrk2Algo==4&&Dtrk2MVAVal>-0.77)||(Dtrk2Algo==5&&Dtrk2MVAVal>0.35)||(Dtrk2Algo==6&&Dtrk2MVAVal>0.77)||(Dtrk2Algo==7&&Dtrk2MVAVal>-0.09))";
+TString mvatk = "((Dtrk1Quality&2>0)&&(Dtrk2Quality&2>0))";
+//TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";
+//TString mvatk = "((Dtrk1Algo==4&&Dtrk1MVAVal>-0.77)||(Dtrk1Algo==5&&Dtrk1MVAVal>0.35)||(Dtrk1Algo==6&&Dtrk1MVAVal>0.77)||(Dtrk1Algo==7&&Dtrk1MVAVal>-0.09))&&((Dtrk2Algo==4&&Dtrk2MVAVal>-0.77)||(Dtrk2Algo==5&&Dtrk2MVAVal>0.35)||(Dtrk2Algo==6&&Dtrk2MVAVal>0.77)||(Dtrk2Algo==7&&Dtrk2MVAVal>-0.09))";
 TString prefilter = Form("(Dgen==23333||Dgen==23344)&&Dmaxpt&&Dtrk1Pt>8.&&Dtrk2Pt>8.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
 Bool_t isPbPb = false;
 Float_t pthat = 15;

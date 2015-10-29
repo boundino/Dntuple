@@ -1,7 +1,7 @@
 #include "loophlt.h"
 
 Float_t pthat = 15;
-int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151029_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -326,6 +326,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dtrk2Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk2_index[j]];
   Dtrk1highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk1_index[j]];
   Dtrk2highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk2_index[j]];
+  Dtrk1Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk1_index[j]];
+  Dtrk2Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk2_index[j]];
   Dtrkminpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
   Dtrkmaxpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
   Dtrkminptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
@@ -396,6 +398,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
       Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
       Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
+      Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
       Dtrk4Idx[typesize] = -1;
       Dtrk4Pt[typesize] = -1;
       Dtrk4Eta[typesize] = -20;
@@ -414,6 +417,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4MassHypo[typesize] = 0;
       Dtrk4MVAVal[typesize] = -100;
       Dtrk4Algo[typesize] = 0;
+      Dtrk4Quality[typesize] = 0;
       Dtrk4highPurity[typesize] = false;
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
@@ -464,6 +468,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
       Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
       Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
+      Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
+      Dtrk4Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = -1;
       DtktkRespt[typesize] = -1;
       DtktkReseta[typesize] = -20;
@@ -509,6 +515,8 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
       Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
       Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
+      Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
+      Dtrk4Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk4_index[j]];
       DtktkResmass[typesize] = DInfo_tktkRes_mass[j];
       DtktkRespt[typesize] = DInfo_tktkRes_pt[j];
       DtktkReseta[typesize] = DInfo_tktkRes_eta[j];
