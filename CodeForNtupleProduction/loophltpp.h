@@ -11,7 +11,6 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "loophltpp.h"
 
 #define MUON_MASS   0.10565837
 #define PION_MASS   0.13957018
