@@ -9,12 +9,11 @@
 #include <TMath.h>
 #include <TEfficiency.h>
 
-TString mvatk = "((Dtrk1Quality&2>0)&&(Dtrk2Quality&2>0))";
-//TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";
-//TString mvatk = "((Dtrk1Algo==4&&Dtrk1MVAVal>-0.77)||(Dtrk1Algo==5&&Dtrk1MVAVal>0.35)||(Dtrk1Algo==6&&Dtrk1MVAVal>0.77)||(Dtrk1Algo==7&&Dtrk1MVAVal>-0.09))&&((Dtrk2Algo==4&&Dtrk2MVAVal>-0.77)||(Dtrk2Algo==5&&Dtrk2MVAVal>0.35)||(Dtrk2Algo==6&&Dtrk2MVAVal>0.77)||(Dtrk2Algo==7&&Dtrk2MVAVal>-0.09))";
+//TString mvatk = "((Dtrk1Quality&2)&&(Dtrk2Quality&2))";//tight
+TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";//highpurity
 TString prefilter = Form("(Dgen==23333||Dgen==23344)&&Dmaxpt&&Dtrk1Pt>8.&&Dtrk2Pt>8.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
-Bool_t isPbPb = false;
-Float_t pthat = 15;
+Bool_t isPbPb = true;
+Float_t pthat = 15.;
 
 void triggerturnon()
 {
@@ -22,7 +21,8 @@ void triggerturnon()
   void plotTurnOnNL1seed(TTree* inttree, TString triggerpass, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
   TString infname;
   if(!isPbPb) infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151029_DfinderMC_20151029_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151027.root",pthat,pthat);
-  else infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151028_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat);
+  else infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151103_DfinderMC_20151103_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027_ZS_V11_YJfix_20151102.root",pthat,pthat);
+  //infname = "/export/d00/scratch/jwang/Dmeson/all.root";
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
 
@@ -37,9 +37,9 @@ void triggerturnon()
     }
   else
     {
-      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
-      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
-      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dpt","pt","p_{T} (GeV/c)",8,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonTrackingGlobalPt8_Dpt60_v1","Dpt","pt","p_{T} (GeV/c)",16,0,80);
     }
 
   /*
