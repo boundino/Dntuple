@@ -12,7 +12,7 @@
 //TString mvatk = "((Dtrk1Quality&2)&&(Dtrk2Quality&2))";//tight
 TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";//highpurity
 TString prefilter = Form("(Dgen==23333||Dgen==23344)&&DmaxptMatched&&Dtrk1Pt>8.&&Dtrk2Pt>8.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
-Bool_t isPbPb = false;
+Bool_t isPbPb = true;
 Float_t pthat = 15.;
 
 void triggerturnon()
@@ -90,7 +90,8 @@ void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString v
       hinclusive->Draw();
       hinclusive->SetStats(0);
       tex->Draw();
-      chinclusive->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/chinclusive_%s.pdf",pthat,varname.Data()));
+      if(isPbPb) chinclusive->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pbpb/chinclusive_%s.pdf",pthat,varname.Data()));
+      else chinclusive->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pp/chinclusive_%s.pdf",pthat,varname.Data()));
     }
   TH2D* hempty = new TH2D(Form("hempty_%s_%s",triggerpass.Data(),varname.Data()),Form(";Matched reco D^{0} %s;Pass efficiency (MB seed)",varlatex.Data()),BIN_NUM,BIN_MIN,BIN_MAX,10,0,1.2);
   hempty->SetStats(0);
@@ -102,7 +103,8 @@ void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString v
   hempty->Draw();
   pEffMBseed->Draw("PSAME");
   tex->Draw();
-  cMBseed->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/c%s_MBseed_%s.pdf",pthat,triggerpass.Data(),varname.Data()));
+  if(isPbPb) cMBseed->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pbpb/c%s_MBseed_%s.pdf",pthat,triggerpass.Data(),varname.Data()));
+  else cMBseed->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pp/c%s_MBseed_%s.pdf",pthat,triggerpass.Data(),varname.Data()));
 }
 
 void plotTurnOnNL1seed(TTree* inttree, TString triggerpass, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX)
