@@ -11,7 +11,6 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include "loophlt.h"
 
 #define MUON_MASS   0.10565837
 #define PION_MASS   0.13957018
@@ -112,7 +111,6 @@ Double_t   DsvpvDisErr[MAX_XB];
 Double_t   DsvpvDistance_2D[MAX_XB];
 Double_t   DsvpvDisErr_2D[MAX_XB];
 Double_t   DMaxDoca[MAX_XB];
-Int_t      Ddbc[MAX_XB];
 Bool_t     Dmaxpt[MAX_XB];
 Bool_t     Dmaxprob[MAX_XB];
 Bool_t     DmaxptMatched[MAX_XB];
@@ -294,7 +292,6 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("DsvpvDistance_2D",DsvpvDistance_2D,"DsvpvDistance_2D[Dsize]/D");
   dnt->Branch("DsvpvDisErr_2D",DsvpvDisErr_2D,"DsvpvDisErr_2D[Dsize]/D");
   dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/D");
-  dnt->Branch("Ddbc",Ddbc,"Ddbc[Dsize]/I");
   dnt->Branch("Dmaxpt",Dmaxpt,"Dmaxpt[Dsize]/O");
   dnt->Branch("Dmaxprob",Dmaxprob,"Dmaxprob[Dsize]/O");
   dnt->Branch("DmaxptMatched",DmaxptMatched,"DmaxptMatched[Dsize]/O");

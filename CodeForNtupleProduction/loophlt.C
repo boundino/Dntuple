@@ -1,7 +1,7 @@
 #include "loophlt.h"
 
-Float_t pthat = 15;
-int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151029_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+Float_t pthat = 35;
+int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151106_DfinderMC_20151028_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151027.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -89,27 +89,6 @@ int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_2015
 		  if(DInfo_type[j]==(t+1))
 		    {
 		      fillDTree(bP,bVtx,b4P,j,Dtypesize[t/2],REAL);
-		      if(t%2==0) Ndbc++;
-		      else if(t%2==1)
-			{
-			  for(int idbc=0;idbc<Ndbc;idbc++)
-			    {
-			      if(Dtrk1Idx[idbc]==DInfo_rftk1_index[j]&&Dtrk2Idx[idbc]==DInfo_rftk2_index[j])
-				{
-				  if(Dchi2cl[idbc]>Dchi2cl[Dtypesize[t/2]])
-				    {
-				      Ddbc[idbc] = 1;
-				      Ddbc[Dtypesize[t/2]] = -1;
-				    }
-				  else
-				    {
-				      Ddbc[idbc] = -1;
-				      Ddbc[Dtypesize[t/2]] = 1;
-				    }
-				  break;
-				}
-			    }
-			}
 		      if(DInfo_pt[j]>pttem)
 			{
 			  ptflag = Dtypesize[t/2];
@@ -120,7 +99,7 @@ int loophlt(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_2015
 			  probflag = Dtypesize[t/2];
 			  probtem = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
 			}
-		      if(!REAL&&(Dgen[Dtypesize[t/2]]==23333||Dgen[Dtypesize[t/2]]==23344))
+		      if(!REAL&&(Dgen[Dtypesize[t/2]]==23333||Dgen[Dtypesize[t/2]]==23344)&&Dtrk1Pt[Dtypesize[t/2]]>8.&&Dtrk2Pt[Dtypesize[t/2]]>8.&&Dchi2cl[Dtypesize[t/2]]>0.05&&(DsvpvDistance[Dtypesize[t/2]]/DsvpvDisErr[Dtypesize[t/2]])>2.5&&TMath::Cos(Dalpha[Dtypesize[t/2]])>0.95&&(Dtrk1highPurity[Dtypesize[t/2]]&&Dtrk2highPurity[Dtypesize[t/2]]))
 			{
 			  if(DInfo_pt[j]>ptMatchedtem)
 			    {
@@ -271,7 +250,6 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
   DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
   DMaxDoca[typesize] = DInfo_MaxDoca[j];
-  Ddbc[typesize] = 0;
   Dmaxpt[typesize] = false;
   Dmaxprob[typesize] = false;
   DmaxptMatched[typesize] = false;
