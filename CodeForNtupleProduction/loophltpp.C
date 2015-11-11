@@ -1,12 +1,13 @@
 #include "loophltpp.h"
 
-Float_t pthat = 15;
-int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151029_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151027.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151106_DfinderMC_20151029_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151027.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+Float_t pthat = 35;
+int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
   bool isDsignalGen(Int_t Dtype, Int_t j);
 
+  cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
   else cout<<"--- Processing - MC"<<endl;
   
@@ -133,32 +134,26 @@ int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20
 	    {
 	      if(TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID&&gskim) continue;
 	      Gsize = gsize+1;
-	      GHLT_DmesonTrackingGlobal_Dpt10_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt10_pp_v1;
-	      GHLT_DmesonTrackingGlobal_Dpt10_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt10_pp_v1_Prescl;
-	      GHLT_DmesonTrackingGlobal_Dpt20_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt20_pp_v1;
-	      GHLT_DmesonTrackingGlobal_Dpt20_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt20_pp_v1_Prescl;
-	      GHLT_DmesonTrackingGlobal_Dpt30_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt30_pp_v1;
-	      GHLT_DmesonTrackingGlobal_Dpt30_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt30_pp_v1_Prescl;
-	      GHLT_DmesonTrackingGlobal_Dpt40_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt40_pp_v1;
-	      GHLT_DmesonTrackingGlobal_Dpt40_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt40_pp_v1_Prescl;
-	      GHLT_DmesonTrackingGlobal_Dpt50_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt50_pp_v1;
-	      GHLT_DmesonTrackingGlobal_Dpt50_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt50_pp_v1_Prescl;
-	      GHLT_DmesonTrackingGlobal_Dpt60_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt60_pp_v1;
-	      GHLT_DmesonTrackingGlobal_Dpt60_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt60_pp_v1_Prescl;
+	      GHLT_DmesonPPTrackingGlobal_Dpt10_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt10_v1;
+	      GHLT_DmesonPPTrackingGlobal_Dpt20_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt20_v1;
+	      GHLT_DmesonPPTrackingGlobal_Dpt30_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt30_v1;
+	      GHLT_DmesonPPTrackingGlobal_Dpt40_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt40_v1;
+	      GHLT_DmesonPPTrackingGlobal_Dpt50_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt50_v1;
+	      GHLT_DmesonPPTrackingGlobal_Dpt60_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt60_v1;
 	      GL1_SingleJet8_BptxAND = Df_L1_SingleJet8_BptxAND;
-	      GL1_SingleJet8_BptxAND_Prescl = Df_L1_SingleJet8_BptxAND_Prescl;
 	      GL1_SingleJet12_BptxAND = Df_L1_SingleJet12_BptxAND;
-	      GL1_SingleJet12_BptxAND_Prescl = Df_L1_SingleJet12_BptxAND_Prescl;
-	      GL1_SingleJet16 = Df_L1_SingleJet16;
-	      GL1_SingleJet16_Prescl = Df_L1_SingleJet16_Prescl;
-	      GL1_SingleJet20 = Df_L1_SingleJet20;
-	      GL1_SingleJet20_Prescl = Df_L1_SingleJet20_Prescl;
-	      GL1_SingleJet36 = Df_L1_SingleJet36;
-	      GL1_SingleJet36_Prescl = Df_L1_SingleJet36_Prescl;
-	      GL1_SingleJet68 = Df_L1_SingleJet68;
-	      GL1_SingleJet68_Prescl = Df_L1_SingleJet68_Prescl;
-	      GL1_SingleJet200 = Df_L1_SingleJet200;
-	      GL1_SingleJet200_Prescl = Df_L1_SingleJet200_Prescl;
+	      GL1_SingleJet16_BptxAND = Df_L1_SingleJet16_BptxAND;
+	      GL1_SingleJet20_BptxAND = Df_L1_SingleJet20_BptxAND;
+	      GL1_SingleJet24_BptxAND = Df_L1_SingleJet24_BptxAND;
+	      GL1_SingleJet28_BptxAND = Df_L1_SingleJet28_BptxAND;
+	      GL1_SingleJet32_BptxAND = Df_L1_SingleJet32_BptxAND;
+	      GL1_SingleJet36_BptxAND = Df_L1_SingleJet36_BptxAND;
+	      GL1_SingleJet40_BptxAND = Df_L1_SingleJet40_BptxAND;
+	      GL1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
+	      GL1_SingleJet48_BptxAND = Df_L1_SingleJet48_BptxAND;
+	      GL1_SingleJet52_BptxAND = Df_L1_SingleJet52_BptxAND;
+	      GL1_SingleJet60_BptxAND = Df_L1_SingleJet60_BptxAND;
+	      GL1_SingleJet68_BptxAND = Df_L1_SingleJet68_BptxAND;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];
 	      Gphi[gsize] = GenInfo_phi[j];
@@ -213,32 +208,26 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   PVnchi2 = EvtInfo_PVnchi2;
   PVchi2 = EvtInfo_PVchi2;
   //HltInfo
-  HLT_DmesonTrackingGlobal_Dpt10_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt10_pp_v1;
-  HLT_DmesonTrackingGlobal_Dpt10_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt10_pp_v1_Prescl;
-  HLT_DmesonTrackingGlobal_Dpt20_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt20_pp_v1;
-  HLT_DmesonTrackingGlobal_Dpt20_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt20_pp_v1_Prescl;
-  HLT_DmesonTrackingGlobal_Dpt30_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt30_pp_v1;
-  HLT_DmesonTrackingGlobal_Dpt30_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt30_pp_v1_Prescl;
-  HLT_DmesonTrackingGlobal_Dpt40_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt40_pp_v1;
-  HLT_DmesonTrackingGlobal_Dpt40_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt40_pp_v1_Prescl;
-  HLT_DmesonTrackingGlobal_Dpt50_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt50_pp_v1;
-  HLT_DmesonTrackingGlobal_Dpt50_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt50_pp_v1_Prescl;
-  HLT_DmesonTrackingGlobal_Dpt60_pp_v1 = Df_HLT_DmesonTrackingGlobal_Dpt60_pp_v1;
-  HLT_DmesonTrackingGlobal_Dpt60_pp_v1_Prescl = Df_HLT_DmesonTrackingGlobal_Dpt60_pp_v1_Prescl;
+  HLT_DmesonPPTrackingGlobal_Dpt10_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt10_v1;
+  HLT_DmesonPPTrackingGlobal_Dpt20_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt20_v1;
+  HLT_DmesonPPTrackingGlobal_Dpt30_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt30_v1;
+  HLT_DmesonPPTrackingGlobal_Dpt40_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt40_v1;
+  HLT_DmesonPPTrackingGlobal_Dpt50_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt50_v1;
+  HLT_DmesonPPTrackingGlobal_Dpt60_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt60_v1;
   L1_SingleJet8_BptxAND = Df_L1_SingleJet8_BptxAND;
-  L1_SingleJet8_BptxAND_Prescl = Df_L1_SingleJet8_BptxAND_Prescl;
   L1_SingleJet12_BptxAND = Df_L1_SingleJet12_BptxAND;
-  L1_SingleJet12_BptxAND_Prescl = Df_L1_SingleJet12_BptxAND_Prescl;
-  L1_SingleJet16 = Df_L1_SingleJet16;
-  L1_SingleJet16_Prescl = Df_L1_SingleJet16_Prescl;
-  L1_SingleJet20 = Df_L1_SingleJet20;
-  L1_SingleJet20_Prescl = Df_L1_SingleJet20_Prescl;
-  L1_SingleJet36 = Df_L1_SingleJet36;
-  L1_SingleJet36_Prescl = Df_L1_SingleJet36_Prescl;
-  L1_SingleJet68 = Df_L1_SingleJet68;
-  L1_SingleJet68_Prescl = Df_L1_SingleJet68_Prescl;
-  L1_SingleJet200 = Df_L1_SingleJet200;
-  L1_SingleJet200_Prescl = Df_L1_SingleJet200_Prescl;
+  L1_SingleJet16_BptxAND = Df_L1_SingleJet16_BptxAND;
+  L1_SingleJet20_BptxAND = Df_L1_SingleJet20_BptxAND;
+  L1_SingleJet24_BptxAND = Df_L1_SingleJet24_BptxAND;
+  L1_SingleJet28_BptxAND = Df_L1_SingleJet28_BptxAND;
+  L1_SingleJet32_BptxAND = Df_L1_SingleJet32_BptxAND;
+  L1_SingleJet36_BptxAND = Df_L1_SingleJet36_BptxAND;
+  L1_SingleJet40_BptxAND = Df_L1_SingleJet40_BptxAND;
+  L1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
+  L1_SingleJet48_BptxAND = Df_L1_SingleJet48_BptxAND;
+  L1_SingleJet52_BptxAND = Df_L1_SingleJet52_BptxAND;
+  L1_SingleJet60_BptxAND = Df_L1_SingleJet60_BptxAND;
+  L1_SingleJet68_BptxAND = Df_L1_SingleJet68_BptxAND;
   //DInfo
   bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
   bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,
@@ -255,9 +244,9 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   DvtxX[typesize] = DInfo_vtxX[j] - EvtInfo_PVx;
   DvtxY[typesize] = DInfo_vtxY[j] - EvtInfo_PVy;
   Dd0[typesize] = TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy));
-  Dd0Err[typesize] = TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]);
+  Dd0Err[typesize] = TMath::Sqrt(DInfo_vtxXErr[j]*DInfo_vtxXErr[j]+DInfo_vtxYErr[j]*DInfo_vtxYErr[j]);
   Ddxyz[typesize] = TMath::Sqrt((DInfo_vtxX[j]-EvtInfo_PVx)*(DInfo_vtxX[j]-EvtInfo_PVx)+(DInfo_vtxY[j]-EvtInfo_PVy)*(DInfo_vtxY[j]-EvtInfo_PVy)+(DInfo_vtxZ[j]-EvtInfo_PVz)*(DInfo_vtxZ[j]-EvtInfo_PVz));
-  DdxyzErr[typesize] = TMath::Sqrt(DInfo_vtxXE[j]*DInfo_vtxXE[j]+DInfo_vtxYE[j]*DInfo_vtxYE[j]+DInfo_vtxZE[j]*DInfo_vtxZE[j]);
+  DdxyzErr[typesize] = TMath::Sqrt(DInfo_vtxXErr[j]*DInfo_vtxXErr[j]+DInfo_vtxYErr[j]*DInfo_vtxYErr[j]+DInfo_vtxZErr[j]*DInfo_vtxZErr[j]);
   Dchi2ndf[typesize] = DInfo_vtxchi2[j]/DInfo_vtxdof[j];
   Dchi2cl[typesize] = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
   Ddtheta[typesize] = bP->Angle(*bVtx);
@@ -267,17 +256,18 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
   DsvpvDistance_2D[typesize] = DInfo_svpvDistance_2D[j];
   DsvpvDisErr_2D[typesize] = DInfo_svpvDisErr_2D[j];
+  Double_t r2lxyBS = (DInfo_vtxX[j]-EvtInfo_BSx+(DInfo_vtxZ[j]-EvtInfo_BSz)*EvtInfo_BSdxdz) * (DInfo_vtxX[j]-EvtInfo_BSx+(DInfo_vtxZ[j]-EvtInfo_BSz)*EvtInfo_BSdxdz)
+                   + (DInfo_vtxY[j]-EvtInfo_BSy+(DInfo_vtxZ[j]-EvtInfo_BSz)*EvtInfo_BSdydz) * (DInfo_vtxY[j]-EvtInfo_BSy+(DInfo_vtxZ[j]-EvtInfo_BSz)*EvtInfo_BSdydz);
+  Double_t xlxyBS = DInfo_vtxX[j]-EvtInfo_BSx + (DInfo_vtxZ[j]-EvtInfo_BSz)*EvtInfo_BSdxdz;
+  Double_t ylxyBS = DInfo_vtxY[j]-EvtInfo_BSy + (DInfo_vtxZ[j]-EvtInfo_BSz)*EvtInfo_BSdydz;
+  DlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
+  DlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo_vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo_vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo_vtxYErr[j]);
   DMaxDoca[typesize] = DInfo_MaxDoca[j];
   Dmaxpt[typesize] = false;
   Dmaxprob[typesize] = false;
   DmaxptMatched[typesize] = false;
   DmaxprobMatched[typesize] = false;
 
-  //DInfo.b4fitInfo
-  Db4fit_mass[typesize] = DInfo_b4fit_mass[j];
-  Db4fit_pt[typesize] = DInfo_b4fit_pt[j];
-  Db4fit_eta[typesize] = DInfo_b4fit_eta[j];
-  Db4fit_phi[typesize] = DInfo_b4fit_phi[j];
   //DInfo.trkInfo
   Double_t trk1mass,trk2mass,trk3mass,trk4mass;
   Dtrk1Idx[typesize] = DInfo_rftk1_index[j];
