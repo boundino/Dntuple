@@ -23,7 +23,7 @@ const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,
 TString cut = cuts[binsIndex];
 TString seldata = Form("%s",cut.Data());
 TString selmc = seldata;
-TString selmcgen = "(GisSignal==1||GisSignal==2)&&Gy>-1.&&Gy>1.";
+TString selmcgen = "(GisSignal==1||GisSignal==2)&&( Gy>-1.&&Gy<1. )";
 
 void fitD(TString infname="", TString label="", Bool_t doweight=true)
 {
