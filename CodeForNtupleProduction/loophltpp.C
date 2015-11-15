@@ -1,7 +1,7 @@
 #include "loophltpp.h"
 
-Float_t pthat = 35;
-int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+Float_t pthat = 15;
+int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat), TString outfile=Form("/export/d00/scratch/jwang/Dmeson/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat), Bool_t REAL=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -16,8 +16,7 @@ int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20
   TTree *hltroot = (TTree*)f->Get("hltbitanalysis/HltTree");
   TFile *outf = new TFile(outfile,"recreate");
   setDBranch(root);
-  if(REAL) SetDataHLTBranch(hltroot);
-  else SetMCHLTBranch(hltroot);
+  setHltTreeBranch(hltroot);
 
   int isDchannel[6];
   isDchannel[0] = 1; //k+pi-
@@ -32,6 +31,7 @@ int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20
   TTree* ntD2 = new TTree("ntDkpipi","");     buildDBranch(ntD2);
   TTree* ntD3 = new TTree("ntDkpipipi","");   buildDBranch(ntD3);
   TTree* ntGen = new TTree("ntGen","");       buildGenBranch(ntGen);
+  TTree* ntHlt = hltroot->CloneTree(0);
   cout<<"--- Building trees finished"<<endl;
 
   Long64_t nentries = root->GetEntries();
@@ -125,6 +125,8 @@ int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20
 	    }
 	}
 
+      ntHlt->Fill();
+
       if(!REAL)
 	{
 	  Int_t gt=0,sigtype=0;
@@ -134,26 +136,6 @@ int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20
 	    {
 	      if(TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID&&gskim) continue;
 	      Gsize = gsize+1;
-	      GHLT_DmesonPPTrackingGlobal_Dpt10_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt10_v1;
-	      GHLT_DmesonPPTrackingGlobal_Dpt20_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt20_v1;
-	      GHLT_DmesonPPTrackingGlobal_Dpt30_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt30_v1;
-	      GHLT_DmesonPPTrackingGlobal_Dpt40_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt40_v1;
-	      GHLT_DmesonPPTrackingGlobal_Dpt50_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt50_v1;
-	      GHLT_DmesonPPTrackingGlobal_Dpt60_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt60_v1;
-	      GL1_SingleJet8_BptxAND = Df_L1_SingleJet8_BptxAND;
-	      GL1_SingleJet12_BptxAND = Df_L1_SingleJet12_BptxAND;
-	      GL1_SingleJet16_BptxAND = Df_L1_SingleJet16_BptxAND;
-	      GL1_SingleJet20_BptxAND = Df_L1_SingleJet20_BptxAND;
-	      GL1_SingleJet24_BptxAND = Df_L1_SingleJet24_BptxAND;
-	      GL1_SingleJet28_BptxAND = Df_L1_SingleJet28_BptxAND;
-	      GL1_SingleJet32_BptxAND = Df_L1_SingleJet32_BptxAND;
-	      GL1_SingleJet36_BptxAND = Df_L1_SingleJet36_BptxAND;
-	      GL1_SingleJet40_BptxAND = Df_L1_SingleJet40_BptxAND;
-	      GL1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
-	      GL1_SingleJet48_BptxAND = Df_L1_SingleJet48_BptxAND;
-	      GL1_SingleJet52_BptxAND = Df_L1_SingleJet52_BptxAND;
-	      GL1_SingleJet60_BptxAND = Df_L1_SingleJet60_BptxAND;
-	      GL1_SingleJet68_BptxAND = Df_L1_SingleJet68_BptxAND;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];
 	      Gphi[gsize] = GenInfo_phi[j];
@@ -207,27 +189,6 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   PVzE = EvtInfo_PVzE;
   PVnchi2 = EvtInfo_PVnchi2;
   PVchi2 = EvtInfo_PVchi2;
-  //HltInfo
-  HLT_DmesonPPTrackingGlobal_Dpt10_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt10_v1;
-  HLT_DmesonPPTrackingGlobal_Dpt20_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt20_v1;
-  HLT_DmesonPPTrackingGlobal_Dpt30_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt30_v1;
-  HLT_DmesonPPTrackingGlobal_Dpt40_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt40_v1;
-  HLT_DmesonPPTrackingGlobal_Dpt50_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt50_v1;
-  HLT_DmesonPPTrackingGlobal_Dpt60_v1 = Df_HLT_DmesonPPTrackingGlobal_Dpt60_v1;
-  L1_SingleJet8_BptxAND = Df_L1_SingleJet8_BptxAND;
-  L1_SingleJet12_BptxAND = Df_L1_SingleJet12_BptxAND;
-  L1_SingleJet16_BptxAND = Df_L1_SingleJet16_BptxAND;
-  L1_SingleJet20_BptxAND = Df_L1_SingleJet20_BptxAND;
-  L1_SingleJet24_BptxAND = Df_L1_SingleJet24_BptxAND;
-  L1_SingleJet28_BptxAND = Df_L1_SingleJet28_BptxAND;
-  L1_SingleJet32_BptxAND = Df_L1_SingleJet32_BptxAND;
-  L1_SingleJet36_BptxAND = Df_L1_SingleJet36_BptxAND;
-  L1_SingleJet40_BptxAND = Df_L1_SingleJet40_BptxAND;
-  L1_SingleJet44_BptxAND = Df_L1_SingleJet44_BptxAND;
-  L1_SingleJet48_BptxAND = Df_L1_SingleJet48_BptxAND;
-  L1_SingleJet52_BptxAND = Df_L1_SingleJet52_BptxAND;
-  L1_SingleJet60_BptxAND = Df_L1_SingleJet60_BptxAND;
-  L1_SingleJet68_BptxAND = Df_L1_SingleJet68_BptxAND;
   //DInfo
   bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
   bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,

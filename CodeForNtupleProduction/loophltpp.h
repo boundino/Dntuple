@@ -51,30 +51,6 @@ Double_t   PVyE;
 Double_t   PVzE;
 Double_t   PVnchi2;
 Double_t   PVchi2;
-//HltInfo
-//
-Int_t      HLT_DmesonPPTrackingGlobal_Dpt10_v1;
-Int_t      HLT_DmesonPPTrackingGlobal_Dpt20_v1;
-Int_t      HLT_DmesonPPTrackingGlobal_Dpt30_v1;
-Int_t      HLT_DmesonPPTrackingGlobal_Dpt40_v1;
-Int_t      HLT_DmesonPPTrackingGlobal_Dpt50_v1;
-Int_t      HLT_DmesonPPTrackingGlobal_Dpt60_v1;
-//
-Int_t      L1_SingleJet8_BptxAND;
-Int_t      L1_SingleJet12_BptxAND;
-Int_t      L1_SingleJet16_BptxAND;
-Int_t      L1_SingleJet20_BptxAND;
-Int_t      L1_SingleJet24_BptxAND;
-Int_t      L1_SingleJet28_BptxAND;
-Int_t      L1_SingleJet32_BptxAND;
-Int_t      L1_SingleJet36_BptxAND;
-Int_t      L1_SingleJet40_BptxAND;
-Int_t      L1_SingleJet44_BptxAND;
-Int_t      L1_SingleJet48_BptxAND;
-Int_t      L1_SingleJet52_BptxAND;
-Int_t      L1_SingleJet60_BptxAND;
-Int_t      L1_SingleJet68_BptxAND;
-
 //DInfo
 Int_t      Dindex[MAX_XB];
 Int_t      Dtype[MAX_XB];
@@ -218,26 +194,6 @@ void buildDBranch(TTree* dnt)
   dnt->Branch("PVyE",&PVyE);
   dnt->Branch("PVzE",&PVzE);
   dnt->Branch("PVnchi2",&PVnchi2);
-  dnt->Branch("HLT_DmesonPPTrackingGlobal_Dpt10_v1",&HLT_DmesonPPTrackingGlobal_Dpt10_v1);
-  dnt->Branch("HLT_DmesonPPTrackingGlobal_Dpt20_v1",&HLT_DmesonPPTrackingGlobal_Dpt20_v1);
-  dnt->Branch("HLT_DmesonPPTrackingGlobal_Dpt30_v1",&HLT_DmesonPPTrackingGlobal_Dpt30_v1);
-  dnt->Branch("HLT_DmesonPPTrackingGlobal_Dpt40_v1",&HLT_DmesonPPTrackingGlobal_Dpt40_v1);
-  dnt->Branch("HLT_DmesonPPTrackingGlobal_Dpt50_v1",&HLT_DmesonPPTrackingGlobal_Dpt50_v1);
-  dnt->Branch("HLT_DmesonPPTrackingGlobal_Dpt60_v1",&HLT_DmesonPPTrackingGlobal_Dpt60_v1);
-  dnt->Branch("L1_SingleJet8_BptxAND",&L1_SingleJet8_BptxAND);
-  dnt->Branch("L1_SingleJet12_BptxAND",&L1_SingleJet12_BptxAND);
-  dnt->Branch("L1_SingleJet16_BptxAND",&L1_SingleJet16_BptxAND);
-  dnt->Branch("L1_SingleJet20_BptxAND",&L1_SingleJet20_BptxAND);
-  dnt->Branch("L1_SingleJet24_BptxAND",&L1_SingleJet24_BptxAND);
-  dnt->Branch("L1_SingleJet28_BptxAND",&L1_SingleJet28_BptxAND);
-  dnt->Branch("L1_SingleJet32_BptxAND",&L1_SingleJet32_BptxAND);
-  dnt->Branch("L1_SingleJet36_BptxAND",&L1_SingleJet36_BptxAND);
-  dnt->Branch("L1_SingleJet40_BptxAND",&L1_SingleJet40_BptxAND);
-  dnt->Branch("L1_SingleJet44_BptxAND",&L1_SingleJet44_BptxAND);
-  dnt->Branch("L1_SingleJet48_BptxAND",&L1_SingleJet48_BptxAND);
-  dnt->Branch("L1_SingleJet52_BptxAND",&L1_SingleJet52_BptxAND);
-  dnt->Branch("L1_SingleJet60_BptxAND",&L1_SingleJet60_BptxAND);
-  dnt->Branch("L1_SingleJet68_BptxAND",&L1_SingleJet68_BptxAND);
   //DInfo
   dnt->Branch("Dindex",Dindex,"Dindex[Dsize]/I");
   dnt->Branch("Dtype",Dtype,"Dtype[Dsize]/I");
@@ -369,28 +325,6 @@ void buildDBranch(TTree* dnt)
 }
 
 //GenInfo
-Int_t      GHLT_HIMinBiasHfOrBSC_v4;
-Int_t      GHLT_HIMinBiasHfOrBSC_v4_Prescl;
-Int_t      GHLT_DmesonPPTrackingGlobal_Dpt10_v1;
-Int_t      GHLT_DmesonPPTrackingGlobal_Dpt20_v1;
-Int_t      GHLT_DmesonPPTrackingGlobal_Dpt30_v1;
-Int_t      GHLT_DmesonPPTrackingGlobal_Dpt40_v1;
-Int_t      GHLT_DmesonPPTrackingGlobal_Dpt50_v1;
-Int_t      GHLT_DmesonPPTrackingGlobal_Dpt60_v1;
-Int_t      GL1_SingleJet8_BptxAND;
-Int_t      GL1_SingleJet12_BptxAND;
-Int_t      GL1_SingleJet16_BptxAND;
-Int_t      GL1_SingleJet20_BptxAND;
-Int_t      GL1_SingleJet24_BptxAND;
-Int_t      GL1_SingleJet28_BptxAND;
-Int_t      GL1_SingleJet32_BptxAND;
-Int_t      GL1_SingleJet36_BptxAND;
-Int_t      GL1_SingleJet40_BptxAND;
-Int_t      GL1_SingleJet44_BptxAND;
-Int_t      GL1_SingleJet48_BptxAND;
-Int_t      GL1_SingleJet52_BptxAND;
-Int_t      GL1_SingleJet60_BptxAND;
-Int_t      GL1_SingleJet68_BptxAND;
 Int_t      Gsize;
 Double_t   Gy[MAX_GEN];
 Double_t   Geta[MAX_GEN];
@@ -401,26 +335,6 @@ Int_t      GisSignal[MAX_GEN];
 
 void buildGenBranch(TTree* nt)
 {
-  nt->Branch("HLT_DmesonPPTrackingGlobal_Dpt10_v1",&GHLT_DmesonPPTrackingGlobal_Dpt10_v1);
-  nt->Branch("HLT_DmesonPPTrackingGlobal_Dpt20_v1",&GHLT_DmesonPPTrackingGlobal_Dpt20_v1);
-  nt->Branch("HLT_DmesonPPTrackingGlobal_Dpt30_v1",&GHLT_DmesonPPTrackingGlobal_Dpt30_v1);
-  nt->Branch("HLT_DmesonPPTrackingGlobal_Dpt40_v1",&GHLT_DmesonPPTrackingGlobal_Dpt40_v1);
-  nt->Branch("HLT_DmesonPPTrackingGlobal_Dpt50_v1",&GHLT_DmesonPPTrackingGlobal_Dpt50_v1);
-  nt->Branch("HLT_DmesonPPTrackingGlobal_Dpt60_v1",&GHLT_DmesonPPTrackingGlobal_Dpt60_v1);
-  nt->Branch("L1_SingleJet8_BptxAND",&GL1_SingleJet8_BptxAND);
-  nt->Branch("L1_SingleJet12_BptxAND",&GL1_SingleJet12_BptxAND);
-  nt->Branch("L1_SingleJet16_BptxAND",&GL1_SingleJet16_BptxAND);
-  nt->Branch("L1_SingleJet20_BptxAND",&GL1_SingleJet20_BptxAND);
-  nt->Branch("L1_SingleJet24_BptxAND",&GL1_SingleJet24_BptxAND);
-  nt->Branch("L1_SingleJet28_BptxAND",&GL1_SingleJet28_BptxAND);
-  nt->Branch("L1_SingleJet32_BptxAND",&GL1_SingleJet32_BptxAND);
-  nt->Branch("L1_SingleJet36_BptxAND",&GL1_SingleJet36_BptxAND);
-  nt->Branch("L1_SingleJet40_BptxAND",&GL1_SingleJet40_BptxAND);
-  nt->Branch("L1_SingleJet44_BptxAND",&GL1_SingleJet44_BptxAND);
-  nt->Branch("L1_SingleJet48_BptxAND",&GL1_SingleJet48_BptxAND);
-  nt->Branch("L1_SingleJet52_BptxAND",&GL1_SingleJet52_BptxAND);
-  nt->Branch("L1_SingleJet60_BptxAND",&GL1_SingleJet60_BptxAND);
-  nt->Branch("L1_SingleJet68_BptxAND",&GL1_SingleJet68_BptxAND);
   nt->Branch("Gsize",&Gsize);
   nt->Branch("Gy",Gy,"Gy[Gsize]/D");
   nt->Branch("Geta",Geta,"Geta[Gsize]/D");
@@ -764,6 +678,38 @@ void setDBranch(TTree *root)
 Int_t           Df_HLT_Run;
 ULong64_t       Df_HLT_Event;
 Int_t           Df_HLT_LumiBlock;
+void setHltTreeBranch(TTree* hltroot)
+{
+  hltroot->SetBranchAddress("Run",&Df_HLT_Run);
+  hltroot->SetBranchAddress("Event",&Df_HLT_Event);
+  hltroot->SetBranchAddress("LumiBlock",&Df_HLT_LumiBlock);
+}
+
+//hiEvtInfo
+Int_t           Df_HiTree_Run;
+Int_t           Df_HiTree_Evt;
+Int_t           Df_HiTree_Lumi;
+Float_t         Df_HiTree_Npart;
+Float_t         Df_HiTree_Ncoll;
+Float_t         Df_HiTree_Nhard;
+Int_t           Df_HiTree_hiBin;
+
+void setHiTreeBranch(TTree* hitreeroot)
+{
+  hitreeroot->SetBranchAddress("run",&Df_HiTree_Run);
+  hitreeroot->SetBranchAddress("evt",&Df_HiTree_Evt);
+  hitreeroot->SetBranchAddress("lumi",&Df_HiTree_Lumi);
+  hitreeroot->SetBranchAddress("Npart",&Df_HiTree_Npart);
+  hitreeroot->SetBranchAddress("Ncoll",&Df_HiTree_Ncoll);
+  hitreeroot->SetBranchAddress("Nhard",&Df_HiTree_Nhard);
+  hitreeroot->SetBranchAddress("hiBin",&Df_HiTree_hiBin);
+}
+
+/*
+//HltInfo
+Int_t           Df_HLT_Run;
+ULong64_t       Df_HLT_Event;
+Int_t           Df_HLT_LumiBlock;
 Int_t           Df_HLT_HIMinBiasHfOrBSC_v1;
 Int_t           Df_HLT_HIMinBiasHfOrBSC_v4;
 Int_t           Df_HLT_DmesonPPTrackingGlobal_Dpt10_v1;
@@ -840,26 +786,7 @@ void SetMCHLTBranch(TTree* hltroot)
   hltroot->SetBranchAddress("L1_SingleJet60_BptxAND",&Df_L1_SingleJet60_BptxAND);
   hltroot->SetBranchAddress("L1_SingleJet68_BptxAND",&Df_L1_SingleJet68_BptxAND);
 }
-
-//hiEvtInfo
-Int_t           Df_HiTree_Run;
-Int_t           Df_HiTree_Evt;
-Int_t           Df_HiTree_Lumi;
-Float_t         Df_HiTree_Npart;
-Float_t         Df_HiTree_Ncoll;
-Float_t         Df_HiTree_Nhard;
-Int_t           Df_HiTree_hiBin;
-
-void setHiTreeBranch(TTree* hitreeroot)
-{
-  hitreeroot->SetBranchAddress("run",&Df_HiTree_Run);
-  hitreeroot->SetBranchAddress("evt",&Df_HiTree_Evt);
-  hitreeroot->SetBranchAddress("lumi",&Df_HiTree_Lumi);
-  hitreeroot->SetBranchAddress("Npart",&Df_HiTree_Npart);
-  hitreeroot->SetBranchAddress("Ncoll",&Df_HiTree_Ncoll);
-  hitreeroot->SetBranchAddress("Nhard",&Df_HiTree_Nhard);
-  hitreeroot->SetBranchAddress("hiBin",&Df_HiTree_hiBin);
-}
+*/
 
 /*
 Int_t      HLT_HIMinBiasBSC_v1;
