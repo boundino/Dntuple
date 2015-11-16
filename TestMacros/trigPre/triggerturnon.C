@@ -11,23 +11,32 @@
 
 //TString mvatk = "((Dtrk1Quality&2)&&(Dtrk2Quality&2))";//tight
 TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";//highpurity
-TString prefilter = Form("(Dgen==23333||Dgen==23344)&&DmaxptMatched&&Dtrk1Pt>8.&&Dtrk2Pt>8.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
-Bool_t isPbPb = true;
-Float_t pthat = 15.;
+TString prefilter = Form("(Dgen==23333||Dgen==23344)&&DmaxptMatched&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
+Bool_t isPbPb = false;
+Float_t pthat = 35.;
 
 void triggerturnon()
 {
   void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
   void plotTurnOnNL1seed(TTree* inttree, TString triggerpass, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
   TString infname;
-  if(!isPbPb) infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat);
+  if(!isPbPb) infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151115_DfinderMC_20151115_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_755patch2_v20_MBseed_1116.root",pthat,pthat);
   else infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151110_50k_L1v4_v15_loosecuts_MBseed_1108.root",pthat,pthat);
   //infname = "/export/d00/scratch/jwang/Dmeson/nt_merged_dntuple.root";
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
+  root->AddFriend("HltTree");
 
   if(!isPbPb)
     {
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt8_v1&&L1_SingleJet16_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt15_v1&&L1_SingleJet24_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt20_v1&&L1_SingleJet28_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt30_v1&&L1_SingleJet40_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt40_v1&&L1_SingleJet40_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt50_v1&&L1_SingleJet48_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt60_v1&&L1_SingleJet48_BptxAND","Dpt","pt","p_{T} (GeV/c)",16,0,80);
+      /*
       plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt10_v1","Dpt","pt","p_{T} (GeV/c)",16,0,80);
       plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",16,0,80);
       plotTurnOn(root,"HLT_DmesonPPTrackingGlobal_Dpt30_v1","Dpt","pt","p_{T} (GeV/c)",16,0,80);
@@ -40,6 +49,7 @@ void triggerturnon()
       plotTurnOnNL1seed(root,"HLT_DmesonPPTrackingGlobal_Dpt40_v1",16,0,80);
       plotTurnOnNL1seed(root,"HLT_DmesonPPTrackingGlobal_Dpt50_v1",16,0,80);
       plotTurnOnNL1seed(root,"HLT_DmesonPPTrackingGlobal_Dpt60_v1",16,0,80);
+      */
     }
   else
     {
@@ -75,7 +85,7 @@ void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString v
       if(isPbPb) chinclusive->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pbpb/chinclusive_%s.pdf",pthat,varname.Data()));
       else chinclusive->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pp/chinclusive_%s.pdf",pthat,varname.Data()));
     }
-  TH2D* hempty = new TH2D(Form("hempty_%s_%s",triggerpass.Data(),varname.Data()),Form(";Matched reco D^{0} %s;Pass efficiency (MB seed)",varlatex.Data()),BIN_NUM,BIN_MIN,BIN_MAX,10,0,1.2);
+  TH2D* hempty = new TH2D(Form("hempty_%s_%s",triggerpass.Data(),varname.Data()),Form(";Matched reco D^{0} %s;Pass efficiency (ZB seed)",varlatex.Data()),BIN_NUM,BIN_MIN,BIN_MAX,10,0,1.2);
   hempty->SetStats(0);
   TH1D* hMBseed = new TH1D(Form("h%s_MBseed_%s",triggerpass.Data(),varname.Data()),"",BIN_NUM,BIN_MIN,BIN_MAX);
   inttree->Project(Form("h%s_MBseed_%s",triggerpass.Data(),varname.Data()),variable,Form("%s%s&&%s",prefilter.Data(),addcut.Data(),triggerpass.Data()));
@@ -85,8 +95,11 @@ void plotTurnOn(TTree* inttree, TString triggerpass, TString variable, TString v
   hempty->Draw();
   pEffMBseed->Draw("PSAME");
   tex->Draw();
+  /*
   if(isPbPb) cMBseed->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pbpb/c%s_MBseed_%s.pdf",pthat,triggerpass.Data(),varname.Data()));
   else cMBseed->SaveAs(Form("triggerturnonPlots/pthat%.0f/MBseed/pp/c%s_MBseed_%s.pdf",pthat,triggerpass.Data(),varname.Data()));
+  */
+  cMBseed->SaveAs(Form("triggerturnonPlots/pthat%.0f/ZBseed/pp/c%s_MBseed_%s.pdf",pthat,triggerpass.Data(),varname.Data()));
 }
 
 void plotTurnOnNL1seed(TTree* inttree, TString triggerpass, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX)
