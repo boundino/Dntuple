@@ -234,6 +234,9 @@ TH1D* plotInclusive(TTree* nt, TTree* ntMC, TString variable, TString varname, T
 
       hinclusive->SetBinContent(ivar+1,yield);
       hinclusive->SetBinError(ivar+1,yieldErr);
+
+      if(isPbPb) c->SaveAs(Form("triggerturnonData/pthat%.0f/MBseed/pbpb/c_%s_%.0f.pdf",pthat,varname.Data(),ivar));
+      else c->SaveAs(Form("triggerturnonData/pthat%.0f/MBseed/pp/c_%s_%.0f.pdf",pthat,varname.Data(),ivar));
     }
   TCanvas* chinclusive = new TCanvas(Form("chinclusive_%s",varname.Data()),"",500,500);
   hinclusive->Draw();
