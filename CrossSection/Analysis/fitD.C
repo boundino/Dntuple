@@ -12,21 +12,24 @@ Double_t setparam8=0.1;
 Double_t setparam9=0.1;
 Double_t fixparam1=1.865;
 
-TString inputdata="/mnt/hadoop/cms/store/user/jwang/Dmeson/skim/ntD_20150924_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_EvtBase_skim.root";
-//TString inputdata="/mnt/hadoop/cms/store/user/jwang/Dmeson/skim/ntD_20150924_MC_merge_withoutweight_skim.root";
-TString inputmc="/mnt/hadoop/cms/store/user/jwang/Dmeson/skim/ntD_20150924_MC_merge_withoutweight_skim.root";
+Bool_t isMC = false;
 TString weight = "1";
 
 //const int nBins=1;  Int_t binsIndex=0;  Double_t ptBins[nBins+1]={3.5,40};
 const int nBins=10; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={3.5,4.5,5.5,7,9,11,13,16,20,28,40};
 
 TString cut = cuts[binsIndex];
-TString seldata = Form("%s",cut.Data());
-TString selmc = seldata;
-TString selmcgen = "(GisSignal==1||GisSignal==2)&&( Gy>-1.&&Gy<1. )";
+TString seldata = Form("HLT_HIMinBiasHfOrBSC_v1&&%s",cut.Data());
+TString selmc = cut;
+TString selmcgen = "(GisSignal==1||GisSignal==2)&&(Gy>-1.&&Gy<1.)";
 
 void fitD(TString infname="", TString label="", Bool_t doweight=true)
 {
+  TString inputmc = "/export/d00/scratch/jwang/Dmeson/2p76/ntD_20150924_MC_merge_withoutweight_skim.root";
+  TString inputdata;
+  if(!isMC) inputdata = "/export/d00/scratch/jwang/Dmeson/2p76/ntD_20150924_DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912_EvtBase_skim.root";
+  else inputdata = "/export/d00/scratch/jwang/Dmeson/2p76/ntD_20150924_MC_merge_withoutweight_skim.root";
+
   void clean0 (TH1D* h);
   TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax);
 
@@ -56,7 +59,7 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
 
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
   divideBinWidth(hPtMC);
-  ntMC->Project("hPtRecoTruth","Dpt",TCut(seldata.Data())&&"Dgen==23333");
+  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"Dgen==23333");
   divideBinWidth(hPtRecoTruth);
   ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
@@ -67,12 +70,14 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
   hPt->SetYTitle("Uncorrected dN(D^{0})/dp_{T}");
   hPt->Sumw2();
   hPt->Draw();
-  hPtMC->Draw("same hist");
-  TLegend* legPt = myLegend(0.55,0.80,0.90,0.94);
-  legPt->AddEntry(hPt,"Signal extraction","pl");
-  legPt->AddEntry(hPtMC,"Matched reco","lf");
-  legPt->Draw("same");  
-
+  if(isMC)
+    {
+      hPtMC->Draw("same hist");
+      TLegend* legPt = myLegend(0.55,0.80,0.90,0.94);
+      legPt->AddEntry(hPt,"Signal extraction","pl");
+      legPt->AddEntry(hPtMC,"Matched reco","lf");
+      legPt->Draw("same");  
+    }
   hPtMC->Sumw2();
   TH1D* hEff = (TH1D*)hPtMC->Clone("hEff");
   hEff->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
@@ -87,11 +92,14 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
   TCanvas* cPtCor=  new TCanvas("cCorResult","",600,600);
   cPtCor->SetLogy();
   hPtCor->Draw();
-  hPtGen->Draw("same hist");
-  TLegend* legPtCor = myLegend(0.55,0.80,0.90,0.94);
-  legPtCor->AddEntry(hPtCor,"Corrected signal","pl");
-  legPtCor->AddEntry(hPtGen,"Generated D^{0}","lf");
-  legPtCor->Draw("same");  
+  if(isMC)
+    {
+      hPtGen->Draw("same hist");
+      TLegend* legPtCor = myLegend(0.55,0.80,0.90,0.94);
+      legPtCor->AddEntry(hPtCor,"Corrected signal","pl");
+      legPtCor->AddEntry(hPtGen,"Generated D^{0}","lf");
+      legPtCor->Draw("same");  
+    }
 
   TH1D* hPtSigma= (TH1D*)hPtCor->Clone("hPtSigma");
   hPtSigma->SetTitle(";D^{0} p_{T} (GeV/c);d#sigma(D^{0})/dp_{T}");
@@ -100,7 +108,7 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
   cPtSigma->SetLogy();
   hPtSigma->Draw();
 
-  TFile* outf = new TFile(Form("../ResultsMIT/alphaD0%s.root",label.Data()),"recreate");
+  TFile* outf = new TFile(Form("../ResultsD0/alphaD0%s.root",label.Data()),"recreate");
   outf->cd();
   hPt->Write();
   hEff->Write();
@@ -134,14 +142,13 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
   
   nt->Project(Form("h-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),selmc.Data(),ptmin,ptmax));   
+  ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),selmc.Data(),ptmin,ptmax));   
 
   clean0(h);
   h->SetMaximum(h->GetMaximum()*1.20);
   h->Draw();
   
-  // Extract Signal PDF
   f->SetParLimits(4,-1000,1000);
   f->SetParLimits(10,0.001,0.05);
   f->SetParLimits(2,0.01,0.1);
@@ -171,7 +178,6 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
   hMCSignal->Fit(Form("f%d",count),"L m","",1.7,2.0);
   
-  // Extract k-pi Swapped PDF
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
   f->FixParameter(10,f->GetParameter(10));
@@ -192,7 +198,6 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   f->ReleaseParameter(5);
   f->ReleaseParameter(6);
   
-  // Fit on data
   h->Fit(Form("f%d",count),"q","",1.7,2.0);
   h->Fit(Form("f%d",count),"q","",1.7,2.0);
   f->ReleaseParameter(1);
@@ -203,7 +208,6 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   h->SetMarkerSize(0.8);
   h->SetMarkerStyle(20);
   
-  // function for background shape plotting. take the fit result from f
   TF1* background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
   background->SetParameter(0,f->GetParameter(3));
   background->SetParameter(1,f->GetParameter(4));
@@ -213,7 +217,6 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   background->SetRange(1.7,2.0);
   background->SetLineStyle(2);
   
-  // function for signal shape plotting. take the fit result from f
   TF1* mass = new TF1(Form("fmass%d",count),"[0]*([3]*([4]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[4])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))");
   mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(9),f->GetParameter(10));
   mass->SetParError(0,f->GetParError(0));
@@ -261,7 +264,6 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   Double_t yield = mass->Integral(1.7,2.0)/0.005;
   Double_t yieldErr = mass->Integral(1.7,2.0)/0.005*mass->GetParError(0)/mass->GetParameter(0);
   
-  // Draw the legend:)   
   TLegend* leg = myLegend(0.20,0.60,0.53,0.94);
   leg->SetFillColor(0);
   leg->SetBorderSize(0);
@@ -282,8 +284,8 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   leg2->AddEntry(h,Form("N_{D}=%.0f #pm %.0f", yield, yieldErr),"");
   leg2->Draw();
   
-  if(nBins==1) c->SaveAs("../ResultsMIT/DMass-inclusive.pdf");
-  else c->SaveAs(Form("../ResultsMIT/DMass-%d.pdf",count));
+  if(nBins==1) c->SaveAs("../ResultsD0/DMass-inclusive.pdf");
+  else c->SaveAs(Form("../ResultsD0/DMass-%d.pdf",count));
   
   return mass;
 }
