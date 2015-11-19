@@ -25,9 +25,9 @@ Float_t pthat = 15.;
 //string outfname = "triggerturnondata_35.root";
 string outfname = "triggerturnondata.root";
 
-void triggerturnondata()
+void triggerturnondata_prescale()
 {
-  TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
+  TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString prescale, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
   void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TString triggername, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
 
   TString infnameMC,infname;
@@ -58,29 +58,29 @@ void triggerturnondata()
   
   if(!isPbPb)
     {
-      TH1D* hpp_pt = getYield(root,rootMC,"","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpp_pt_HltDpt8 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpp_pt = getYield(root,rootMC,"","","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpp_pt_HltDpt8 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","HLT_DmesonPPTrackingGlobal_Dpt8_v1_Prescl","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
       plotTurnOn(hpp_pt_HltDpt8,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpp_pt_HltDpt15 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt15_v1","_HLT_DmesonPPTrackingGlobal_Dpt15_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpp_pt_HltDpt15 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt15_v1","_HLT_DmesonPPTrackingGlobal_Dpt15_v1","HLT_DmesonPPTrackingGlobal_Dpt15_v1_Prescl","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
       plotTurnOn(hpp_pt_HltDpt15,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt15_v1","_HLT_DmesonPPTrackingGlobal_Dpt15_v1","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpp_pt_HltDpt20 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt20_v1","_HLT_DmesonPPTrackingGlobal_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpp_pt_HltDpt20 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt20_v1","_HLT_DmesonPPTrackingGlobal_Dpt20_v1","HLT_DmesonPPTrackingGlobal_Dpt20_v1_Prescl","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
       plotTurnOn(hpp_pt_HltDpt20,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt20_v1","_HLT_DmesonPPTrackingGlobal_Dpt20_v1","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpp_pt_HltDpt30 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt30_v1","_HLT_DmesonPPTrackingGlobal_Dpt30_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpp_pt_HltDpt30 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt30_v1","_HLT_DmesonPPTrackingGlobal_Dpt30_v1","HLT_DmesonPPTrackingGlobal_Dpt30_v1_Prescl","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
       plotTurnOn(hpp_pt_HltDpt30,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt30_v1","_HLT_DmesonPPTrackingGlobal_Dpt30_v1","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpp_pt_HltDpt40 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt40_v1","_HLT_DmesonPPTrackingGlobal_Dpt40_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpp_pt_HltDpt40 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt40_v1","_HLT_DmesonPPTrackingGlobal_Dpt40_v1","HLT_DmesonPPTrackingGlobal_Dpt40_v1_Prescl","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
       plotTurnOn(hpp_pt_HltDpt40,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt40_v1","_HLT_DmesonPPTrackingGlobal_Dpt40_v1","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
     }
   else
     {
-      TH1D* hpbpb_pt = getYield(root,rootMC,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","_HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpbpb_pt_HltDpt20 = getYield(root,rootMC,"","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpbpb_pt = getYield(root,rootMC,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","_HLT_DmesonTrackingGlobalPt8_Dpt20_v1","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpbpb_pt_HltDpt20 = getYield(root,rootMC,"","","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
     }
   outf->Write();
   cout<<"--- Writing finished"<<endl;
   outf->Close();
 }
 
-TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="")
+TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString prescale, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="")
 {
   TH1D* hDistrib = new TH1D(Form("h%s_Distrib_%s",triggername.Data(),varname.Data()),"",BIN_NUM,BIN_MIN,BIN_MAX);
   for(float ivar=0;ivar<BIN_NUM;ivar++)
@@ -91,9 +91,16 @@ TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername,
       TH1D* hSW = new TH1D(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"",60,1.7,2.0);
       Float_t varmin = BIN_MIN+ivar*((BIN_MAX-BIN_MIN)/BIN_NUM);
       Float_t varmax = BIN_MIN+(ivar+1)*((BIN_MAX-BIN_MIN)/BIN_NUM);
-      nt->Project(Form("h%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilter.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
-      ntMC->Project(Form("hMC%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterMC.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
-      ntMC->Project(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterSW.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+	  if(prescale==""){
+        nt->Project(Form("h%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilter.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+        ntMC->Project(Form("hMC%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterMC.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+        ntMC->Project(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterSW.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+	  }
+	  else{
+        nt->Project(Form("h%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),Form("Dmass*%s",prescale.Data()),Form("%s%s&&(%s>%f&&%s<%f)%s",prefilter.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+        ntMC->Project(Form("hMC%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),Form("Dmass*%s",prescale.Data()),Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterMC.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+        ntMC->Project(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),Form("Dmass*%s",prescale.Data()),Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterSW.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+	  }
       h->SetMaximum(h->GetMaximum()*1.20);
       h->Draw();
 

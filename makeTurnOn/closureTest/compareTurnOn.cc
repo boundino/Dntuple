@@ -50,5 +50,5 @@ void compareTurnOn(){
 	leg->AddEntry(eff1, "MC matched","p");
 	leg->AddEntry(eff2, "Fitting","p");
 	leg->Draw();
-	c->SaveAs(Form("triggerturnonPlots/comparison/%s.pdf", triggerName.c_str()));
+	c->SaveAs(Form("comparison/%s.pdf", triggerName.c_str()));
 }
