@@ -72,8 +72,8 @@ void triggerturnondata()
     }
   else
     {
-      TH1D* hpbpb_pt = getYield(root,rootMC,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","_HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
-      TH1D* hpbpb_pt_HltDpt20 = getYield(root,rootMC,"","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpbpb_pt = getYield(root,rootMC,"","","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
+      TH1D* hpbpb_pt_HltDpt20 = getYield(root,rootMC,"&&HLT_DmesonTrackingGlobalPt8_Dpt20_v1","_HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",NBIN,BINMIN,BINMAX);
     }
   outf->Write();
   cout<<"--- Writing finished"<<endl;
