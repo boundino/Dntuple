@@ -111,13 +111,13 @@ int loophltpp(TString infile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20
 			}
 		      Dtypesize[t/2]++;
 		    }
-		  if(t%2==1)
-		    {
-		      if(ptflag>=0) Dmaxpt[ptflag] = true;
-		      if(probflag>=0) Dmaxprob[probflag] = true;
-		      if(ptMatchedflag>=0) DmaxptMatched[ptMatchedflag] = true;
-		      if(probMatchedflag>=0) DmaxprobMatched[probMatchedflag] = true;
-		    }
+		}
+	      if(t%2==1)
+		{
+		  if(ptflag>=0) Dmaxpt[ptflag] = true;
+		  if(probflag>=0) Dmaxprob[probflag] = true;
+		  if(ptMatchedflag>=0) DmaxptMatched[ptMatchedflag] = true;
+		  if(probMatchedflag>=0) DmaxprobMatched[probMatchedflag] = true;
 		}
 	      if(t==1)      ntD1->Fill();
 	      else if(t==3) ntD2->Fill();
@@ -305,16 +305,18 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4PixelHit[typesize] = -1;
       Dtrk3StripHit[typesize] = -1;
       Dtrk4StripHit[typesize] = -1;
-      Dtrk1nPixelLayer[typesize] = -1;
-      Dtrk2nPixelLayer[typesize] = -1;
-      Dtrk1nStripLayer[typesize] = -1;
-      Dtrk2nStripLayer[typesize] = -1;
+      Dtrk3nPixelLayer[typesize] = -1;
+      Dtrk4nPixelLayer[typesize] = -1;
+      Dtrk3nStripLayer[typesize] = -1;
+      Dtrk4nStripLayer[typesize] = -1;
       Dtrk3Chi2ndf[typesize] = -1;
       Dtrk4Chi2ndf[typesize] = -1;
       Dtrk3MassHypo[typesize] = 0;
       Dtrk4MassHypo[typesize] = 0;
       Dtrk3MVAVal[typesize] = -100;
       Dtrk4MVAVal[typesize] = -100;
+      Dtrk3Algo[typesize] = 0;
+      Dtrk4Algo[typesize] = 0;
       Dtrk3highPurity[typesize] = false;
       Dtrk4highPurity[typesize] = false;
       DtktkResmass[typesize] = -1;
