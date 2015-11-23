@@ -8,30 +8,21 @@ Double_t setparam8=0.1;
 Double_t setparam9=0.1;
 Double_t fixparam1=1.865;
 
-//TString mvatk = "((Dtrk1Quality&2)&&(Dtrk2Quality&2))";//tight
-TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";//highpurity
-TString prefilter = Form("DmaxptMatched&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
-TString prefilterMC = Form("Dgen==23333&&DmaxptMatched&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
-TString prefilterSW = Form("Dgen==23344&&DmaxptMatched&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.05&&(DsvpvDistance/DsvpvDisErr)>2.5&&TMath::Cos(Dalpha)>0.95&&%s",mvatk.Data());
+TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)";
+TString mbtrg = "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)";
+TString prefilter = Form("(Dtrk1Algo<8)&&(Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&(DsvpvDistance/DsvpvDisErr)>1.5&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.10&&TMath::Cos(Dalpha)>0.9&&%s&&%s",mvatk.Data(),mbtrg.Data());
+TString prefilterMC = Form("Dgen==23333&&(Dtrk1Algo<8)&&(Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.10&&(DsvpvDistance/DsvpvDisErr)>1.5&&TMath::Cos(Dalpha)>0.9&&%s",mvatk.Data());
+TString prefilterSW = Form("Dgen==23344&&(Dtrk1Algo<8)&&(Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.10&&(DsvpvDistance/DsvpvDisErr)>1.5&&TMath::Cos(Dalpha)>0.9&&%s",mvatk.Data());
 Bool_t isPbPb = false;
-Float_t pthat = 35.;
 
-void triggerturnondata()
+void triggerturnondata(TString trigger="HLT_DmesonPPTrackingGlobal_Dpt8_v1")
 {
-  TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
+  TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString prescale, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="");
   void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TString triggername, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
 
   TString infnameMC,infname;
-  if(!isPbPb) 
-    {
-      infnameMC = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151115_DfinderMC_20151115_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_755patch2_v20_MBseed_1116.root",pthat,pthat);
-      infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151115_DfinderMC_20151115_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_755patch2_v20_MBseed_1116.root",pthat,pthat);
-    }
-  else
-    {
-      infnameMC = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151110_50k_L1v4_v15_loosecuts_MBseed_1108.root",pthat,pthat);
-      infname = Form("/export/d00/scratch/jwang/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151110_50k_L1v4_v15_loosecuts_MBseed_1108.root",pthat,pthat);
-    }
+  infnameMC = "/data/wangj/MC2015/Dntuple/ntD_20151115_DfinderMC_20151115_EvtMatching_Pythia_D0pt15p0_Pthat15_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_755patch2_v20_MBseed_1116.root";
+  infname = "/data/wangj/Data2015/Dntuple/ntD_BigMergeExpressHiForest_run262163-run262252_match.root";
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
   root->AddFriend("HltTree");
@@ -41,29 +32,24 @@ void triggerturnondata()
   
   if(!isPbPb)
     {
-      TH1D* hpp_pt = getYield(root,rootMC,"","","Dpt","pt","p_{T} (GeV/c)",4,0,40);
-      TH1D* hpp_pt_HltDpt20 = getYield(root,rootMC,"&&HLT_DmesonPPTrackingGlobal_Dpt20_v1","_HLT_DmesonPPTrackingGlobal_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",4,0,40);
-      plotTurnOn(hpp_pt_HltDpt20,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt20_v1","_HLT_DmesonPPTrackingGlobal_Dpt20_v1","pt","p_{T} (GeV/c)",4,0,40);
-    }
-  else
-    {
-      TH1D* hpbpb_pt = getYield(root,rootMC,"HLT_DmesonTrackingGlobalPt8_Dpt20_v1","_HLT_DmesonTrackingGlobalPt8_Dpt20_v1","Dpt","pt","p_{T} (GeV/c)",4,0,40);
-      TH1D* hpbpb_pt_HltDpt20 = getYield(root,rootMC,"","","Dpt","pt","p_{T} (GeV/c)",4,0,40);
+      TH1D* hpp_pt = getYield(root,rootMC,"","","","Dpt","pt","p_{T} (GeV/c)",4,0,40);
+      TH1D* hpp_pt_Hlt = getYield(root,rootMC,Form("&&%s",trigger.Data()),Form("_%s",trigger.Data()),Form("*%s_Prescl",trigger.Data()),"Dpt","pt","p_{T} (GeV/c)",4,0,40);
+      plotTurnOn(hpp_pt_Hlt,hpp_pt,trigger,Form("_%s",trigger.Data()),"pt","p_{T} (GeV/c)",4,0,40);
     }
 }
 
-TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="")
+TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername, TString prescale, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="")
 {
   TH1D* hDistrib = new TH1D(Form("h%s_Distrib_%s",triggername.Data(),varname.Data()),"",BIN_NUM,BIN_MIN,BIN_MAX);
   for(float ivar=0;ivar<BIN_NUM;ivar++)
     {
       TCanvas* c = new TCanvas(Form("c%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"",500,500);
       TH1D* h = new TH1D(Form("h%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),";D^{0} mass (GeV/c^{2});Candidates",60,1.7,2.0);
-      TH1D* hMC = new TH1D(Form("hMC%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"",60,1.7,2.0);
-      TH1D* hSW = new TH1D(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"",60,1.7,2.0);
+      TH1D* hMC = new TH1D(Form("hMC%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"",60,1.75,1.95);
+      TH1D* hSW = new TH1D(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"",60,1.75,1.95);
       Float_t varmin = BIN_MIN+ivar*((BIN_MAX-BIN_MIN)/BIN_NUM);
       Float_t varmax = BIN_MIN+(ivar+1)*((BIN_MAX-BIN_MIN)/BIN_NUM);
-      nt->Project(Form("h%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilter.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
+      nt->Project(Form("h%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),Form("Dmass%s",prescale.Data()),Form("%s%s&&(%s>%f&&%s<%f)%s",prefilter.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
       ntMC->Project(Form("hMC%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterMC.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
       ntMC->Project(Form("hSW%s_Fit_%s_%.0f",triggername.Data(),varname.Data(),ivar),"Dmass",Form("%s%s&&(%s>%f&&%s<%f)%s",prefilterSW.Data(),addcut.Data(),variable.Data(),varmin,variable.Data(),varmax,triggerpass.Data()));
       h->SetMaximum(h->GetMaximum()*1.20);
@@ -220,14 +206,14 @@ TH1D* getYield(TTree* nt, TTree* ntMC, TString triggerpass, TString triggername,
       hDistrib->SetBinContent(ivar+1,yield);
       hDistrib->SetBinError(ivar+1,yieldErr);
 
-      if(isPbPb) c->SaveAs(Form("triggerturnonPlots/data/pbpb/pthat%.0f/c%s_Fit_%s_%.0f.pdf",pthat,triggername.Data(),varname.Data(),ivar));
-      else c->SaveAs(Form("triggerturnonPlots/data/pp/pthat%.0f/c%s_Fit_%s_%.0f.pdf",pthat,triggername.Data(),varname.Data(),ivar));
+      if(isPbPb) c->SaveAs(Form("triggerturnonPlots/data/pbpb/c%s_Fit_%s_%.0f.pdf",triggername.Data(),varname.Data(),ivar));
+      else c->SaveAs(Form("triggerturnonPlots/data/pp/c%s_Fit_%s_%.0f.pdf",triggername.Data(),varname.Data(),ivar));
     }
   TCanvas* cDistrib = new TCanvas(Form("c%s_Distrib_%s",triggername.Data(),varname.Data()),"",500,500);
   hDistrib->Draw();
   hDistrib->SetStats(0);
-  if(isPbPb) cDistrib->SaveAs(Form("triggerturnonPlots/data/pbpb/pthat%.0f/c%s_Distrib_%s.pdf",pthat,triggername.Data(),varname.Data()));
-  else cDistrib->SaveAs(Form("triggerturnonPlots/data/pp/pthat%.0f/c%s_Distrib_%s.pdf",pthat,triggername.Data(),varname.Data()));
+  if(isPbPb) cDistrib->SaveAs(Form("triggerturnonPlots/data/pbpb/c%s_Distrib_%s.pdf",triggername.Data(),varname.Data()));
+  else cDistrib->SaveAs(Form("triggerturnonPlots/data/pp/c%s_Distrib_%s.pdf",triggername.Data(),varname.Data()));
 
   return hDistrib;
 }
@@ -245,6 +231,6 @@ void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TSt
   tex->SetTextFont(42);
   tex->SetTextSize(0.04);
   tex->Draw();
-  if(isPbPb) cEff->SaveAs(Form("triggerturnonPlots/data/pbpb/pthat%.0f/c%s_Eff_%s.pdf",pthat,triggername.Data(),varname.Data()));
-  else cEff->SaveAs(Form("triggerturnonPlots/data/pp/pthat%.0f/c%s_Eff_%s.pdf",pthat,triggername.Data(),varname.Data()));
+  if(isPbPb) cEff->SaveAs(Form("triggerturnonPlots/data/pbpb/c%s_Eff_%s.pdf",triggername.Data(),varname.Data()));
+  else cEff->SaveAs(Form("triggerturnonPlots/data/pp/c%s_Eff_%s.pdf",triggername.Data(),varname.Data()));
 }

@@ -1,5 +1,13 @@
 #include "uti.h"
 
+Double_t setparam0=100.;
+Double_t setparam1=1.865;
+Double_t setparam2=0.03;
+Double_t setparam10=0.005;
+Double_t setparam8=0.1;
+Double_t setparam9=0.1;
+Double_t fixparam1=1.865;
+
 TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)&&(Dmass>1.75&&Dmass<1.95)";
 TString mbtrg = "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)";
 TString prefilter = Form("(Dtrk1Algo<8&&Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&(DsvpvDistance/DsvpvDisErr)>1.5&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.10&&TMath::Cos(Dalpha)>0.9&&%s&&%s",mvatk.Data(),mbtrg.Data());
@@ -17,9 +25,20 @@ void triggerturnonFast(TString trigger="HLT_DmesonPPTrackingGlobal_Dpt20_v1")
   TTree* root = (TTree*)infile->Get("ntDkpi");
   root->AddFriend("HltTree",infname);
 
+  /*
+  TString oufname;
+  if(isPbPb) oufname = Form("triggerturnonPlots/data/pbpb/cEff_%s.root",trigger.Data());
+  else oufname = Form("triggerturnonPlots/data/pp/cEff_%s.root",trigger.Data());
+  TFile *outf = new TFile(oufname,"recreate");
+  */
   TH1D* hpp_pt = getYield(root,"","","","Dpt","pt","p_{T} (GeV/c)",16,0,80);
   TH1D* hpp_pt_Hlt = getYield(root,Form("&&%s",trigger.Data()),Form("_%s",trigger.Data()),Form("*%s_Prescl",trigger.Data()),"Dpt","pt","p_{T} (GeV/c)",16,0,80);
   plotTurnOn(hpp_pt_Hlt,hpp_pt,trigger,Form("_%s",trigger.Data()),"pt","p_{T} (GeV/c)",16,0,80);
+  /*
+  outf->Write();
+  cout<<"--- Writing finished"<<endl;
+  outf->Close();
+  */
 }
 
 TH1D* getYield(TTree* nt, TString triggerpass, TString triggername, TString prescale, TString variable, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX, TString addcut="")
@@ -53,3 +72,33 @@ void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TSt
   if(isPbPb) cEff->SaveAs(Form("triggerturnonPlots/data/pbpb/c%s_Eff_%s.pdf",triggername.Data(),varname.Data()));
   else cEff->SaveAs(Form("triggerturnonPlots/data/pp/c%s_Eff_%s.pdf",triggername.Data(),varname.Data()));
 }
+
+
+
+
+
+
+
+
+
+
+
+//backup
+
+/*
+  TH1D* hpp_pt = getYield(root,"","","(DlxyBS/DlxyBSErr)","lxylxyerr","lxy/lxyerr",10,0,10,"&&Dpt>15.");
+  TH1D* hpp_pt_HltDpt15 = getYield(root,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","(DlxyBS/DlxyBSErr)","lxylxyerr","lxy/lxyerr",10,0,10,"&&Dpt>15.");
+  plotTurnOn(hpp_pt_HltDpt15,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","lxylxyerr","lxy/lxyerr",10,0,10);
+  TH1D* hpp_pt = getYield(root,"","","(DsvpvDistance/DsvpvDisErr)","d0d0err","d0/d0Err",10,0,10,"&&Dpt>15.");
+  TH1D* hpp_pt_HltDpt15 = getYield(root,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","(DsvpvDistance/DsvpvDisErr)","d0d0err","d0/d0err",10,0,10,"&&Dpt>15.");
+  plotTurnOn(hpp_pt_HltDpt15,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","d0d0err","d0/d0err",10,0,10);
+  TH1D* hpp_pt = getYield(root,"","","Dtrk1Pt","trk1pt","trk1 p_{T} (GeV/c)",8,0,80,"&&Dpt>15.");
+  TH1D* hpp_pt_HltDpt15 = getYield(root,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","Dtrk1Pt","trk1pt","trk1 p_{T} (GeV/c)",8,0,80,"&&Dpt>15.");
+  plotTurnOn(hpp_pt_HltDpt15,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","trk1pt","trk1 p_{T} (GeV/c)",8,0,80);
+  TH1D* hpp_pt = getYield(root,"","","Deta","eta","#eta",8,-2,2,"&&Dpt>15.");
+  TH1D* hpp_pt_HltDpt15 = getYield(root,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","Deta","eta","#eta",8,-2,2,"&&Dpt>15.");
+  plotTurnOn(hpp_pt_HltDpt15,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","eta","#eta",8,-2,2);
+  TH1D* hpp_pt = getYield(root,"","","Dphi","phi","#phi",8,-2,2,"&&Dpt>15.");
+  TH1D* hpp_pt_HltDpt15 = getYield(root,"&&HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","Dphi","phi","#phi",8,-2,2,"&&Dpt>15.");
+  plotTurnOn(hpp_pt_HltDpt15,hpp_pt,"HLT_DmesonPPTrackingGlobal_Dpt8_v1","_HLT_DmesonPPTrackingGlobal_Dpt8_v1","eta","#eta",8,-2,2);
+*/
