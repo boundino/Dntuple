@@ -3,7 +3,7 @@ using namespace std;
 
 Bool_t iseos = false;
 int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+         TString outfile="/data/wangj/Data2015/Dntuple/example/test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=300, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   double findMass(Int_t particlePdgId);
   int findPdgid(Double_t tkmass);
@@ -668,12 +668,15 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
                             }
                           else if((TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j]&&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j]&&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk3_MassHypo[j]&&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk1_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j]&&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk3_MassHypo[j]&&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk2_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j]&&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID))
                             {
                               Dgen[typesize] = 23344;
@@ -711,26 +714,38 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
                             }
                           else if((TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk4_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk3_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk4_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk4_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk3_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk4_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk4_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID) ||
                                   (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk4_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk3_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j] &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID &&
                                    TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID))
                             {
@@ -831,26 +846,38 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
                                     }
                                   else if((TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) && 
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==PION_PDGID &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==PION_PDGID) ||
                                           (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) && 
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==PION_PDGID &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==PION_PDGID) ||
                                           (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) && 
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==PION_PDGID &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==PION_PDGID) ||
                                           (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) && 
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==PION_PDGID &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==PION_PDGID) ||
                                           (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) && 
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==PION_PDGID &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==PION_PDGID) ||
                                           (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) && 
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==PION_PDGID &&
                                            TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==PION_PDGID))
                                     {
