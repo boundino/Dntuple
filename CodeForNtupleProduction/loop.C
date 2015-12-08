@@ -3,7 +3,7 @@ using namespace std;
 
 Bool_t iseos = false;
 int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=300, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+         TString outfile="/data/wangj/Data2015/Dntuple/example/test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   double findMass(Int_t particlePdgId);
   int findPdgid(Double_t tkmass);
@@ -80,7 +80,7 @@ int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_
       hltroot->GetEntry(i);
       //skimroot->GetEntry(i);
       //if(isPbPb) hiroot->GetEntry(i);
-      if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
+      if(i%10000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
       if(checkMatching)
         {
           if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||(Int_t)Df_HLT_Run!=EvtInfo_RunNo||(Int_t)Df_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&((Int_t)Df_HiTree_Evt!=EvtInfo_EvtNo||(Int_t)Df_HiTree_Run!=EvtInfo_RunNo||(Int_t)Df_HiTree_Lumi!=EvtInfo_LumiNo)))

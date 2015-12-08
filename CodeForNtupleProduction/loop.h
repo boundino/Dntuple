@@ -634,6 +634,10 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.tktkRes_rftk4_pt",DInfo_tktkRes_rftk4_pt);
   root->SetBranchAddress("DInfo.tktkRes_rftk4_eta",DInfo_tktkRes_rftk4_eta);
   root->SetBranchAddress("DInfo.tktkRes_rftk4_phi",DInfo_tktkRes_rftk4_phi);
+  root->SetBranchAddress("DInfo.tktkRes_rftk1_index",DInfo_tktkRes_rftk1_index);
+  root->SetBranchAddress("DInfo.tktkRes_rftk2_index",DInfo_tktkRes_rftk2_index);
+  root->SetBranchAddress("DInfo.tktkRes_rftk3_index",DInfo_tktkRes_rftk3_index);
+  root->SetBranchAddress("DInfo.tktkRes_rftk4_index",DInfo_tktkRes_rftk4_index);
   root->SetBranchAddress("DInfo.mass",DInfo_mass);
   root->SetBranchAddress("DInfo.pt",DInfo_pt);
   root->SetBranchAddress("DInfo.eta",DInfo_eta);
