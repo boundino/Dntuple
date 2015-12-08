@@ -25,9 +25,10 @@ Int_t KAON_PDGID = 321;
 Int_t DZERO_PDGID = 421;
 Int_t DPLUS_PDGID = 411;
 Int_t DSUBS_PDGID = 431;
+Int_t DSTAR_PDGID = 413;
+Int_t PHI_PDGID = 333;
 
 #define MAX_XB 16384
-#define MAX_MUON 512
 #define MAX_TRACK 4096
 #define MAX_GEN 8192
 #define MAX_BX 128
@@ -370,7 +371,6 @@ void buildGenBranch(TTree* nt)
   nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/I");
 }
 
-
 //EvtInfo
 Int_t           EvtInfo_RunNo;
 Int_t           EvtInfo_EvtNo;
@@ -437,10 +437,6 @@ Int_t           TrackInfo_trkAlgo[MAX_TRACK];
 Int_t           DInfo_size;
 Int_t           DInfo_index[MAX_XB];
 Int_t           DInfo_type[MAX_XB];    
-Double_t        DInfo_b4fit_mass[MAX_XB];
-Double_t        DInfo_b4fit_pt[MAX_XB];
-Double_t        DInfo_b4fit_eta[MAX_XB];
-Double_t        DInfo_b4fit_phi[MAX_XB];
 Double_t        DInfo_tktkRes_mass[MAX_XB];
 Double_t        DInfo_tktkRes_pt[MAX_XB];
 Double_t        DInfo_tktkRes_eta[MAX_XB];
@@ -453,12 +449,26 @@ Double_t        DInfo_tktkRes_vtxYErr[MAX_XB];
 Double_t        DInfo_tktkRes_vtxZErr[MAX_XB];
 Double_t        DInfo_tktkRes_vtxdof[MAX_XB];
 Double_t        DInfo_tktkRes_vtxchi2[MAX_XB];
+Double_t        DInfo_tktkRes_rftk1_mass[MAX_XB];
 Double_t        DInfo_tktkRes_rftk1_pt[MAX_XB];
 Double_t        DInfo_tktkRes_rftk1_eta[MAX_XB];
 Double_t        DInfo_tktkRes_rftk1_phi[MAX_XB];
+Double_t        DInfo_tktkRes_rftk2_mass[MAX_XB];
 Double_t        DInfo_tktkRes_rftk2_pt[MAX_XB];
 Double_t        DInfo_tktkRes_rftk2_eta[MAX_XB];
 Double_t        DInfo_tktkRes_rftk2_phi[MAX_XB];
+Double_t        DInfo_tktkRes_rftk3_mass[MAX_XB];
+Double_t        DInfo_tktkRes_rftk3_pt[MAX_XB];
+Double_t        DInfo_tktkRes_rftk3_eta[MAX_XB];
+Double_t        DInfo_tktkRes_rftk3_phi[MAX_XB];
+Double_t        DInfo_tktkRes_rftk4_mass[MAX_XB];
+Double_t        DInfo_tktkRes_rftk4_pt[MAX_XB];
+Double_t        DInfo_tktkRes_rftk4_eta[MAX_XB];
+Double_t        DInfo_tktkRes_rftk4_phi[MAX_XB];
+Int_t           DInfo_tktkRes_rftk1_index[MAX_XB];
+Int_t           DInfo_tktkRes_rftk2_index[MAX_XB];
+Int_t           DInfo_tktkRes_rftk3_index[MAX_XB];
+Int_t           DInfo_tktkRes_rftk4_index[MAX_XB];
 Double_t        DInfo_mass[MAX_XB];
 Double_t        DInfo_pt[MAX_XB];
 Double_t        DInfo_eta[MAX_XB];
@@ -480,26 +490,36 @@ Double_t        DInfo_vtxZXErr[MAX_XB];
 Double_t        DInfo_vtxZYErr[MAX_XB];
 Double_t        DInfo_vtxdof[MAX_XB];
 Double_t        DInfo_vtxchi2[MAX_XB];
+Double_t        DInfo_rftk1_mass[MAX_XB];
 Double_t        DInfo_rftk1_pt[MAX_XB];
 Double_t        DInfo_rftk1_eta[MAX_XB];
 Double_t        DInfo_rftk1_phi[MAX_XB];
+Double_t        DInfo_rftk2_mass[MAX_XB];
 Double_t        DInfo_rftk2_pt[MAX_XB];
 Double_t        DInfo_rftk2_eta[MAX_XB];
 Double_t        DInfo_rftk2_phi[MAX_XB];
+Double_t        DInfo_rftk3_mass[MAX_XB];
 Double_t        DInfo_rftk3_pt[MAX_XB];
 Double_t        DInfo_rftk3_eta[MAX_XB];
 Double_t        DInfo_rftk3_phi[MAX_XB];
+Double_t        DInfo_rftk4_mass[MAX_XB];
 Double_t        DInfo_rftk4_pt[MAX_XB];
 Double_t        DInfo_rftk4_eta[MAX_XB];
 Double_t        DInfo_rftk4_phi[MAX_XB];
+Double_t        DInfo_rftk5_mass[MAX_XB];
+Double_t        DInfo_rftk5_pt[MAX_XB];
+Double_t        DInfo_rftk5_eta[MAX_XB];
+Double_t        DInfo_rftk5_phi[MAX_XB];
 Int_t           DInfo_rftk1_index[MAX_XB];
 Int_t           DInfo_rftk2_index[MAX_XB];
 Int_t           DInfo_rftk3_index[MAX_XB];
 Int_t           DInfo_rftk4_index[MAX_XB];
+Int_t           DInfo_rftk5_index[MAX_XB];
 Int_t           DInfo_rftk1_MassHypo[MAX_XB];
 Int_t           DInfo_rftk2_MassHypo[MAX_XB];
 Int_t           DInfo_rftk3_MassHypo[MAX_XB];
 Int_t           DInfo_rftk4_MassHypo[MAX_XB];
+Int_t           DInfo_rftk5_MassHypo[MAX_XB];
 //GenInfo
 Int_t           GenInfo_size;
 Int_t           GenInfo_index[MAX_GEN];
@@ -516,6 +536,8 @@ Int_t           GenInfo_mo1[MAX_GEN];
 Int_t           GenInfo_mo2[MAX_GEN];
 Int_t           GenInfo_da1[MAX_GEN];
 Int_t           GenInfo_da2[MAX_GEN];
+Int_t           GenInfo_da3[MAX_GEN];
+Int_t           GenInfo_da4[MAX_GEN];
 
 void setDBranch(TTree *root)
 {
@@ -596,12 +618,22 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.tktkRes_vtxZErr",DInfo_tktkRes_vtxZErr);
   root->SetBranchAddress("DInfo.tktkRes_vtxdof",DInfo_tktkRes_vtxdof);
   root->SetBranchAddress("DInfo.tktkRes_vtxchi2",DInfo_tktkRes_vtxchi2);
+  root->SetBranchAddress("DInfo.tktkRes_rftk1_mass",DInfo_tktkRes_rftk1_mass);
   root->SetBranchAddress("DInfo.tktkRes_rftk1_pt",DInfo_tktkRes_rftk1_pt);
   root->SetBranchAddress("DInfo.tktkRes_rftk1_eta",DInfo_tktkRes_rftk1_eta);
   root->SetBranchAddress("DInfo.tktkRes_rftk1_phi",DInfo_tktkRes_rftk1_phi);
+  root->SetBranchAddress("DInfo.tktkRes_rftk2_mass",DInfo_tktkRes_rftk2_mass);
   root->SetBranchAddress("DInfo.tktkRes_rftk2_pt",DInfo_tktkRes_rftk2_pt);
   root->SetBranchAddress("DInfo.tktkRes_rftk2_eta",DInfo_tktkRes_rftk2_eta);
   root->SetBranchAddress("DInfo.tktkRes_rftk2_phi",DInfo_tktkRes_rftk2_phi);
+  root->SetBranchAddress("DInfo.tktkRes_rftk3_mass",DInfo_tktkRes_rftk3_mass);
+  root->SetBranchAddress("DInfo.tktkRes_rftk3_pt",DInfo_tktkRes_rftk3_pt);
+  root->SetBranchAddress("DInfo.tktkRes_rftk3_eta",DInfo_tktkRes_rftk3_eta);
+  root->SetBranchAddress("DInfo.tktkRes_rftk3_phi",DInfo_tktkRes_rftk3_phi);
+  root->SetBranchAddress("DInfo.tktkRes_rftk4_mass",DInfo_tktkRes_rftk4_mass);
+  root->SetBranchAddress("DInfo.tktkRes_rftk4_pt",DInfo_tktkRes_rftk4_pt);
+  root->SetBranchAddress("DInfo.tktkRes_rftk4_eta",DInfo_tktkRes_rftk4_eta);
+  root->SetBranchAddress("DInfo.tktkRes_rftk4_phi",DInfo_tktkRes_rftk4_phi);
   root->SetBranchAddress("DInfo.mass",DInfo_mass);
   root->SetBranchAddress("DInfo.pt",DInfo_pt);
   root->SetBranchAddress("DInfo.eta",DInfo_eta);
@@ -623,26 +655,36 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.vtxZYErr",DInfo_vtxZYErr);
   root->SetBranchAddress("DInfo.vtxdof",DInfo_vtxdof);
   root->SetBranchAddress("DInfo.vtxchi2",DInfo_vtxchi2);
+  root->SetBranchAddress("DInfo.rftk1_mass",DInfo_rftk1_mass);
   root->SetBranchAddress("DInfo.rftk1_pt",DInfo_rftk1_pt);
   root->SetBranchAddress("DInfo.rftk1_eta",DInfo_rftk1_eta);
   root->SetBranchAddress("DInfo.rftk1_phi",DInfo_rftk1_phi);
+  root->SetBranchAddress("DInfo.rftk2_mass",DInfo_rftk2_mass);
   root->SetBranchAddress("DInfo.rftk2_pt",DInfo_rftk2_pt);
   root->SetBranchAddress("DInfo.rftk2_eta",DInfo_rftk2_eta);
   root->SetBranchAddress("DInfo.rftk2_phi",DInfo_rftk2_phi);
+  root->SetBranchAddress("DInfo.rftk3_mass",DInfo_rftk3_mass);
   root->SetBranchAddress("DInfo.rftk3_pt",DInfo_rftk3_pt);
   root->SetBranchAddress("DInfo.rftk3_eta",DInfo_rftk3_eta);
   root->SetBranchAddress("DInfo.rftk3_phi",DInfo_rftk3_phi);
+  root->SetBranchAddress("DInfo.rftk4_mass",DInfo_rftk4_mass);
   root->SetBranchAddress("DInfo.rftk4_pt",DInfo_rftk4_pt);
   root->SetBranchAddress("DInfo.rftk4_eta",DInfo_rftk4_eta);
   root->SetBranchAddress("DInfo.rftk4_phi",DInfo_rftk4_phi);
+  root->SetBranchAddress("DInfo.rftk5_mass",DInfo_rftk5_mass);
+  root->SetBranchAddress("DInfo.rftk5_pt",DInfo_rftk5_pt);
+  root->SetBranchAddress("DInfo.rftk5_eta",DInfo_rftk5_eta);
+  root->SetBranchAddress("DInfo.rftk5_phi",DInfo_rftk5_phi);
   root->SetBranchAddress("DInfo.rftk1_index",DInfo_rftk1_index);
   root->SetBranchAddress("DInfo.rftk2_index",DInfo_rftk2_index);
   root->SetBranchAddress("DInfo.rftk3_index",DInfo_rftk3_index);
   root->SetBranchAddress("DInfo.rftk4_index",DInfo_rftk4_index);
+  root->SetBranchAddress("DInfo.rftk5_index",DInfo_rftk5_index);
   root->SetBranchAddress("DInfo.rftk1_MassHypo",DInfo_rftk1_MassHypo);
   root->SetBranchAddress("DInfo.rftk2_MassHypo",DInfo_rftk2_MassHypo);
   root->SetBranchAddress("DInfo.rftk3_MassHypo",DInfo_rftk3_MassHypo);
   root->SetBranchAddress("DInfo.rftk4_MassHypo",DInfo_rftk4_MassHypo);
+  root->SetBranchAddress("DInfo.rftk5_MassHypo",DInfo_rftk5_MassHypo);
   //GenInfo
   root->SetBranchAddress("GenInfo.size",&GenInfo_size);
   root->SetBranchAddress("GenInfo.index",GenInfo_index);
@@ -659,6 +701,8 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("GenInfo.mo2",GenInfo_mo2);
   root->SetBranchAddress("GenInfo.da1",GenInfo_da1);
   root->SetBranchAddress("GenInfo.da2",GenInfo_da2);
+  root->SetBranchAddress("GenInfo.da3",GenInfo_da3);
+  root->SetBranchAddress("GenInfo.da4",GenInfo_da4);
 }
 
 //HltInfo

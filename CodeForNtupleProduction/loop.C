@@ -1,11 +1,12 @@
 #include "loop.h"
 using namespace std;
 
-Bool_t iseos = true;
-int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+Bool_t iseos = false;
+int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb.root",
+         TString outfile="/data/wangj/Data2015/Dntuple/example/test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   double findMass(Int_t particlePdgId);
+  int findPdgid(Double_t tkmass);
   void fillTreeEvt();
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
   bool isDsignalGen(Int_t Dtype, Int_t j);
@@ -23,38 +24,46 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
   TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
-  TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
-  TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
+  //TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
+  //TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   setDBranch(root);
   setHltTreeBranch(hltroot);
-  if(isPbPb) setHiTreeBranch(hiroot);
+  //if(isPbPb) setHiTreeBranch(hiroot);
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries==-1) endEntries = nentries;
   TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
-  int isDchannel[6];
+  int isDchannel[12];
   isDchannel[0] = 1; //k+pi-
   isDchannel[1] = 1; //k-pi+
   isDchannel[2] = 1; //k-pi+pi+
   isDchannel[3] = 1; //k+pi-pi-
   isDchannel[4] = 1; //k-pi-pi+pi+
   isDchannel[5] = 1; //k+pi+pi-pi-
+  isDchannel[6] = 1; 
+  isDchannel[7] = 1; 
+  isDchannel[8] = 1; 
+  isDchannel[9] = 1; 
+  isDchannel[10] = 1; 
+  isDchannel[11] = 1; 
 
   cout<<"--- Building trees"<<endl;
-  TTree* ntD1 = new TTree("ntDkpi","");       buildDBranch(ntD1);
-  TTree* ntD2 = new TTree("ntDkpipi","");     buildDBranch(ntD2);
-  TTree* ntD3 = new TTree("ntDkpipipi","");   buildDBranch(ntD3);
-  TTree* ntGen = new TTree("ntGen","");       buildGenBranch(ntGen);
+  TTree* ntD1 = new TTree("ntDkpi","");           buildDBranch(ntD1);
+  TTree* ntD2 = new TTree("ntDkpipi","");         buildDBranch(ntD2);
+  TTree* ntD3 = new TTree("ntDkpipipi","");       buildDBranch(ntD3);
+  TTree* ntD4 = new TTree("ntDPhikkpi","");       buildDBranch(ntD4);
+  TTree* ntD5 = new TTree("ntDD0kpipi","");       buildDBranch(ntD5);
+  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   buildDBranch(ntD6);
+  TTree* ntGen = new TTree("ntGen","");           buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
-  TTree* ntSkim = skimroot->CloneTree(0);
-  ntSkim->SetName("ntSkim");
-  TTree* ntHi = hiroot->CloneTree(0);
-  ntHi->SetName("ntHi");
+  //TTree* ntSkim = skimroot->CloneTree(0);
+  //ntSkim->SetName("ntSkim");
+  //TTree* ntHi = hiroot->CloneTree(0);
+  //ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
-  //Int_t flagEvt=0 
   Int_t offsetHltTree=0;
   TVector3* bP = new TVector3;
   TVector3* bVtx = new TVector3;
@@ -62,15 +71,15 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
   TLorentzVector* bGen = new TLorentzVector;
   cout<<"--- Check the number of events for three trees"<<endl;
   cout<<root->GetEntries()<<" "<<hltroot->GetEntries();
-  if(isPbPb) cout<<" "<<hiroot->GetEntries();
+  //if(isPbPb) cout<<" "<<hiroot->GetEntries();
   cout<<endl;
   cout<<"--- Processing events"<<endl;
   for(Int_t i=startEntries;i<endEntries;i++)
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
-      skimroot->GetEntry(i);
-      if(isPbPb) hiroot->GetEntry(i);
+      //skimroot->GetEntry(i);
+      //if(isPbPb) hiroot->GetEntry(i);
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
       if(checkMatching)
         {
@@ -82,11 +91,10 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
             }
         }
       fillTreeEvt();
-      Int_t Dtypesize[3]={0,0,0};
-      Int_t Ndbc=0;
+      Int_t Dtypesize[6]={0,0,0,0,0,0};
       Int_t ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
       Double_t pttem=0,ptMatchedtem=0,probtem=0,probMatchedtem=0;
-      for(Int_t t=0;t<6;t++)
+      for(Int_t t=0;t<12;t++)
 	{
 	  if(t%2==0)
 	    {
@@ -150,12 +158,15 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
 	      if(t==1)      ntD1->Fill();
 	      else if(t==3) ntD2->Fill();
 	      else if(t==5) ntD3->Fill();
+	      else if(t==7) ntD4->Fill();
+	      else if(t==9) ntD5->Fill();
+	      else if(t==11) ntD6->Fill();
 	    }
 	}
 
       ntHlt->Fill();
-      ntSkim->Fill();
-      if(isPbPb) ntHi->Fill();
+      //ntSkim->Fill();
+      //if(isPbPb) ntHi->Fill();
 
       if(!REAL)
 	{
@@ -173,7 +184,7 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
 	      bGen->SetPtEtaPhiM(GenInfo_pt[j],GenInfo_eta[j],GenInfo_phi[j],GenInfo_mass[j]);
 	      Gy[gsize] = bGen->Rapidity();
 	      sigtype=0;
-	      for(gt=1;gt<5;gt++)
+	      for(gt=1;gt<13;gt++)
 		{
 		  if(isDsignalGen(gt,j))
 		    {
@@ -209,6 +220,18 @@ double findMass(Int_t particlePdgId)
       return 0;
     }
 }
+
+int findPdgid(Double_t tkmass)
+{
+  if(TMath::Abs(tkmass-KAON_MASS)<0.1) return KAON_PDGID;
+  else if(TMath::Abs(tkmass-PION_MASS)<0.1) return PION_PDGID;
+  else
+    {
+      cout<<"ERROR: find particle pdgid falied >> Particle mass: "<<tkmass<<endl;
+      return 0;
+    }
+}
+
 
 void fillTreeEvt()
 {
@@ -287,121 +310,269 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
 
   //DInfo.trkInfo
   Double_t trk1mass,trk2mass,trk3mass,trk4mass;
-  Dtrk1Idx[typesize] = DInfo_rftk1_index[j];
-  Dtrk2Idx[typesize] = DInfo_rftk2_index[j];
-  Dtrk1Pt[typesize] = TrackInfo_pt[DInfo_rftk1_index[j]];
-  Dtrk2Pt[typesize] = TrackInfo_pt[DInfo_rftk2_index[j]];
-  Dtrk1Eta[typesize] = TrackInfo_eta[DInfo_rftk1_index[j]];
-  Dtrk2Eta[typesize] = TrackInfo_eta[DInfo_rftk2_index[j]];
-  Dtrk1Phi[typesize] = TrackInfo_phi[DInfo_rftk1_index[j]];
-  Dtrk2Phi[typesize] = TrackInfo_phi[DInfo_rftk2_index[j]];
-  Dtrk1PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk1_index[j]];
-  Dtrk2PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk2_index[j]];
-  Dtrk1EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk1_index[j]];
-  Dtrk2EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk2_index[j]];
-  Dtrk1PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk1_index[j]];
-  Dtrk2PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk2_index[j]];
-  trk1mass = findMass(DInfo_rftk1_MassHypo[j]);
-  trk2mass = findMass(DInfo_rftk2_MassHypo[j]);
-  b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk1_index[j]],TrackInfo_eta[DInfo_rftk1_index[j]],TrackInfo_phi[DInfo_rftk1_index[j]],trk1mass);
-  Dtrk1Y[typesize] = b4P->Rapidity();
-  b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk2_index[j]],TrackInfo_eta[DInfo_rftk2_index[j]],TrackInfo_phi[DInfo_rftk2_index[j]],trk2mass);
-  Dtrk2Y[typesize] = b4P->Rapidity();
-  Dtrk1Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk1_index[j]];
-  Dtrk2Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk2_index[j]];
-  Dtrk1D0Err[typesize] = TrackInfo_d0error[DInfo_rftk1_index[j]];
-  Dtrk2D0Err[typesize] = TrackInfo_d0error[DInfo_rftk2_index[j]];
-  Dtrk1PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk1_index[j]];
-  Dtrk2PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk2_index[j]];
-  Dtrk1StripHit[typesize] = TrackInfo_striphit[DInfo_rftk1_index[j]];
-  Dtrk2StripHit[typesize] = TrackInfo_striphit[DInfo_rftk2_index[j]];
-  Dtrk1nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk1_index[j]];
-  Dtrk2nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk2_index[j]];
-  Dtrk1nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk1_index[j]];
-  Dtrk2nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk2_index[j]];
-  Dtrk1Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk1_index[j]]/TrackInfo_ndf[DInfo_rftk1_index[j]];
-  Dtrk2Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
-  Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j]*TrackInfo_charge[DInfo_rftk1_index[j]];
-  Dtrk2MassHypo[typesize] = DInfo_rftk2_MassHypo[j]*TrackInfo_charge[DInfo_rftk2_index[j]];
-  Dtrk1MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk1_index[j]];
-  Dtrk2MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk2_index[j]];
-  Dtrk1Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk1_index[j]];
-  Dtrk2Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk2_index[j]];
-  Dtrk1highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk1_index[j]];
-  Dtrk2highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk2_index[j]];
-  Dtrk1Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk1_index[j]];
-  Dtrk2Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk2_index[j]];
-  Dtrkminpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
-  Dtrkmaxpt[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?TrackInfo_pt[DInfo_rftk1_index[j]]:TrackInfo_pt[DInfo_rftk2_index[j]];
-  Dtrkminptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]<TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
-  Dtrkmaxptindex[typesize] = (TrackInfo_pt[DInfo_rftk1_index[j]]>TrackInfo_pt[DInfo_rftk2_index[j]])?1:2;
-  if(DInfo_type[j]==1||DInfo_type[j]==2)
+  if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5||DInfo_type[j]==6)
     {
-      Dtrk3Idx[typesize] = -1;
-      Dtrk4Idx[typesize] = -1;
-      Dtrk3Pt[typesize] = -1;
-      Dtrk4Pt[typesize] = -1;
-      Dtrk3Eta[typesize] = -20;
-      Dtrk4Eta[typesize] = -20;
-      Dtrk3Phi[typesize] = -20;
-      Dtrk4Phi[typesize] = -20;
-      Dtrk3PtErr[typesize] = 0;
-      Dtrk4PtErr[typesize] = 0;
-      Dtrk3EtaErr[typesize] = 0;
-      Dtrk4EtaErr[typesize] = 0;
-      Dtrk3PhiErr[typesize] = 0;
-      Dtrk4PhiErr[typesize] = 0;
-      Dtrk3Y[typesize] = -1;
-      Dtrk4Y[typesize] = -1;
-      Dtrk3Dxy[typesize] = -1;
-      Dtrk4Dxy[typesize] = -1;
-      Dtrk3D0Err[typesize] = -1;
-      Dtrk4D0Err[typesize] = -1;
-      Dtrk3PixelHit[typesize] = -1;
-      Dtrk4PixelHit[typesize] = -1;
-      Dtrk3StripHit[typesize] = -1;
-      Dtrk4StripHit[typesize] = -1;
-      Dtrk1nPixelLayer[typesize] = -1;
-      Dtrk2nPixelLayer[typesize] = -1;
-      Dtrk1nStripLayer[typesize] = -1;
-      Dtrk2nStripLayer[typesize] = -1;
-      Dtrk3Chi2ndf[typesize] = -1;
-      Dtrk4Chi2ndf[typesize] = -1;
-      Dtrk3MassHypo[typesize] = 0;
-      Dtrk4MassHypo[typesize] = 0;
-      Dtrk3MVAVal[typesize] = -100;
-      Dtrk4MVAVal[typesize] = -100;
-      Dtrk3highPurity[typesize] = false;
-      Dtrk4highPurity[typesize] = false;
-      DtktkResmass[typesize] = -1;
-      DtktkRespt[typesize] = -1;
-      DtktkReseta[typesize] = -20;
-      DtktkResphi[typesize] = -20;
+      Dtrk1Idx[typesize] = DInfo_rftk1_index[j];
+      Dtrk1Pt[typesize] = TrackInfo_pt[DInfo_rftk1_index[j]];
+      Dtrk1Eta[typesize] = TrackInfo_eta[DInfo_rftk1_index[j]];
+      Dtrk1Phi[typesize] = TrackInfo_phi[DInfo_rftk1_index[j]];
+      Dtrk1PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk1_index[j]];
+      Dtrk1EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk1_index[j]];
+      Dtrk1PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk1_index[j]];
+      trk1mass = findMass(DInfo_rftk1_MassHypo[j]);
+      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk1_index[j]],TrackInfo_eta[DInfo_rftk1_index[j]],TrackInfo_phi[DInfo_rftk1_index[j]],trk1mass);
+      Dtrk1Y[typesize] = b4P->Rapidity();
+      Dtrk1Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk1_index[j]];
+      Dtrk1D0Err[typesize] = TrackInfo_d0error[DInfo_rftk1_index[j]];
+      Dtrk1PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk1_index[j]];
+      Dtrk1StripHit[typesize] = TrackInfo_striphit[DInfo_rftk1_index[j]];
+      Dtrk1nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk1_index[j]];
+      Dtrk1nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk1_index[j]];
+      Dtrk1MassHypo[typesize] = DInfo_rftk1_MassHypo[j]*TrackInfo_charge[DInfo_rftk1_index[j]];
+      Dtrk1Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk1_index[j]]/TrackInfo_ndf[DInfo_rftk1_index[j]];
+      Dtrk1MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk1_index[j]];
+      Dtrk1Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk1_index[j]];
+      Dtrk1highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk1_index[j]];
+      Dtrk1Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk1_index[j]];
+
+      Dtrk2Idx[typesize] = DInfo_rftk2_index[j];
+      Dtrk2Pt[typesize] = TrackInfo_pt[DInfo_rftk2_index[j]];
+      Dtrk2Eta[typesize] = TrackInfo_eta[DInfo_rftk2_index[j]];
+      Dtrk2Phi[typesize] = TrackInfo_phi[DInfo_rftk2_index[j]];
+      Dtrk2PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk2_index[j]];
+      Dtrk2EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk2_index[j]];
+      Dtrk2PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk2_index[j]];
+      trk2mass = findMass(DInfo_rftk2_MassHypo[j]);
+      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk2_index[j]],TrackInfo_eta[DInfo_rftk2_index[j]],TrackInfo_phi[DInfo_rftk2_index[j]],trk2mass);
+      Dtrk2Y[typesize] = b4P->Rapidity();
+      Dtrk2Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk2_index[j]];
+      Dtrk2D0Err[typesize] = TrackInfo_d0error[DInfo_rftk2_index[j]];
+      Dtrk2PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk2_index[j]];
+      Dtrk2StripHit[typesize] = TrackInfo_striphit[DInfo_rftk2_index[j]];
+      Dtrk2nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk2_index[j]];
+      Dtrk2nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk2_index[j]];
+      Dtrk2Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
+      Dtrk2MassHypo[typesize] = DInfo_rftk2_MassHypo[j]*TrackInfo_charge[DInfo_rftk2_index[j]];
+      Dtrk2MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk2_index[j]];
+      Dtrk2Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk2_index[j]];
+      Dtrk2highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk2_index[j]];
+      Dtrk2Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk2_index[j]];
+
+      if(DInfo_type[j]==1||DInfo_type[j]==2)
+        {
+          Dtrk3Idx[typesize] = -1;
+          Dtrk3Pt[typesize] = -1;
+          Dtrk3Eta[typesize] = -20;
+          Dtrk3Phi[typesize] = -20;
+          Dtrk3PtErr[typesize] = 0;
+          Dtrk3EtaErr[typesize] = 0;
+          Dtrk3PhiErr[typesize] = 0;
+          Dtrk3Y[typesize] = -1;
+          Dtrk3Dxy[typesize] = -1;
+          Dtrk3D0Err[typesize] = -1;
+          Dtrk3PixelHit[typesize] = -1;
+          Dtrk3StripHit[typesize] = -1;
+          Dtrk3nPixelLayer[typesize] = -1;
+          Dtrk3nStripLayer[typesize] = -1;
+          Dtrk3Chi2ndf[typesize] = -1;
+          Dtrk3MassHypo[typesize] = 0;
+          Dtrk3MVAVal[typesize] = -100;
+          Dtrk3Algo[typesize] = 0;
+          Dtrk3Quality[typesize] = 0;
+          Dtrk3highPurity[typesize] = false;
+          Dtrk4Idx[typesize] = -1;
+          Dtrk4Pt[typesize] = -1;
+          Dtrk4Eta[typesize] = -20;
+          Dtrk4Phi[typesize] = -20;
+          Dtrk4PtErr[typesize] = 0;
+          Dtrk4EtaErr[typesize] = 0;
+          Dtrk4PhiErr[typesize] = 0;
+          Dtrk4Y[typesize] = -1;
+          Dtrk4Dxy[typesize] = -1;
+          Dtrk4D0Err[typesize] = -1;
+          Dtrk4PixelHit[typesize] = -1;
+          Dtrk4StripHit[typesize] = -1;
+          Dtrk4nPixelLayer[typesize] = -1;
+          Dtrk4nStripLayer[typesize] = -1;
+          Dtrk4Chi2ndf[typesize] = -1;
+          Dtrk4MassHypo[typesize] = 0;
+          Dtrk4MVAVal[typesize] = -100;
+          Dtrk4Algo[typesize] = 0;
+          Dtrk4Quality[typesize] = 0;
+          Dtrk4highPurity[typesize] = false;
+          
+          DtktkResmass[typesize] = -1;
+          DtktkRespt[typesize] = -1;
+          DtktkReseta[typesize] = -20;
+          DtktkResphi[typesize] = -20;
+        }
+      else if(DInfo_type[j]==3||DInfo_type[j]==4)
+        {
+          Dtrk3Idx[typesize] = DInfo_rftk3_index[j];
+          Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
+          Dtrk3Eta[typesize] = TrackInfo_eta[DInfo_rftk3_index[j]];
+          Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
+          Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
+          Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
+          Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
+          trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
+          b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
+          Dtrk3Y[typesize] = b4P->Rapidity();
+          Dtrk3Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk3_index[j]];
+          Dtrk3D0Err[typesize] = TrackInfo_d0error[DInfo_rftk3_index[j]];
+          Dtrk3PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk3_index[j]];
+          Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
+          Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
+          Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
+          Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
+          Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
+          Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
+          Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
+          Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
+          Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
+          Dtrk4Idx[typesize] = -1;
+          Dtrk4Pt[typesize] = -1;
+          Dtrk4Eta[typesize] = -20;
+          Dtrk4Phi[typesize] = -20;
+          Dtrk4PtErr[typesize] = 0;
+          Dtrk4EtaErr[typesize] = 0;
+          Dtrk4PhiErr[typesize] = 0;
+          Dtrk4Y[typesize] = -1;
+          Dtrk4Dxy[typesize] = -1;
+          Dtrk4D0Err[typesize] = -1;
+          Dtrk4PixelHit[typesize] = -1;
+          Dtrk4StripHit[typesize] = -1;
+          Dtrk4nPixelLayer[typesize] = -1;
+          Dtrk4nStripLayer[typesize] = -1;
+          Dtrk4Chi2ndf[typesize] = -1;
+          Dtrk4MassHypo[typesize] = 0;
+          Dtrk4MVAVal[typesize] = -100;
+          Dtrk4Algo[typesize] = 0;
+          Dtrk4Quality[typesize] = 0;
+          Dtrk4highPurity[typesize] = false;
+
+          DtktkResmass[typesize] = -1;
+          DtktkRespt[typesize] = -1;
+          DtktkReseta[typesize] = -20;
+          DtktkResphi[typesize] = -20;
+        }
+      else if(DInfo_type[j]==5||DInfo_type[j]==6)
+        {
+          Dtrk3Idx[typesize] = DInfo_rftk3_index[j];
+          Dtrk4Idx[typesize] = DInfo_rftk4_index[j];
+          Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
+          Dtrk4Pt[typesize] = TrackInfo_pt[DInfo_rftk4_index[j]];
+          Dtrk3Eta[typesize] = TrackInfo_eta[DInfo_rftk3_index[j]];
+          Dtrk4Eta[typesize] = TrackInfo_eta[DInfo_rftk4_index[j]];
+          Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
+          Dtrk4Phi[typesize] = TrackInfo_phi[DInfo_rftk4_index[j]];
+          Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
+          Dtrk4PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk4_index[j]];
+          Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
+          Dtrk4EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk4_index[j]];
+          Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
+          Dtrk4PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk4_index[j]];
+          trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
+          trk4mass = findMass(DInfo_rftk4_MassHypo[j]);
+          b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
+          Dtrk3Y[typesize] = b4P->Rapidity();
+          b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk4_index[j]],TrackInfo_eta[DInfo_rftk4_index[j]],TrackInfo_phi[DInfo_rftk4_index[j]],trk4mass);
+          Dtrk4Y[typesize] = b4P->Rapidity();
+          Dtrk3Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk3_index[j]];
+          Dtrk4Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk4_index[j]];
+          Dtrk3D0Err[typesize] = TrackInfo_d0error[DInfo_rftk3_index[j]];
+          Dtrk4D0Err[typesize] = TrackInfo_d0error[DInfo_rftk4_index[j]];
+          Dtrk3PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk3_index[j]];
+          Dtrk4PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk4_index[j]];
+          Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
+          Dtrk4StripHit[typesize] = TrackInfo_striphit[DInfo_rftk4_index[j]];
+          Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
+          Dtrk4nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk4_index[j]];
+          Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
+          Dtrk4nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk4_index[j]];
+          Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
+          Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
+          Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
+          Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
+          Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
+          Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
+          Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
+          Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
+          Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
+          Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
+          Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
+          Dtrk4Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk4_index[j]];
+
+          DtktkResmass[typesize] = -1;
+          DtktkRespt[typesize] = -1;
+          DtktkReseta[typesize] = -20;
+          DtktkResphi[typesize] = -20;
+        }
     }
-  else if(DInfo_type[j]==3||DInfo_type[j]==4)
+  else if(DInfo_type[j]==7||DInfo_type[j]==8||DInfo_type[j]==9||DInfo_type[j]==10||DInfo_type[j]==11||DInfo_type[j]==12)
     {
-      Dtrk3Idx[typesize] = DInfo_rftk3_index[j];
-      Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
-      Dtrk3Eta[typesize] = TrackInfo_eta[DInfo_rftk3_index[j]];
-      Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
-      Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
-      Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
-      Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
-      trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
-      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
-      Dtrk3Y[typesize] = b4P->Rapidity();
-      Dtrk3Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk3_index[j]];
-      Dtrk3D0Err[typesize] = TrackInfo_d0error[DInfo_rftk3_index[j]];
-      Dtrk3PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk3_index[j]];
-      Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
-      Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
-      Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
-      Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
-      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
-      Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
-      Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
-      Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
-      Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
+      Dtrk1Idx[typesize] = DInfo_rftk2_index[j];
+      Dtrk1Pt[typesize] = TrackInfo_pt[DInfo_rftk2_index[j]];
+      Dtrk1Eta[typesize] = TrackInfo_eta[DInfo_rftk2_index[j]];
+      Dtrk1Phi[typesize] = TrackInfo_phi[DInfo_rftk2_index[j]];
+      Dtrk1PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk2_index[j]];
+      Dtrk1EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk2_index[j]];
+      Dtrk1PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk2_index[j]];
+      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk2_index[j]],TrackInfo_eta[DInfo_rftk2_index[j]],TrackInfo_phi[DInfo_rftk2_index[j]],PION_MASS);
+      Dtrk1Y[typesize] = b4P->Rapidity();
+      Dtrk1Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk2_index[j]];
+      Dtrk1D0Err[typesize] = TrackInfo_d0error[DInfo_rftk2_index[j]];
+      Dtrk1PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk2_index[j]];
+      Dtrk1StripHit[typesize] = TrackInfo_striphit[DInfo_rftk2_index[j]];
+      Dtrk1nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk2_index[j]];
+      Dtrk1nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk2_index[j]];
+      Dtrk1Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk2_index[j]]/TrackInfo_ndf[DInfo_rftk2_index[j]];
+      Dtrk1MassHypo[typesize] = DInfo_rftk2_MassHypo[j]*TrackInfo_charge[DInfo_rftk2_index[j]];
+      Dtrk1MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk2_index[j]];
+      Dtrk1Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk2_index[j]];
+      Dtrk1highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk2_index[j]];
+      Dtrk1Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk2_index[j]];
+
+      Dtrk2Idx[typesize] = -1;
+      Dtrk2Pt[typesize] = -1;
+      Dtrk2Eta[typesize] = -20;
+      Dtrk2Phi[typesize] = -20;
+      Dtrk2PtErr[typesize] = 0;
+      Dtrk2EtaErr[typesize] = 0;
+      Dtrk2PhiErr[typesize] = 0;
+      Dtrk2Y[typesize] = -1;
+      Dtrk2Dxy[typesize] = -1;
+      Dtrk2D0Err[typesize] = -1;
+      Dtrk2PixelHit[typesize] = -1;
+      Dtrk2StripHit[typesize] = -1;
+      Dtrk2nPixelLayer[typesize] = -1;
+      Dtrk2nStripLayer[typesize] = -1;
+      Dtrk2Chi2ndf[typesize] = -1;
+      Dtrk2MassHypo[typesize] = 0;
+      Dtrk2MVAVal[typesize] = -100;
+      Dtrk2Algo[typesize] = 0;
+      Dtrk2Quality[typesize] = 0;
+      Dtrk2highPurity[typesize] = false;
+      Dtrk3Idx[typesize] = -1;
+      Dtrk3Pt[typesize] = -1;
+      Dtrk3Eta[typesize] = -20;
+      Dtrk3Phi[typesize] = -20;
+      Dtrk3PtErr[typesize] = 0;
+      Dtrk3EtaErr[typesize] = 0;
+      Dtrk3PhiErr[typesize] = 0;
+      Dtrk3Y[typesize] = -1;
+      Dtrk3Dxy[typesize] = -1;
+      Dtrk3D0Err[typesize] = -1;
+      Dtrk3PixelHit[typesize] = -1;
+      Dtrk3StripHit[typesize] = -1;
+      Dtrk3nPixelLayer[typesize] = -1;
+      Dtrk3nStripLayer[typesize] = -1;
+      Dtrk3Chi2ndf[typesize] = -1;
+      Dtrk3MassHypo[typesize] = 0;
+      Dtrk3MVAVal[typesize] = -100;
+      Dtrk3Algo[typesize] = 0;
+      Dtrk3Quality[typesize] = 0;
+      Dtrk3highPurity[typesize] = false;
       Dtrk4Idx[typesize] = -1;
       Dtrk4Pt[typesize] = -1;
       Dtrk4Eta[typesize] = -20;
@@ -422,114 +593,20 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       Dtrk4Algo[typesize] = 0;
       Dtrk4Quality[typesize] = 0;
       Dtrk4highPurity[typesize] = false;
-      DtktkResmass[typesize] = -1;
-      DtktkRespt[typesize] = -1;
-      DtktkReseta[typesize] = -20;
-      DtktkResphi[typesize] = -20;
-    }
-  else if(DInfo_type[j]==5||DInfo_type[j]==6)
-    {
-      Dtrk3Idx[typesize] = DInfo_rftk3_index[j];
-      Dtrk4Idx[typesize] = DInfo_rftk4_index[j];
-      Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
-      Dtrk4Pt[typesize] = TrackInfo_pt[DInfo_rftk4_index[j]];
-      Dtrk3Eta[typesize] = TrackInfo_eta[DInfo_rftk3_index[j]];
-      Dtrk4Eta[typesize] = TrackInfo_eta[DInfo_rftk4_index[j]];
-      Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
-      Dtrk4Phi[typesize] = TrackInfo_phi[DInfo_rftk4_index[j]];
-      Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
-      Dtrk4PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk4_index[j]];
-      Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
-      Dtrk4EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk4_index[j]];
-      Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
-      Dtrk4PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk4_index[j]];
-      trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
-      trk4mass = findMass(DInfo_rftk4_MassHypo[j]);
-      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
-      Dtrk3Y[typesize] = b4P->Rapidity();
-      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk4_index[j]],TrackInfo_eta[DInfo_rftk4_index[j]],TrackInfo_phi[DInfo_rftk4_index[j]],trk4mass);
-      Dtrk4Y[typesize] = b4P->Rapidity();
-      Dtrk3Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk3_index[j]];
-      Dtrk4Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk4_index[j]];
-      Dtrk3D0Err[typesize] = TrackInfo_d0error[DInfo_rftk3_index[j]];
-      Dtrk4D0Err[typesize] = TrackInfo_d0error[DInfo_rftk4_index[j]];
-      Dtrk3PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk3_index[j]];
-      Dtrk4PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk4_index[j]];
-      Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
-      Dtrk4StripHit[typesize] = TrackInfo_striphit[DInfo_rftk4_index[j]];
-      Dtrk3nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk3_index[j]];
-      Dtrk4nPixelLayer[typesize] = TrackInfo_nPixelLayer[DInfo_rftk4_index[j]];
-      Dtrk3nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk3_index[j]];
-      Dtrk4nStripLayer[typesize] = TrackInfo_nStripLayer[DInfo_rftk4_index[j]];
-      Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
-      Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
-      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
-      Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
-      Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
-      Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
-      Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
-      Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
-      Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
-      Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
-      Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
-      Dtrk4Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk4_index[j]];
-      DtktkResmass[typesize] = -1;
-      DtktkRespt[typesize] = -1;
-      DtktkReseta[typesize] = -20;
-      DtktkResphi[typesize] = -20;
-    }
-  else if(DInfo_type[j]==7||DInfo_type[j]==8)
-    {
-      Dtrk3Idx[typesize] = DInfo_rftk3_index[j];
-      Dtrk4Idx[typesize] = DInfo_rftk4_index[j];
-      Dtrk3Pt[typesize] = TrackInfo_pt[DInfo_rftk3_index[j]];
-      Dtrk4Pt[typesize] = TrackInfo_pt[DInfo_rftk4_index[j]];
-      Dtrk3Eta[typesize] = TrackInfo_eta[DInfo_rftk3_index[j]];
-      Dtrk4Eta[typesize] = TrackInfo_eta[DInfo_rftk4_index[j]];
-      Dtrk3Phi[typesize] = TrackInfo_phi[DInfo_rftk3_index[j]];
-      Dtrk4Phi[typesize] = TrackInfo_phi[DInfo_rftk4_index[j]];
-      Dtrk3PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk3_index[j]];
-      Dtrk4PtErr[typesize] = TrackInfo_ptErr[DInfo_rftk4_index[j]];
-      Dtrk3EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk3_index[j]];
-      Dtrk4EtaErr[typesize] = TrackInfo_etaErr[DInfo_rftk4_index[j]];
-      Dtrk3PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk3_index[j]];
-      Dtrk4PhiErr[typesize] = TrackInfo_phiErr[DInfo_rftk4_index[j]];
-      trk3mass = findMass(DInfo_rftk3_MassHypo[j]);
-      trk4mass = findMass(DInfo_rftk4_MassHypo[j]);
-      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk3_index[j]],TrackInfo_eta[DInfo_rftk3_index[j]],TrackInfo_phi[DInfo_rftk3_index[j]],trk3mass);
-      Dtrk3Y[typesize] = b4P->Rapidity();
-      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_rftk4_index[j]],TrackInfo_eta[DInfo_rftk4_index[j]],TrackInfo_phi[DInfo_rftk4_index[j]],trk4mass);
-      Dtrk4Y[typesize] = b4P->Rapidity();
-      Dtrk3Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk3_index[j]];
-      Dtrk4Dxy[typesize] = TrackInfo_dxyPV[DInfo_rftk4_index[j]];
-      Dtrk3D0Err[typesize] = TrackInfo_d0error[DInfo_rftk3_index[j]];
-      Dtrk4D0Err[typesize] = TrackInfo_d0error[DInfo_rftk4_index[j]];
-      Dtrk3PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk3_index[j]];
-      Dtrk4PixelHit[typesize] = TrackInfo_pixelhit[DInfo_rftk4_index[j]];
-      Dtrk3StripHit[typesize] = TrackInfo_striphit[DInfo_rftk3_index[j]];
-      Dtrk4StripHit[typesize] = TrackInfo_striphit[DInfo_rftk4_index[j]];
-      Dtrk3Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk3_index[j]]/TrackInfo_ndf[DInfo_rftk3_index[j]];
-      Dtrk4Chi2ndf[typesize] = TrackInfo_chi2[DInfo_rftk4_index[j]]/TrackInfo_ndf[DInfo_rftk4_index[j]];
-      Dtrk3MassHypo[typesize] = DInfo_rftk3_MassHypo[j]*TrackInfo_charge[DInfo_rftk3_index[j]];
-      Dtrk4MassHypo[typesize] = DInfo_rftk4_MassHypo[j]*TrackInfo_charge[DInfo_rftk4_index[j]];
-      Dtrk3MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk3_index[j]];
-      Dtrk4MVAVal[typesize] = TrackInfo_trkMVAVal[DInfo_rftk4_index[j]];
-      Dtrk3Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk3_index[j]];
-      Dtrk4Algo[typesize] = TrackInfo_trkAlgo[DInfo_rftk4_index[j]];
-      Dtrk3highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk3_index[j]];
-      Dtrk4highPurity[typesize] = TrackInfo_highPurity[DInfo_rftk4_index[j]];
-      Dtrk3Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk3_index[j]];
-      Dtrk4Quality[typesize] = TrackInfo_trackQuality[DInfo_rftk4_index[j]];
+
       DtktkResmass[typesize] = DInfo_tktkRes_mass[j];
       DtktkRespt[typesize] = DInfo_tktkRes_pt[j];
       DtktkReseta[typesize] = DInfo_tktkRes_eta[j];
       DtktkResphi[typesize] = DInfo_tktkRes_phi[j];
     }
 
-  Int_t hypo=-1,DpdgId=0,level=0;
-  if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==5) DpdgId=DZERO_PDGID;
+  Int_t DpdgId=0,RpdgId=0;
+  if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==5||DInfo_type[j]==6) DpdgId=DZERO_PDGID;
   else if(DInfo_type[j]==3||DInfo_type[j]==4) DpdgId=DPLUS_PDGID;
-  else if(DInfo_type[j]==6||DInfo_type[j]==7) DpdgId=DSUBS_PDGID;
+  else if(DInfo_type[j]==7||DInfo_type[j]==8) DpdgId=DSUBS_PDGID;
+  else if(DInfo_type[j]==9||DInfo_type[j]==10||DInfo_type[j]==11||DInfo_type[j]==12) DpdgId=DSTAR_PDGID;
+  if(DInfo_type[j]==7||DInfo_type[j]==8) RpdgId=PHI_PDGID;
+  else if(DInfo_type[j]==9||DInfo_type[j]==10||DInfo_type[j]==11||DInfo_type[j]==12) RpdgId=DZERO_PDGID;
   Dgen[typesize] = 0;//gen init
   DgenIndex[typesize] = -1;
   DgennDa[typesize] = -1;
@@ -537,195 +614,277 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dgeneta[typesize] = -20;
   Dgenphi[typesize] = -20;
   Dgeny[typesize] = -1;
-  //Int_t rGenIdxTk1 = -1;
-  //Int_t rGenIdxTk2 = -1;
-  Int_t dGenIdxTk1 = -1;
-  Int_t dGenIdxTk2 = -1;
-  Int_t dGenIdxTk3 = -1;
-  Int_t dGenIdxTk4 = -1;
-  //Int_t dGenIdxRes = -1;
   if(!REAL)
     {
-      if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5||DInfo_type[j]==6)
-	{
-	  if(TrackInfo_geninfo_index[DInfo_rftk1_index[j]]>-1)
-	    {
-	      level=0;
-	      if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j])
-		{
-		  hypo=-1;
-		  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==KAON_PDGID) hypo=0;
-		  else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID) hypo=1;
-		  if(hypo==0||hypo==1)
-		    {
-		      level=1;		      
-		      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1)
-			{
-			  if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]])==DpdgId)
-			    {
-			      level=3;
-			      dGenIdxTk1=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]];
-			    }
-			}
-		    }
-		}
-	      else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j] && (DInfo_type[j]==1||DInfo_type[j]==2))
-		{
-		  hypo=-1;
-                  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==KAON_PDGID) hypo=0;
-                  else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID) hypo=1;
-                  if(hypo==0||hypo==1)
-                    {
-                      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1)
-                        {
-                          if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]])==DpdgId)
-                            {
-                              level=4;
-                              dGenIdxTk1=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]];
-                            }
-                        }
-                    }
-		}
-	      Dgen[typesize]=level;
-	    }
-	  if(TrackInfo_geninfo_index[DInfo_rftk2_index[j]]>-1)
-	    {
-	      level=0;
-	      if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j])
-		{
-		  if((hypo==0&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID)||(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==KAON_PDGID))
-		    {
-		      if(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==KAON_PDGID) hypo=2;
-		      level=1;
-		      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
-                        {
-                          if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]])==DpdgId)
-                            {
-                              level=3;
-                              dGenIdxTk2=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]];
-                            }
-                        }
-		    }
-		  else if(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID&&(DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5||DInfo_type[j]==6))
-		    {
-		      hypo=3;
-		      level=1;
-		      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
-			{
-			  if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]])==DpdgId)
-			    {
-			      level=3;
-			      dGenIdxTk2=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]];
-			    }
-			}
-		    }
-		}
-	      else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j] && (DInfo_type[j]==1||DInfo_type[j]==2))
+      if(DInfo_type[j]==1||DInfo_type[j]==2)
+        {
+          if(DInfo_rftk1_index[j]>-1 && DInfo_rftk2_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_rftk1_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_rftk2_index[j]]>-1)
                 {
-		  if((hypo==0&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID)||(hypo==1&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==KAON_PDGID))
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
                     {
-                      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]])==DpdgId && 
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])
                         {
-                          if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]])==DpdgId)
+                          if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j] && 
+                             TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j])
                             {
-                              level=4;
-                              dGenIdxTk2=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]];
+                              Dgen[typesize] = 23333;
+                            }
+                          else if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j] && 
+                                  TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j])
+                            {
+                              Dgen[typesize] = 23344;
                             }
                         }
                     }
                 }
-	      Dgen[typesize]+=(level*10);
-	    }
-	  if(DInfo_type[j]==1||DInfo_type[j]==2)
-	    {
-	      Dgen[typesize]+=3300;
-	    }
-	  else
-	    {
-	      if(TrackInfo_geninfo_index[DInfo_rftk3_index[j]]>-1)
-		{
-		  level=0;
-		  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j])
-		    {
-		      if(((hypo==0||hypo==2)&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID)||(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==KAON_PDGID))
-			{
-			  if(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==KAON_PDGID) hypo=4;
-			  level=1;
-			  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]>-1)
-			    {
-			      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]])==DpdgId)
-				{
-				  level=3;
-				  dGenIdxTk3=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]];
-				}
-			    }
-			  else if(hypo==3&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID&&(DInfo_type[j]==5||DInfo_type[j]==6))
-			    {
-			      hypo=5;
-			      level=1;
-			      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]>-1)
-				{
-				  if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]])==DpdgId)
-				    {
-				      level=3;
-				      dGenIdxTk3=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]];
-				    }
-				}
-			    }
-			}
-		    }
-		  Dgen[typesize]+=(level*100);
-		}
-	      if(DInfo_type[j]==3||DInfo_type[j]==4)
-		{
-		  Dgen[typesize]+=3000;
-		}
-	      else
-		{
-		  if(TrackInfo_geninfo_index[DInfo_rftk4_index[j]]>-1)
-		    {
-		      level=0;
-		      if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk4_MassHypo[j])
-			{
-			  if(((hypo==0||hypo==2||hypo==4)&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID)||(hypo==5&&TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==KAON_PDGID))
-			    {
-			      level=1;
-			      if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]]>-1)
-				{
-				  if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]]])==DpdgId)
-				    {
-				      level=3;
-				      dGenIdxTk4=GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]];
-				    }
-				}
-			    }
-			}
-		      Dgen[typesize]+=(level*1000);
-		    }
-		}
-	    }
-	  if((Dgen[typesize]==3333||Dgen[typesize]==3344)&&dGenIdxTk1==dGenIdxTk2)
-	    {
-	      if(DInfo_type[j]==1||DInfo_type[j]==2)
-		{
-		  Dgen[typesize]+=20000;
-		}
-	      else if(dGenIdxTk1==dGenIdxTk3)
-		{
-		  if(DInfo_type[j]==3||DInfo_type[j]==4)
-		    {
-		      Dgen[typesize]+=20000;
-		    }
-		  else if(dGenIdxTk1==dGenIdxTk4)
-		    {
-		      Dgen[typesize]+=20000;
-		    }
-		}	    
-	    }
-	}//if(DInfo_type[j]==1||DInfo_type[j]==2||DInfo_type[j]==3||DInfo_type[j]==4||DInfo_type[j]==5)
+            }
+        }
+      else if(DInfo_type[j]==3||DInfo_type[j]==4)
+        {
+          if(DInfo_rftk1_index[j]>-1 && DInfo_rftk2_index[j]>-1 && DInfo_rftk3_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_rftk1_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_rftk2_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_rftk3_index[j]]>-1)
+                {
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]>-1)
+                    {
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]])==DpdgId && 
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]] &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])
+                        {
+                          if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j] && 
+                             TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                             TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j])
+                            {
+                              Dgen[typesize] = 23333;
+                            }
+                          else if((TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk3_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk1_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk3_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk2_MassHypo[j]&&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID))
+                            {
+                              Dgen[typesize] = 23344;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      else if(DInfo_type[j]==5||DInfo_type[j]==6)
+        {
+          if(DInfo_rftk1_index[j]>-1 && DInfo_rftk2_index[j]>-1 && DInfo_rftk3_index[j]>-1 && DInfo_rftk4_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_rftk1_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_rftk2_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_rftk3_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_rftk4_index[j]]>-1)
+                {
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]]>-1)
+                    {
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]])==DpdgId && 
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]] &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]] &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])
+                        {
+                          if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk1_MassHypo[j] && 
+                             TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                             TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk3_MassHypo[j] &&
+                             TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk4_MassHypo[j])
+                            {
+                              Dgen[typesize] = 23333;
+                            }
+                          else if((TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk3_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==DInfo_rftk4_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk1_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk3_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==DInfo_rftk4_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk2_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==PION_PDGID) ||
+                                  (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk3_index[j]]])==DInfo_rftk4_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk4_index[j]]])==DInfo_rftk3_MassHypo[j] &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk1_index[j]]])==PION_PDGID &&
+                                   TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID))
+                            {
+                              Dgen[typesize] = 23344;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      Int_t dGenIdxRes = -1;
+      if(DInfo_type[j]==7||DInfo_type[j]==8||DInfo_type[j]==9||DInfo_type[j]==10)
+        {
+          if(DInfo_tktkRes_rftk1_index[j]>-1 && DInfo_tktkRes_rftk2_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]>-1)
+                {
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]]>-1)
+                    {
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]])==RpdgId && 
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])
+                        {
+                          if(GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]]>-1 &&
+                             GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]]]>-1)
+                            {
+                              if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]]])==DpdgId)
+                                {
+                                  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) && 
+                                     TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]))
+                                    {
+                                      Dgen[typesize] = 3333;
+                                      dGenIdxRes = GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]];
+                                    }
+                                  if((DInfo_type[j]==9||DInfo_type[j]==10) &&
+                                     TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) && 
+                                     TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]))
+                                    {
+                                      Dgen[typesize] = 3344;
+                                      dGenIdxRes = GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+          if(DInfo_rftk2_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_rftk2_index[j]]>-1)
+                {
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
+                    {
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]])==DpdgId &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]==dGenIdxRes)
+                        {
+                          if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID)
+                            {
+                              Dgen[typesize]+=20000;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      dGenIdxRes = -1;
+      if(DInfo_type[j]==11||DInfo_type[j]==12)
+        {
+          if(DInfo_tktkRes_rftk1_index[j]>-1 && DInfo_tktkRes_rftk2_index[j]>-1 && DInfo_tktkRes_rftk3_index[j]>-1 && DInfo_tktkRes_rftk4_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]>-1 && 
+                 TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]>-1)
+                {
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]>-1 && 
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]]>-1 &&
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]]>-1 &&
+                     GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]]>-1)
+                    {
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]])==RpdgId && 
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]] &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]] &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]==GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])
+                        {
+                          if(GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]]>-1)
+                            {
+                              if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]]])==DpdgId)
+                                {
+                                  if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) && 
+                                     TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                     TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) &&
+                                     TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]))
+                                    {
+                                      Dgen[typesize] = 3333;
+                                      dGenIdxRes = GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]];
+                                    }
+                                  else if((TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) && 
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==PION_PDGID &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==PION_PDGID) ||
+                                          (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) && 
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==PION_PDGID &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==PION_PDGID) ||
+                                          (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) && 
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk1_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==PION_PDGID &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==PION_PDGID) ||
+                                          (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) && 
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==PION_PDGID &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==PION_PDGID) ||
+                                          (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) && 
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk2_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==PION_PDGID &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==PION_PDGID) ||
+                                          (TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk3_index[j]]])==findPdgid(DInfo_tktkRes_rftk4_mass[j]) && 
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk4_index[j]]])==findPdgid(DInfo_tktkRes_rftk3_mass[j]) &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]])==PION_PDGID &&
+                                           TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_tktkRes_rftk2_index[j]]])==PION_PDGID))
+                                    {
+                                      Dgen[typesize] = 3344;
+                                      dGenIdxRes = GenInfo_mo1[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_tktkRes_rftk1_index[j]]]];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+          if(DInfo_rftk2_index[j]>-1)
+            {
+              if(TrackInfo_geninfo_index[DInfo_rftk2_index[j]]>-1)
+                {
+                  if(GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]>-1)
+                    {
+                      if(TMath::Abs(GenInfo_pdgId[GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]])==DpdgId &&
+                         GenInfo_mo1[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]]==dGenIdxRes)
+                        {
+                          if(TMath::Abs(GenInfo_pdgId[TrackInfo_geninfo_index[DInfo_rftk2_index[j]]])==PION_PDGID)
+                            {
+                              Dgen[typesize]+=20000;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      
       if(Dgen[typesize]==23333||Dgen[typesize]==23344)
 	{
-	  DgenIndex[typesize] = dGenIdxTk1;
+	  DgenIndex[typesize] = dGenIdxRes;
 	  if((DInfo_type[j]==1||DInfo_type[j]==2)&&GenInfo_nDa[DgenIndex[typesize]]>2) Dgen[typesize]=41000;
 	  DgennDa[typesize] = GenInfo_nDa[DgenIndex[typesize]];
 	  Dgenpt[typesize] = GenInfo_pt[DgenIndex[typesize]];
@@ -751,6 +910,83 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
 	     (TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID))
 	    {
 	      flag=true;
+	    }
+	}
+    }
+  if(dmesontype==3||dmesontype==4)
+    {
+      if(TMath::Abs(GenInfo_pdgId[j])==DPLUS_PDGID&&GenInfo_nDa[j]==3&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1&&GenInfo_da3[j]!=-1)
+        {
+          if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID) ||
+             (TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID) ||
+             (TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID))
+            {
+              flag=true;
+            }
+        }
+    }
+  if(dmesontype==5||dmesontype==6)
+    {
+      if(TMath::Abs(GenInfo_pdgId[j])==DZERO_PDGID&&GenInfo_nDa[j]==4&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1&&GenInfo_da3[j]!=-1&&GenInfo_da4[j]!=-1)
+        {
+          if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID) ||
+             (TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID) ||
+             (TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID) ||
+             (TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID))
+            {
+              flag=true;
+            }
+        }
+    }
+  if(dmesontype==7||dmesontype==8)
+    {
+      if(TMath::Abs(GenInfo_pdgId[j])==DSUBS_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
+	{
+	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PHI_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)
+	    {
+              if(GenInfo_nDa[GenInfo_da1[j]]==2&&GenInfo_da1[GenInfo_da1[j]]!=-1&&GenInfo_da2[GenInfo_da1[j]]!=-1)
+                {
+                  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==KAON_PDGID)
+                    {
+                      flag=true;                      
+                    }
+                }
+	    }
+	}
+    }
+  if(dmesontype==9||dmesontype==10)
+    {
+      if(TMath::Abs(GenInfo_pdgId[j])==DSTAR_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
+	{
+	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==DZERO_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)
+	    {
+              if(GenInfo_nDa[GenInfo_da1[j]]==2&&GenInfo_da1[GenInfo_da1[j]]!=-1&&GenInfo_da2[GenInfo_da1[j]]!=-1)
+                {
+                  if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==KAON_PDGID)||
+                     (TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID))
+                    {
+                      flag=true;                      
+                    }
+                }
+	    }
+	}
+    }
+  if(dmesontype==11||dmesontype==12)
+    {
+      if(TMath::Abs(GenInfo_pdgId[j])==DSTAR_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
+	{
+	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==DZERO_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)
+	    {
+              if(GenInfo_nDa[GenInfo_da1[j]]==4&&GenInfo_da1[GenInfo_da1[j]]!=-1&&GenInfo_da2[GenInfo_da1[j]]!=-1)
+                {
+                  if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID) ||
+                     (TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID) ||
+                     (TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID) ||
+                     (TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID))
+                    {
+                      flag=true;                      
+                    }
+                }
 	    }
 	}
     }
