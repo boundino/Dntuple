@@ -2,8 +2,8 @@
 using namespace std;
 
 Bool_t iseos = false;
-int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_20151206_dPt5tkPt1_D0DsDstar3p5p/finder_pp_merged.root",
+         TString outfile="/data/wangj/Data2015/Dntuple/ntD_DfinderData_pp_20151206_dPt5tkPt1_D0DsDstar3p5p/ntD_finder_pp_merged.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=false)
 {
   double findMass(Int_t particlePdgId);
   int findPdgid(Double_t tkmass);
@@ -24,11 +24,11 @@ int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_
   TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
-  //TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
-  //TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
+  TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
+  TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   setDBranch(root);
   setHltTreeBranch(hltroot);
-  //if(isPbPb) setHiTreeBranch(hiroot);
+  if(isPbPb) setHiTreeBranch(hiroot);
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries==-1) endEntries = nentries;
@@ -58,10 +58,10 @@ int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_
   TTree* ntGen = new TTree("ntGen","");           buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
-  //TTree* ntSkim = skimroot->CloneTree(0);
-  //ntSkim->SetName("ntSkim");
-  //TTree* ntHi = hiroot->CloneTree(0);
-  //ntHi->SetName("ntHi");
+  TTree* ntSkim = skimroot->CloneTree(0);
+  ntSkim->SetName("ntSkim");
+  TTree* ntHi = hiroot->CloneTree(0);
+  ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
   Int_t offsetHltTree=0;
@@ -71,16 +71,16 @@ int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_
   TLorentzVector* bGen = new TLorentzVector;
   cout<<"--- Check the number of events for three trees"<<endl;
   cout<<root->GetEntries()<<" "<<hltroot->GetEntries();
-  //if(isPbPb) cout<<" "<<hiroot->GetEntries();
+  if(isPbPb) cout<<" "<<hiroot->GetEntries();
   cout<<endl;
   cout<<"--- Processing events"<<endl;
   for(Int_t i=startEntries;i<endEntries;i++)
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
-      //skimroot->GetEntry(i);
-      //if(isPbPb) hiroot->GetEntry(i);
-      if(i%10000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
+      skimroot->GetEntry(i);
+      if(isPbPb) hiroot->GetEntry(i);
+      if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
         {
           if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||(Int_t)Df_HLT_Run!=EvtInfo_RunNo||(Int_t)Df_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&((Int_t)Df_HiTree_Evt!=EvtInfo_EvtNo||(Int_t)Df_HiTree_Run!=EvtInfo_RunNo||(Int_t)Df_HiTree_Lumi!=EvtInfo_LumiNo)))
@@ -165,8 +165,8 @@ int loop(TString infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_
 	}
 
       ntHlt->Fill();
-      //ntSkim->Fill();
-      //if(isPbPb) ntHi->Fill();
+      ntSkim->Fill();
+      if(isPbPb) ntHi->Fill();
 
       if(!REAL)
 	{
@@ -405,6 +405,31 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
           DtktkRespt[typesize] = -1;
           DtktkReseta[typesize] = -20;
           DtktkResphi[typesize] = -20;
+          
+          DRestrk1Pt[typesize] = -1;
+          DRestrk1Eta[typesize] = -20;
+          DRestrk1Phi[typesize] = -20;
+          DRestrk1Y[typesize] = -1;
+          DRestrk1Dxy[typesize] = -1;
+          DRestrk1D0Err[typesize] = -1;
+          DRestrk2Pt[typesize] = -1;
+          DRestrk2Eta[typesize] = -20;
+          DRestrk2Phi[typesize] = -20;
+          DRestrk2Y[typesize] = -1;
+          DRestrk2Dxy[typesize] = -1;
+          DRestrk2D0Err[typesize] = -1;
+          DRestrk3Pt[typesize] = -1;
+          DRestrk3Eta[typesize] = -20;
+          DRestrk3Phi[typesize] = -20;
+          DRestrk3Y[typesize] = -1;
+          DRestrk3Dxy[typesize] = -1;
+          DRestrk3D0Err[typesize] = -1;
+          DRestrk4Pt[typesize] = -1;
+          DRestrk4Eta[typesize] = -20;
+          DRestrk4Phi[typesize] = -20;
+          DRestrk4Y[typesize] = -1;
+          DRestrk4Dxy[typesize] = -1;
+          DRestrk4D0Err[typesize] = -1;
         }
       else if(DInfo_type[j]==3||DInfo_type[j]==4)
         {
@@ -455,6 +480,31 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
           DtktkRespt[typesize] = -1;
           DtktkReseta[typesize] = -20;
           DtktkResphi[typesize] = -20;
+
+          DRestrk1Pt[typesize] = -1;
+          DRestrk1Eta[typesize] = -20;
+          DRestrk1Phi[typesize] = -20;
+          DRestrk1Y[typesize] = -1;
+          DRestrk1Dxy[typesize] = -1;
+          DRestrk1D0Err[typesize] = -1;
+          DRestrk2Pt[typesize] = -1;
+          DRestrk2Eta[typesize] = -20;
+          DRestrk2Phi[typesize] = -20;
+          DRestrk2Y[typesize] = -1;
+          DRestrk2Dxy[typesize] = -1;
+          DRestrk2D0Err[typesize] = -1;
+          DRestrk3Pt[typesize] = -1;
+          DRestrk3Eta[typesize] = -20;
+          DRestrk3Phi[typesize] = -20;
+          DRestrk3Y[typesize] = -1;
+          DRestrk3Dxy[typesize] = -1;
+          DRestrk3D0Err[typesize] = -1;
+          DRestrk4Pt[typesize] = -1;
+          DRestrk4Eta[typesize] = -20;
+          DRestrk4Phi[typesize] = -20;
+          DRestrk4Y[typesize] = -1;
+          DRestrk4Dxy[typesize] = -1;
+          DRestrk4D0Err[typesize] = -1;
         }
       else if(DInfo_type[j]==5||DInfo_type[j]==6)
         {
@@ -507,6 +557,31 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
           DtktkRespt[typesize] = -1;
           DtktkReseta[typesize] = -20;
           DtktkResphi[typesize] = -20;
+
+          DRestrk1Pt[typesize] = -1;
+          DRestrk1Eta[typesize] = -20;
+          DRestrk1Phi[typesize] = -20;
+          DRestrk1Y[typesize] = -1;
+          DRestrk1Dxy[typesize] = -1;
+          DRestrk1D0Err[typesize] = -1;
+          DRestrk2Pt[typesize] = -1;
+          DRestrk2Eta[typesize] = -20;
+          DRestrk2Phi[typesize] = -20;
+          DRestrk2Y[typesize] = -1;
+          DRestrk2Dxy[typesize] = -1;
+          DRestrk2D0Err[typesize] = -1;
+          DRestrk3Pt[typesize] = -1;
+          DRestrk3Eta[typesize] = -20;
+          DRestrk3Phi[typesize] = -20;
+          DRestrk3Y[typesize] = -1;
+          DRestrk3Dxy[typesize] = -1;
+          DRestrk3D0Err[typesize] = -1;
+          DRestrk4Pt[typesize] = -1;
+          DRestrk4Eta[typesize] = -20;
+          DRestrk4Phi[typesize] = -20;
+          DRestrk4Y[typesize] = -1;
+          DRestrk4Dxy[typesize] = -1;
+          DRestrk4D0Err[typesize] = -1;
         }
     }
   else if(DInfo_type[j]==7||DInfo_type[j]==8||DInfo_type[j]==9||DInfo_type[j]==10||DInfo_type[j]==11||DInfo_type[j]==12)
@@ -598,6 +673,50 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
       DtktkRespt[typesize] = DInfo_tktkRes_pt[j];
       DtktkReseta[typesize] = DInfo_tktkRes_eta[j];
       DtktkResphi[typesize] = DInfo_tktkRes_phi[j];
+
+      DRestrk1Pt[typesize] = TrackInfo_pt[DInfo_tktkRes_rftk1_index[j]];
+      DRestrk1Eta[typesize] = TrackInfo_eta[DInfo_tktkRes_rftk1_index[j]];
+      DRestrk1Phi[typesize] = TrackInfo_phi[DInfo_tktkRes_rftk1_index[j]];
+      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_tktkRes_rftk1_index[j]],TrackInfo_eta[DInfo_tktkRes_rftk1_index[j]],TrackInfo_phi[DInfo_tktkRes_rftk1_index[j]],DInfo_tktkRes_rftk1_mass[j]);
+      DRestrk1Y[typesize] = b4P->Rapidity();
+      DRestrk1Dxy[typesize] = TrackInfo_dxyPV[DInfo_tktkRes_rftk1_index[j]];
+      DRestrk1D0Err[typesize] = TrackInfo_d0error[DInfo_tktkRes_rftk1_index[j]];
+      DRestrk2Pt[typesize] = TrackInfo_pt[DInfo_tktkRes_rftk2_index[j]];
+      DRestrk2Eta[typesize] = TrackInfo_eta[DInfo_tktkRes_rftk2_index[j]];
+      DRestrk2Phi[typesize] = TrackInfo_phi[DInfo_tktkRes_rftk2_index[j]];
+      b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_tktkRes_rftk2_index[j]],TrackInfo_eta[DInfo_tktkRes_rftk2_index[j]],TrackInfo_phi[DInfo_tktkRes_rftk2_index[j]],DInfo_tktkRes_rftk2_mass[j]);
+      DRestrk2Y[typesize] = b4P->Rapidity();
+      DRestrk2Dxy[typesize] = TrackInfo_dxyPV[DInfo_tktkRes_rftk2_index[j]];
+      DRestrk2D0Err[typesize] = TrackInfo_d0error[DInfo_tktkRes_rftk2_index[j]];
+      DRestrk3Pt[typesize] = -1;
+      DRestrk3Eta[typesize] = -20;
+      DRestrk3Phi[typesize] = -20;
+      DRestrk3Y[typesize] = -1;
+      DRestrk3Dxy[typesize] = -1;
+      DRestrk3D0Err[typesize] = -1;
+      DRestrk4Pt[typesize] = -1;
+      DRestrk4Eta[typesize] = -20;
+      DRestrk4Phi[typesize] = -20;
+      DRestrk4Y[typesize] = -1;
+      DRestrk4Dxy[typesize] = -1;
+      DRestrk4D0Err[typesize] = -1;
+      if(DInfo_type[j]==11||DInfo_type[j]==12)
+        {
+          DRestrk3Pt[typesize] = TrackInfo_pt[DInfo_tktkRes_rftk3_index[j]];
+          DRestrk3Eta[typesize] = TrackInfo_eta[DInfo_tktkRes_rftk3_index[j]];
+          DRestrk3Phi[typesize] = TrackInfo_phi[DInfo_tktkRes_rftk3_index[j]];
+          b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_tktkRes_rftk3_index[j]],TrackInfo_eta[DInfo_tktkRes_rftk3_index[j]],TrackInfo_phi[DInfo_tktkRes_rftk3_index[j]],DInfo_tktkRes_rftk3_mass[j]);
+          DRestrk3Y[typesize] = b4P->Rapidity();
+          DRestrk3Dxy[typesize] = TrackInfo_dxyPV[DInfo_tktkRes_rftk3_index[j]];
+          DRestrk3D0Err[typesize] = TrackInfo_d0error[DInfo_tktkRes_rftk3_index[j]];
+          DRestrk4Pt[typesize] = TrackInfo_pt[DInfo_tktkRes_rftk4_index[j]];
+          DRestrk4Eta[typesize] = TrackInfo_eta[DInfo_tktkRes_rftk4_index[j]];
+          DRestrk4Phi[typesize] = TrackInfo_phi[DInfo_tktkRes_rftk4_index[j]];
+          b4P->SetPtEtaPhiM(TrackInfo_pt[DInfo_tktkRes_rftk4_index[j]],TrackInfo_eta[DInfo_tktkRes_rftk4_index[j]],TrackInfo_phi[DInfo_tktkRes_rftk4_index[j]],DInfo_tktkRes_rftk4_mass[j]);
+          DRestrk4Y[typesize] = b4P->Rapidity();
+          DRestrk4Dxy[typesize] = TrackInfo_dxyPV[DInfo_tktkRes_rftk4_index[j]];
+          DRestrk4D0Err[typesize] = TrackInfo_d0error[DInfo_tktkRes_rftk4_index[j]];
+        }
     }
 
   Int_t DpdgId=0,RpdgId=0;
