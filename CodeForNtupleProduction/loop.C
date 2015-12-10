@@ -2,9 +2,21 @@
 using namespace std;
 
 Bool_t iseos = false;
-int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_20151206_dPt5tkPt1_D0DsDstar3p5p/finder_pp_merged.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/ntD_DfinderData_pp_20151206_dPt5tkPt1_D0DsDstar3p5p/ntD_finder_pp_merged.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=false)
+Bool_t istest = false;
+int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_20151209_dPt5tkPt1_D0DsDstar3p5p/finder_pp_137_1_NWz.root",
+         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_test", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=false)
 {
+  if(istest)
+    {
+      //this testing sample doesn't have skimtree and hitree
+      infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb_253.root";
+      outfile="test";
+      REAL=false;
+      isPbPb=false;
+      iseos=false;
+      checkMatching=true;
+    }
+
   double findMass(Int_t particlePdgId);
   int findPdgid(Double_t tkmass);
   void fillTreeEvt();
@@ -32,7 +44,10 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries==-1) endEntries = nentries;
-  TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
+  TString ofname;
+  if(endEntries==nentries&&startEntries==0) ofname = Form("%s_Evt_All.root", outfile.Data());
+  else ofname = Form("%s_Evt_%.0d_to_%.0d.root", outfile.Data(), startEntries, endEntries);
+  TFile *outf = new TFile(ofname,"recreate");
 
   int isDchannel[12];
   isDchannel[0] = 1; //k+pi-
@@ -132,7 +147,7 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
 			  probflag = Dtypesize[t/2];
 			  probtem = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
 			}
-		      if(((!REAL&&(Dgen[Dtypesize[t/2]]==23333||Dgen[Dtypesize[t/2]]==23344))||REAL)&&Dtrk1Pt[Dtypesize[t/2]]>8.&&Dtrk2Pt[Dtypesize[t/2]]>8.&&Dchi2cl[Dtypesize[t/2]]>0.05&&(DsvpvDistance[Dtypesize[t/2]]/DsvpvDisErr[Dtypesize[t/2]])>2.5&&TMath::Cos(Dalpha[Dtypesize[t/2]])>0.95&&(Dtrk1highPurity[Dtypesize[t/2]]&&Dtrk2highPurity[Dtypesize[t/2]]))
+		      if(((!REAL&&(Dgen[Dtypesize[t/2]]==23333||Dgen[Dtypesize[t/2]]==23344))||REAL)&&true)//working selection
 			{
 			  if(DInfo_pt[j]>ptMatchedtem)
 			    {
@@ -175,7 +190,10 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
 	  Gsize = 0;
 	  for(int j=0;j<GenInfo_size;j++)
 	    {
-	      if(TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID&&gskim) continue;
+	      if(TMath::Abs(GenInfo_pdgId[j])!=DZERO_PDGID&&
+                 TMath::Abs(GenInfo_pdgId[j])!=DPLUS_PDGID&&
+                 TMath::Abs(GenInfo_pdgId[j])!=DSUBS_PDGID&&
+                 TMath::Abs(GenInfo_pdgId[j])!=DSTAR_PDGID&&gskim) continue;
 	      Gsize = gsize+1;
 	      Gpt[gsize] = GenInfo_pt[j];
 	      Geta[gsize] = GenInfo_eta[j];
@@ -203,8 +221,8 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
   outf->Close();
 
   cout<<"--- In/Output files"<<endl;
-  cout<<infile<<endl;
-  cout<<outfile<<endl;
+  cout<<ifname<<endl;
+  cout<<ofname<<endl;
   cout<<endl;
 
   return 1;
@@ -1052,20 +1070,25 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
     {
       if(TMath::Abs(GenInfo_pdgId[j])==DZERO_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
 	{
-	  if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID) || 
-	     (TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID))
+	  if((((GenInfo_pdgId[GenInfo_da1[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da2[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID))&&dmesontype==1) ||
+             (((GenInfo_pdgId[GenInfo_da1[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da2[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID))&&dmesontype==2))
 	    {
-	      flag=true;
-	    }
+              flag=true;
+            }
 	}
     }
   if(dmesontype==3||dmesontype==4)
     {
       if(TMath::Abs(GenInfo_pdgId[j])==DPLUS_PDGID&&GenInfo_nDa[j]==3&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1&&GenInfo_da3[j]!=-1)
         {
-          if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID) ||
-             (TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID) ||
-             (TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID))
+          if((((GenInfo_pdgId[GenInfo_da1[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da2[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da3[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID))&&dmesontype==4) ||
+             (((GenInfo_pdgId[GenInfo_da1[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da2[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da3[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID))&&dmesontype==3))
             {
               flag=true;
             }
@@ -1075,10 +1098,14 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
     {
       if(TMath::Abs(GenInfo_pdgId[j])==DZERO_PDGID&&GenInfo_nDa[j]==4&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1&&GenInfo_da3[j]!=-1&&GenInfo_da4[j]!=-1)
         {
-          if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID) ||
-             (TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID) ||
-             (TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID) ||
-             (TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID))
+          if((((GenInfo_pdgId[GenInfo_da1[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da2[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da3[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da4[j]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID))&&dmesontype==6) ||
+             (((GenInfo_pdgId[GenInfo_da1[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da2[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da3[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[j]])==PION_PDGID)||
+               (GenInfo_pdgId[GenInfo_da4[j]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[j]])==PION_PDGID))&&dmesontype==5))
             {
               flag=true;
             }
@@ -1088,12 +1115,14 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
     {
       if(TMath::Abs(GenInfo_pdgId[j])==DSUBS_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
 	{
-	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PHI_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)
+	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==PHI_PDGID)
 	    {
               if(GenInfo_nDa[GenInfo_da1[j]]==2&&GenInfo_da1[GenInfo_da1[j]]!=-1&&GenInfo_da2[GenInfo_da1[j]]!=-1)
                 {
                   if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==KAON_PDGID)
                     {
+                      if((GenInfo_pdgId[GenInfo_da2[j]]==PION_PDGID&&dmesontype==7) ||
+                         (GenInfo_pdgId[GenInfo_da2[j]]==(0-PION_PDGID)&&dmesontype==8))
                       flag=true;                      
                     }
                 }
@@ -1104,12 +1133,14 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
     {
       if(TMath::Abs(GenInfo_pdgId[j])==DSTAR_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
 	{
-	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==DZERO_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)
+	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==DZERO_PDGID)
 	    {
               if(GenInfo_nDa[GenInfo_da1[j]]==2&&GenInfo_da1[GenInfo_da1[j]]!=-1&&GenInfo_da2[GenInfo_da1[j]]!=-1)
                 {
-                  if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==KAON_PDGID)||
-                     (TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID))
+                  if((((GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID))&&GenInfo_pdgId[GenInfo_da2[j]]==(0-PION_PDGID)&&dmesontype==10) ||
+                     (((GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID))&&GenInfo_pdgId[GenInfo_da2[j]]==PION_PDGID&&dmesontype==9))
                     {
                       flag=true;                      
                     }
@@ -1121,14 +1152,18 @@ bool isDsignalGen(Int_t dmesontype, Int_t j)
     {
       if(TMath::Abs(GenInfo_pdgId[j])==DSTAR_PDGID&&GenInfo_nDa[j]==2&&GenInfo_da1[j]!=-1&&GenInfo_da2[j]!=-1)
 	{
-	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==DZERO_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[j]])==PION_PDGID)
+	  if(TMath::Abs(GenInfo_pdgId[GenInfo_da1[j]])==DZERO_PDGID)
 	    {
               if(GenInfo_nDa[GenInfo_da1[j]]==4&&GenInfo_da1[GenInfo_da1[j]]!=-1&&GenInfo_da2[GenInfo_da1[j]]!=-1)
                 {
-                  if((TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID) ||
-                     (TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID) ||
-                     (TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID) ||
-                     (TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID))
+                  if((((GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID))&&GenInfo_pdgId[GenInfo_da2[j]]==(0-PION_PDGID)&&dmesontype==12) ||
+                     (((GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]])==PION_PDGID)||
+                       (GenInfo_pdgId[GenInfo_da4[GenInfo_da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo_pdgId[GenInfo_da1[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da2[GenInfo_da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo_pdgId[GenInfo_da3[GenInfo_da1[j]]])==PION_PDGID))&&GenInfo_pdgId[GenInfo_da2[j]]==PION_PDGID&&dmesontype==11))
                     {
                       flag=true;                      
                     }
