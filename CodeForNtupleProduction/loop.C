@@ -98,10 +98,13 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
         {
-          if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||(Int_t)Df_HLT_Run!=EvtInfo_RunNo||(Int_t)Df_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&((Int_t)Df_HiTree_Evt!=EvtInfo_EvtNo||(Int_t)Df_HiTree_Run!=EvtInfo_RunNo||(Int_t)Df_HiTree_Lumi!=EvtInfo_LumiNo)))
+          if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||(Int_t)Df_HLT_Run!=EvtInfo_RunNo||(Int_t)Df_HLT_LumiBlock!=EvtInfo_LumiNo ||
+             (isPbPb&&((Int_t)Df_HiTree_Evt!=EvtInfo_EvtNo||(Int_t)Df_HiTree_Run!=EvtInfo_RunNo||(Int_t)Df_HiTree_Lumi!=EvtInfo_LumiNo)))
             {
-              cout<<"Error: not matched "<<i<<" | ";
-              cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo_EvtNo<<") RunNo("<<Df_HLT_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<") | EvtNo("<<Df_HiTree_Evt<<","<<EvtInfo_EvtNo<<") RunNo("<<Df_HiTree_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Df_HiTree_Lumi<<","<<EvtInfo_LumiNo<<")"<<endl;
+              cout<<"Error: not matched "<<i<<" | (Hlt,Dfr,Hi) | ";
+              cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo_EvtNo<<","<<Df_HiTree_Evt<<") ";
+              cout<<"RunNo("<<Df_HLT_Run<<","<<EvtInfo_RunNo<<","<<Df_HiTree_Run<<") ";
+              cout<<"LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<","<<Df_HiTree_Lumi<<")"<<endl;
               continue;
             }
         }
