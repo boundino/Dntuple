@@ -4,20 +4,18 @@ using namespace std;
 #include "format.h"
 #include "Dntuple.h"
 
-Bool_t iseos = false;
 Bool_t istest = false;
-int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisun/PbPb2015_HeavyFlavor/PbPb_2015_HIHardProbes_AOD_tkpt0p8_D0pt0p8_D3d2_Prob0p05_alpha0p3_Dstarpt6_1210/finder_962.root",
-         TString outfile="test.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
+         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   if(istest)
     {
-      //this testing sample doesn't have skimtree and hitree
-      infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb_253.root";
+      infile="/store/group/phys_heavyions/HeavyFlavourRun2/DfinderRun2/HeavyFlavor/crab_DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/151218_092138/0000/finder_pp_66.root";
       outfile="test.root";
-      REAL=false;
+      REAL=true;
       isPbPb=false;
-      iseos=false;
       checkMatching=true;
+      iseos=true;
     }
 
   cout<<endl;
