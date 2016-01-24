@@ -191,7 +191,7 @@ void TMVAClassification( TString myMethodList = "" )
 
    factory->AddVariable("DtktkRes_chi2cl");//>
    factory->AddVariable("DtktkRes_alpha");//<
-   factory->AddVariable("(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)");//>
+   factory->AddVariable("DtktkRes_svpvDistance/DtktkRes_svpvDisErr");//>
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -207,20 +207,24 @@ void TMVAClassification( TString myMethodList = "" )
    //   gSystem->Exec("wget http://root.cern.ch/files/tmva_class_example.root");
    
    
-   //TFile *inputS = TFile::Open("/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpipipi/ntD_CandBase_20151231_Dfinder_20151229_pp_Pythia8D0kpipipi_noweight.root");
    TFile *inputS = TFile::Open("/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpi/ntD_CandBase_20151231_Dfinder_20151229_pp_Pythia8D0kpi_noweight.root");
-   TFile *inputB = TFile::Open("/data/wangj/Data2015/Dntuple/pp/ntD_CandBase_20151231_HeavyFlavor_DfinderData_pp_20151214_dPt0tkPt1_D0DsDstar3p5p.root");
+   //TFile *inputS = TFile::Open("/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpipipi/ntD_CandBase_20151231_Dfinder_20151229_pp_Pythia8D0kpipipi_noweight.root");
+   TFile *inputB = TFile::Open("/data/wangj/Data2015/Dntuple/pp/ntD_CandBase_20160104_HeavyFlavor_DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p.root");
+
+   //TFile *inputS = TFile::Open("/data/wangj/MC2015/Dntuple/PbPb/ntD_PbPb_Dstar_D0kpi/ntD_CandBase_20160104_Dfinder_20151229_PbPb_Pythia8D0kpi_Dstar_noweight.root");
+   //TFile *inputS = TFile::Open("/data/wangj/MC2015/Dntuple/PbPb/ntD_PbPb_Dstar_D0kpipipi/ntD_CandBase_20160104_Dfinder_20151229_PbPb_Pythia8D0kpipipi_Dstar_noweight.root");
+   //TFile *inputB = TFile::Open("/data/wangj/Data2015/Dntuple/PbPb/ntD_CandBase_20160108_HIHardProbes_DfinderData_PbPb_20151227_dPt10tkPt2p5_D0Dstar3p5p_CameliaJSON.root");
 
    std::cout << "--- TMVAClassification       : Using input file: " << inputS->GetName() << " & "<< inputB->GetName() <<std::endl;
    
    // --- Register the training and test trees
 
-   //TTree *signal     = (TTree*)inputS->Get("ntDD0kpipipipi");
-   //TTree *background = (TTree*)inputB->Get("ntDD0kpipipipi"); 
    TTree *signal     = (TTree*)inputS->Get("ntDD0kpipi");
    TTree *background = (TTree*)inputB->Get("ntDD0kpipi"); 
+   //TTree *signal     = (TTree*)inputS->Get("ntDD0kpipipipi");
+   //TTree *background = (TTree*)inputB->Get("ntDD0kpipipipi"); 
 
-   // global event weights per tree (see below for setting event-wise weights)
+   //global event weights per tree (see below for setting event-wise weights)
    Double_t signalWeight     = 1.0;
    Double_t backgroundWeight = 1.0;
    
@@ -274,9 +278,17 @@ void TMVAClassification( TString myMethodList = "" )
 
    // Apply additional cuts on the signal and background samples (can be different)
 
+   //pp
+   TCut mycuts = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&(Dgen==23333)";
+   TCut mycutb = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&abs(Dmass-2.010)>0.1&&abs(Dmass-2.010)<0.15";
+   //TCut mycuts = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&DRestrk3Pt>1.&&DRestrk4Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&(Dgen==23333)";
+   //TCut mycutb = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&DRestrk3Pt>1.&&DRestrk4Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&abs(Dmass-2.010)>0.1&&abs(Dmass-2.010)<0.15";
    //PbPb
-   TCut mycuts = "Dy>-1.0&&Dy<1.0&&Dpt>1.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&(Dgen==23333)";
-   TCut mycutb = "Dy>-1.0&&Dy<1.0&&Dpt>1.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&abs(Dmass-2.010)>0.1&&abs(Dmass-2.010)<0.15";
+   //TCut mycuts = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>2.5&&DRestrk1Pt>2.5&&DRestrk2Pt>2.5&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&(Dgen==23333)";
+   //TCut mycutb = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>2.5&&DRestrk1Pt>2.5&&DRestrk2Pt>2.5&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&abs(Dmass-2.010)>0.1&&abs(Dmass-2.010)<0.15";
+   //TCut mycuts = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>2.5&&DRestrk1Pt>2.5&&DRestrk2Pt>2.5&&DRestrk3Pt>2.5&&DRestrk4Pt>2.5&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&(Dgen==23333)";
+   //TCut mycutb = "Dy>-1.0&&Dy<1.0&&Dpt>10.&&Dpt<70.&&Dtrk1Pt>2.5&&DRestrk1Pt>2.5&&DRestrk2Pt>2.5&&DRestrk3Pt>2.5&&DRestrk4Pt>2.5&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5&&abs(Dmass-2.010)>0.1&&abs(Dmass-2.010)<0.15";
+
    //TCut mycutb = "Dy>-1.0&&Dy<1.0&&Dpt>1.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&abs(DtktkResmass-1.864)>0.1&&abs(DtktkResmass-1.864)<0.15";
 
    // Tell the factory how to use the training and testing events
@@ -313,7 +325,7 @@ void TMVAClassification( TString myMethodList = "" )
 
    if (Use["CutsGA"])
      factory->BookMethod( TMVA::Types::kCuts, "CutsGA",
-			  "H:!V:FitMethod=GA:EffSel:Steps=5:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax");
+			  "H:!V:FitMethod=GA:EffSel:Steps=5:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95:VarProp[0]=FMax:VarProp[1]=FMin:VarProp[2]=FMax");
    //"H:!V:FitMethod=GA:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax");
 
    if (Use["CutsSA"])
