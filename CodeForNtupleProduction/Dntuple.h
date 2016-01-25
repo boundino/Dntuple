@@ -1209,11 +1209,13 @@ class DntupleBranches
                                TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]])==DInfo->rftk2_MassHypo[j])
                               {
                                 Dgen[typesize] = 23333;
+                                dGenIdxRes = GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]];
                               }
                             else if(TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]])==DInfo->rftk1_MassHypo[j] && 
                                     TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]])==DInfo->rftk2_MassHypo[j])
                               {
                                 Dgen[typesize] = 23344;
+                                dGenIdxRes = GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]];
                               }
                           }
                       }
@@ -1241,6 +1243,7 @@ class DntupleBranches
                                TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk3_index[j]]])==DInfo->rftk3_MassHypo[j])
                               {
                                 Dgen[typesize] = 23333;
+                                dGenIdxRes = GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]];
                               }
                             else if((TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]])==DInfo->rftk2_MassHypo[j]&&
                                      TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]])==DInfo->rftk1_MassHypo[j]&&
@@ -1256,6 +1259,7 @@ class DntupleBranches
                                      TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]])==PION_PDGID))
                               {
                                 Dgen[typesize] = 23344;
+                                dGenIdxRes = GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]];
                               }
                           }
                       }
@@ -1287,6 +1291,7 @@ class DntupleBranches
                                TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk4_index[j]]])==DInfo->rftk4_MassHypo[j])
                               {
                                 Dgen[typesize] = 23333;
+                                dGenIdxRes = GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]];
                               }
                             else if((TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]])==DInfo->rftk2_MassHypo[j] &&
                                      TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]])==DInfo->rftk1_MassHypo[j] &&
@@ -1326,6 +1331,7 @@ class DntupleBranches
                                      TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]])==PION_PDGID))
                               {
                                 Dgen[typesize] = 23344;
+                                dGenIdxRes = GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk1_index[j]]];
                               }
                           }
                       }
@@ -1334,7 +1340,6 @@ class DntupleBranches
           }
         else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10)
           {
-            dGenIdxRes = -1;
             if(DInfo->tktkRes_rftk1_index[j]>-1 && DInfo->tktkRes_rftk2_index[j]>-1)
               {
                 if(TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]>-1 && 
@@ -1390,7 +1395,6 @@ class DntupleBranches
           }
         else if(DInfo->type[j]==11||DInfo->type[j]==12)
           {
-            dGenIdxRes = -1;
             if(DInfo->tktkRes_rftk1_index[j]>-1 && DInfo->tktkRes_rftk2_index[j]>-1 && DInfo->tktkRes_rftk3_index[j]>-1 && DInfo->tktkRes_rftk4_index[j]>-1)
               {
                 if(TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]>-1 && 
@@ -1487,17 +1491,21 @@ class DntupleBranches
 
         if(Dgen[typesize]==23333||Dgen[typesize]==23344)
           {
-            DgenIndex[typesize] = dGenIdxRes;
-            if((DInfo->type[j]==1||DInfo->type[j]==2)&&GenInfo->nDa[DgenIndex[typesize]]>2) Dgen[typesize]=41000;
-            DgennDa[typesize] = GenInfo->nDa[DgenIndex[typesize]];
-            Dgenpt[typesize] = GenInfo->pt[DgenIndex[typesize]];
-            Dgeneta[typesize] = GenInfo->eta[DgenIndex[typesize]];
-            Dgenphi[typesize] = GenInfo->phi[DgenIndex[typesize]];
-            b4P->SetXYZM(GenInfo->pt[DgenIndex[typesize]]*cos(GenInfo->phi[DgenIndex[typesize]]),
-                         GenInfo->pt[DgenIndex[typesize]]*sin(GenInfo->phi[DgenIndex[typesize]]),
-                         GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
-                         GenInfo->mass[DgenIndex[typesize]]);
-            Dgeny[typesize] = b4P->Rapidity();
+            if(dGenIdxRes<0) cout<<"ERROR: Gen-Matched D index is -1"<<endl;
+            else
+              {
+                DgenIndex[typesize] = dGenIdxRes;
+                if((DInfo->type[j]==1||DInfo->type[j]==2)&&GenInfo->nDa[DgenIndex[typesize]]>2) Dgen[typesize]=41000;
+                DgennDa[typesize] = GenInfo->nDa[DgenIndex[typesize]];
+                Dgenpt[typesize] = GenInfo->pt[DgenIndex[typesize]];
+                Dgeneta[typesize] = GenInfo->eta[DgenIndex[typesize]];
+                Dgenphi[typesize] = GenInfo->phi[DgenIndex[typesize]];
+                b4P->SetXYZM(GenInfo->pt[DgenIndex[typesize]]*cos(GenInfo->phi[DgenIndex[typesize]]),
+                             GenInfo->pt[DgenIndex[typesize]]*sin(GenInfo->phi[DgenIndex[typesize]]),
+                             GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
+                             GenInfo->mass[DgenIndex[typesize]]);
+                Dgeny[typesize] = b4P->Rapidity();
+              }
           }
       }//if(!real)
   }//fillDtree
