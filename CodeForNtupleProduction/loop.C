@@ -85,7 +85,8 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   cout<<"--- Building trees finished"<<endl;
 
   cout<<"--- Check the number of events for three trees"<<endl;
-  cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries()<<" "<<skimroot->GetEntries()<<endl;
+  cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries();
+  //cout<<" "<<skimroot->GetEntries()<<endl;
   cout<<endl;
   cout<<"--- Processing events"<<endl;
   for(int i=startEntries;i<endEntries;i++)
