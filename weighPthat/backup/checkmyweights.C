@@ -39,14 +39,14 @@ void checkmyweights()
   cout<<"event30="<<events30<<endl;
   cout<<"event50="<<events50<<endl;
   
-  TH1D *MCPthat0 = new TH1D("MCPthat0",";pthat;Events",50,0,500);
-  TH1D *MCPthat5 = new TH1D("MCPthat5",";pthat;Events",50,0,500);
-  TH1D *MCPthat10 = new TH1D("MCPthat10",";pthat;Events",50,0,500);
-  TH1D *MCPthat15 = new TH1D("MCPthat15",";pthat;Events",50,0,500);
-  TH1D *MCPthat30 = new TH1D("MCPthat30",";pthat;Events",50,0,500);
-  TH1D *MCPthat50 = new TH1D("MCPthat50",";pthat;Events",50,0,500);
-  TH1D *MCPthatTot = new TH1D("MCPthatTot",";pthat;Events",50,0,500);
-  TH1D *MCPthatTotOriginal = new TH1D("MCPthatTotOriginal",";pthat;Events",100,0,500);
+  TH1D *MCPthat0 = new TH1D("MCPthat0",";pthat;Events",100,0,100);
+  TH1D *MCPthat5 = new TH1D("MCPthat5",";pthat;Events",100,0,100);
+  TH1D *MCPthat10 = new TH1D("MCPthat10",";pthat;Events",100,0,100);
+  TH1D *MCPthat15 = new TH1D("MCPthat15",";pthat;Events",100,0,100);
+  TH1D *MCPthat30 = new TH1D("MCPthat30",";pthat;Events",100,0,100);
+  TH1D *MCPthat50 = new TH1D("MCPthat50",";pthat;Events",100,0,100);
+  //TH1D *MCPthatTot = new TH1D("MCPthatTot",";pthat;Events",100,0,100);
+  //TH1D *MCPthatTotOriginal = new TH1D("MCPthatTotOriginal",";pthat;Events",100,0,100);
   /*  
   TString weight0="6.924e+09/54587";
   TString weight5="1.713e+08/52335";
@@ -62,27 +62,30 @@ void checkmyweights()
   TString weight30="9.654e+04/56560";
   TString weight50="8.639e+03/53978";
 
-
   nthi0->Project("MCPthat0","pthat",TCut(weight0));
   nthi5->Project("MCPthat5","pthat",TCut(weight5));
   nthi10->Project("MCPthat10","pthat",TCut(weight10));
   nthi15->Project("MCPthat15","pthat",TCut(weight15));
   nthi30->Project("MCPthat30","pthat",TCut(weight30));
   nthi50->Project("MCPthat50","pthat",TCut(weight50));
-  nthiTOT->Project("MCPthatTotOriginal","pthat","1");
+  //nthiTOT->Project("MCPthatTotOriginal","pthat","1");
   
+  /*
   MCPthatTot->Add(MCPthat0);
   MCPthatTot->Add(MCPthat5);
   MCPthatTot->Add(MCPthat10);
   MCPthatTot->Add(MCPthat15);
   MCPthatTot->Add(MCPthat30);
   MCPthatTot->Add(MCPthat50);
+  TCanvas* c = new TCanvas("c","",1000,1000);
+  c->SetLogy();
   MCPthatTot->Draw();
-  
-  TCanvas*canvas=new TCanvas("canvas","canvas",1000,1000);
+  */
+  /*
+  TCanvas* canvas=new TCanvas("canvas","canvas",1000,1000);
+  canvas->SetLogy();
   canvas->Divide(3,3);
   canvas->cd(1);
-  canvas->SetLogy();
   MCPthat0->Draw();
   canvas->cd(2);
   MCPthat5->Draw();
@@ -98,8 +101,8 @@ void checkmyweights()
   MCPthatTotOriginal->Draw("p");
   canvas->cd(8);
   MCPthatTot->Draw("p");
-  
-  TCanvas*canvasall=new TCanvas("canvasall","canvasall",1000,1000);
+  */
+  TCanvas* canvasall=new TCanvas("canvasall","canvasall",1000,1000);
   canvasall->cd(1);
   canvasall->SetLogy();
   MCPthat0->SetMaximum(1e12);

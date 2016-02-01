@@ -1,8 +1,8 @@
 using namespace std;
 #include "weighPthat.h"
 
-int weighPthat(TString ifname = "",
-               TString ofname = "")
+int weighPthat(TString ifname = "/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8D0kpi_noweight.root",
+               TString ofname = "/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8D0kpi_withweight.root")
 {
   Bool_t isInsidebin(Float_t xpthat, Float_t xmaxgenpt, Int_t i);
   cout<<endl;
@@ -80,13 +80,10 @@ int weighPthat(TString ifname = "",
         {
           if((GisSignal[k]==1||GisSignal[k]==2)&&Gpt[k]>maxpt) maxpt=Gpt[k];
         }
-      maxDgenpt = maxpt;
       for(Int_t j=0;j<nBins;j++)
         {
-          if(isInsidebin(pthat,maxpt,j))
-            {
-              pthatweight = weight[j];
-            }
+          maxDgenpt = maxpt;
+          if(isInsidebin(pthat,maxpt,j)) pthatweight = weight[j];
         }
       newBr_pthatweight->Fill();
       newBr_maxDgenpt->Fill();
@@ -105,7 +102,7 @@ Bool_t isInsidebin(Float_t xpthat, Float_t xmaxgenpt, Int_t i)
       cout<<"    Error: invalid input"<<endl;
       return false;
     }
-  if(i<(nBins-1)&&(xpthat>pthatBin[i]&&xmaxgenpt>pthatBin[i])&&!(xpthat>pthatBin[i+1]&&xmaxgenpt>pthatBin[i+1])) return true;
+  if(i<(nBins-1)&&xpthat>pthatBin[i]&&xpthat<pthatBin[i+1]&&xmaxgenpt>pthatBin[i]&&xmaxgenpt<pthatBin[i+1]) return true;
   else if(i==(nBins-1)&&xpthat>pthatBin[i]&&xmaxgenpt>pthatBin[i]) return true;
   else return false;
 }
