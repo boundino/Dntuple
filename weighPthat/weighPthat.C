@@ -1,5 +1,6 @@
 using namespace std;
-#include "weighPthat.h"
+#include "uti.h"
+#define MAX_GEN      6000
 
 int weighPthat(TString ifname = "",
                TString ofname = "")
@@ -43,7 +44,7 @@ int weighPthat(TString ifname = "",
       Float_t maxpt=0;
       for(Int_t k=0;k<Gsize;k++)
         {
-          if((GisSignal[k]==1||GisSignal[k]==2)&&Gpt[k]>maxpt) maxpt=Gpt[k];
+          if((GisSignal[k]==genSignal[0]||GisSignal[k]==genSignal[1])&&Gpt[k]>maxpt) maxpt=Gpt[k];
         }
       for(Int_t j=0;j<nBins;j++)
         {
@@ -78,7 +79,7 @@ int weighPthat(TString ifname = "",
       Float_t maxpt=0;
       for(Int_t k=0;k<Gsize;k++)
         {
-          if((GisSignal[k]==1||GisSignal[k]==2)&&Gpt[k]>maxpt) maxpt=Gpt[k];
+          if((GisSignal[k]==genSignal[0]||GisSignal[k]==genSignal[1])&&Gpt[k]>maxpt) maxpt=Gpt[k];
         }
       maxDgenpt = maxpt;
       for(Int_t j=0;j<nBins;j++)
