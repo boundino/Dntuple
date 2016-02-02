@@ -6,7 +6,6 @@
 #include "evtmatching.h"
 
 Float_t pthat = 15;
-//int evtmatching(TString infdfinder="openHLT_HF_100_1_OYu.root", TString infhlt="openHLT_HF_100_1_OYu.root",TString outfile="comp1.root")
 int evtmatchingFix(TString infdfinder=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root",pthat,pthat), TString infhlt=Form("/export/d00/scratch/jwang/Dmeson/openHLT_HF_HLTHeavyFlavour_MVA_V13_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_1016_MBseed_fix.root",pthat,pthat),TString outfile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151020_EvtMatching_Pyquen_D0tokaonpion_D0pt%.0fp0_Pthat%.0f_TuneZ2_Unquenched_5020GeV_GENSIM_75x_v2_20151016.root",pthat,pthat))
 {
   TFile* fdfinder = new TFile(infdfinder);

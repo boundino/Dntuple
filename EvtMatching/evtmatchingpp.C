@@ -6,8 +6,8 @@
 #include <fstream>
 #include "evtmatching.h"
 
-Float_t pthat = 35;
-int evtmatchingpp(TString infdfinder=Form("/export/d00/scratch/jwang/Dmeson/evtmatchingInput/DfinderMC_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110.root",pthat,pthat), TString infhlt=Form("/export/d00/scratch/jwang/Dmeson/evtmatchingInput/openHLT_HF_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_D0pt%.0fp0_Pthat%.0f7415_755patch2_v20_MBseed_1116.root",pthat,pthat),TString outfile=Form("/export/d00/scratch/jwang/Dmeson/DfinderMC_20151115_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_755patch2_v20_MBseed_1116.root",pthat,pthat))
+Float_t pthat = 15;
+int evtmatchingpp(TString infdfinder=Form("/afs/cern.ch/work/w/wangj/public/Dmeson/Dfinder/DfinderMC_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110.root",pthat,pthat), TString infhlt=Form("/afs/cern.ch/work/w/wangj/public/Dmeson/Dfinder/openHLT_HF_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_D0pt%.0fp0_Pthat%.0f7415_753_1107.root",pthat,pthat),TString outfile=Form("/afs/cern.ch/work/w/wangj/public/Dmeson/Dfinder/DfinderMC_20151115_EvtMatching_Pythia_D0pt%.0fp0_Pthat%.0f_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root",pthat,pthat))
 {
   TFile* fdfinder = new TFile(infdfinder);
   TFile* fhlt = new TFile(infhlt);
