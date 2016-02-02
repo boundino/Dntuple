@@ -1,25 +1,28 @@
-#include "PtBins.h"
+#include "PtBinsPP.h"
 
 Float_t ptmin = 20.;
-Float_t ptmax = 25.;
+Float_t ptmax = 70.;
+enum ch{Dstar3p,Dstar5p} channel=Dstar3p;
 
 void readxmlPP()
 {
   void calRatio(Float_t* results);
 
   //read weight file
-  const char* filename = Form("weights/%s/TMVAClassification_CutsSA.weights.xml",channel.Data());
-  void *doc = TMVA::gTools().xmlengine().ParseFile(filename,TMVA::gTools().xmlenginebuffersize());
+  const char* filename = "weights/TMVAClassification_CutsSA.weights.xml";
+  void* doc = TMVA::gTools().xmlengine().ParseFile(filename,TMVA::gTools().xmlenginebuffersize());
   void* rootnode = TMVA::gTools().xmlengine().DocGetRootElement(doc);//node "MethodSetup"
   TString fullMethodName("");  
   TMVA::gTools().ReadAttr(rootnode, "Method", fullMethodName);
   cout<<endl;
-  cout<<" ╒══════════════════════════════════════════════════╕"<<endl;
-  cout<<" |               Cut Opt Configuration              |"<<endl;
-  cout<<" ├────────────┬────────────────────────────┬────────┤"<<endl;
-  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Method"<<" | "<<setiosflags(ios::left)<<setw(26)<<fullMethodName<<" | "<<setiosflags(ios::left)<<setw(6)<<" "<<" |"<<endl;
+  cout<<" ╒══════════════════════════════════════════════════════════════════════╕"<<endl;
+  cout<<" |                         Cut Opt Configuration                        |"<<endl;
+  cout<<" ├────────────┬────────────────────────────────────────────────┬────────┤"<<endl;
+  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Channel"<<" | "<<setiosflags(ios::left)<<setw(46)<<chname[channel]<<" | "<<setiosflags(ios::left)<<setw(6)<<" "<<" |"<<endl;
+  cout<<" ├────────────┼────────────────────────────────────────────────┼────────┤"<<endl;
+  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Method"<<" | "<<setiosflags(ios::left)<<setw(46)<<fullMethodName<<" | "<<setiosflags(ios::left)<<setw(6)<<" "<<" |"<<endl;
 
-  void *opts = TMVA::gTools().GetChild(rootnode,"Options");
+  void* opts = TMVA::gTools().GetChild(rootnode,"Options");
   void* opt = TMVA::gTools().GetChild(opts,"Option");
 
   TString varProp("");
@@ -51,12 +54,12 @@ void readxmlPP()
       TMVA::gTools().ReadAttr(var, "Expression", varname);
       TString tem = Form("Variable%i",k);
       varval[k] = varname;
-      cout<<" ├────────────┼────────────────────────────┼────────┤"<<endl;
-      cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<tem<<" | "<<setiosflags(ios::left)<<setw(26)<<varname<<" | "<<setiosflags(ios::left)<<setw(6)<<margins[k]<<" |"<<endl;
+      cout<<" ├────────────┼────────────────────────────────────────────────┼────────┤"<<endl;
+      cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<tem<<" | "<<setiosflags(ios::left)<<setw(46)<<varname<<" | "<<setiosflags(ios::left)<<setw(6)<<margins[k]<<" |"<<endl;
       var = TMVA::gTools().GetNextChild(var);
       varnames.push_back(varname);
     }
-  cout<<" ╞════════════╪════════════════════════════╪════════╡"<<endl;
+  cout<<" ╞════════════╪════════════════════════════════════════════════╪════════╡"<<endl;
 
   void* weight = TMVA::gTools().GetChild(rootnode,"Weights");
   void* eff = TMVA::gTools().GetChild(weight,"Bin");
@@ -98,11 +101,8 @@ void readxmlPP()
   //
   calRatio(weights);
   //
-  cout<<endl;
   wS = weights[1];
   wB = weights[0];
-
-  cout<<"Looking for max significance ..."<<endl;
 
   Double_t max = 0;
   Int_t maxindex = 0;
@@ -121,20 +121,18 @@ void readxmlPP()
 	  maxindex=i;
 	}
     }
-  cout<<endl;
-  cout<<" ╒══════════════════════════════════════════════════╕"<<endl;
-  cout<<" |                     Opt Result                   |"<<endl;
-  cout<<" ├────────────┬────────────┬────────────┬───────────┤"<<endl;
-  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Sig eff"<<" | "<<setiosflags(ios::left)<<setw(10)<<effS[maxindex]<<" | "<<setiosflags(ios::left)<<setw(10)<<"Signi"<<" | "<<setiosflags(ios::left)<<setw(9)<<max<<" |"<<endl;
-  cout<<" ├────────────┴────────────┴───┬────────┴───────────┤"<<endl;
+  cout<<" |                               Opt Result                             |"<<endl;
+  cout<<" ├─────────────────┬─────────────────┬─────────────────┬────────────────┤"<<endl;
+  cout<<" │ "<<setiosflags(ios::left)<<setw(15)<<"Sig eff"<<" | "<<setiosflags(ios::left)<<setw(15)<<effS[maxindex]<<" | "<<setiosflags(ios::left)<<setw(15)<<"Significance"<<" | "<<setiosflags(ios::left)<<setw(14)<<max<<" |"<<endl;
+  cout<<" ├─────────────────┴─────────────────┴─────────────┬───┴────────────────┤"<<endl;
 
   Int_t m;
   for(m=0;m<3;m++)
     {
-      if(m) cout<<" ├─────────────────────────────┼────────────────────┤"<<endl;
-      cout<<" │ "<<setiosflags(ios::left)<<setw(27)<<varval[m]<<" | "<<setiosflags(ios::left)<<setw(18)<<cutval[m].at(maxindex)<<" |"<<endl;
+      if(m) cout<<" ├─────────────────────────────────────────────────┼────────────────────┤"<<endl;
+      cout<<" │ "<<setiosflags(ios::left)<<setw(47)<<varval[m]<<" | "<<setiosflags(ios::left)<<setw(18)<<cutval[m].at(maxindex)<<" |"<<endl;
     }
-  cout<<" ╘═════════════════════════════╧════════════════════╛"<<endl;
+  cout<<" ╘═════════════════════════════════════════════════╧════════════════════╛"<<endl;
   cout<<endl;
 
   TGraph* gsig = new TGraph(100,effS,effSig);
@@ -146,37 +144,36 @@ void readxmlPP()
   leg->AddEntry("null", "D*","");
   leg->SetFillColor(kWhite);
   leg->Draw();
-  csig->SaveAs(Form("plots/plot_%s/sig/%s/sig-eff_%.1f_%.1f.pdf",channel.Data(),func.Data(),ptmin,ptmax));
+  csig->SaveAs(Form("plots/plot_%s/%s/sig-eff_%.1f_%.1f.pdf",ntDtr[channel].Data(),func.Data(),ptmin,ptmax));
 }
 
 void calRatio(Float_t* results)
 {
-  TFile* inputS = new TFile("/afs/cern.ch/work/j/jisun/public/Dmesonana/Dmesonana_hiforest_D0filtered_2760GeV_D0pt3_pthat015305080120_1220_1222_all_v1.root");
-  TFile* inputB = new TFile("/afs/cern.ch/work/j/jisun/public/Dmesonana/Dmesonana_PPJet_Jettrig_obj_pt0p5_d0dstar_alpha1p0_highpurity_1209_all_v1.root");
-  TTree* ntS = (TTree*)inputS->Get("ntDD0kpipi");
-  TTree* ntB = (TTree*)inputB->Get("ntDD0kpipi");
+  TFile* inputS = new TFile(inputSname[channel]);
+  TFile* inputB = new TFile(inputBname[channel]);
+  TTree* ntS = (TTree*)inputS->Get(ntDtr[channel]);
+  TTree* ntB = (TTree*)inputB->Get(ntDtr[channel]);
   TTree* ntG = (TTree*)inputS->Get("ntGen");
 
   Int_t i;
-  TString cutS = Form("%s&&Dpt>%f&&Dpt<%f&&Dgen==23333",cut.Data(),ptmin,ptmax);
-  TString cutB = Form("%s&&Dpt>%f&&Dpt<%f&&TMath::Abs(Dmass-2.01)>0.1&&TMath::Abs(Dmass-2.01)<0.15",cut.Data(),ptmin,ptmax);
-  //TString cutB = Form("%s&&Dpt>%f&&Dpt<%f&&TMath::Abs(DtktkResmass-1.864)>0.1&&TMath::Abs(DtktkResmass-1.864)<0.15",cut.Data(),ptmin,ptmax);
-  TString cutG = Form("%s&&Gpt>%f&&Gpt<%f",cut_gen.Data(),ptmin,ptmax);
+  TString cutS = Form("%s&&Dpt>%f&&Dpt<%f",cut_sig[channel].Data(),ptmin,ptmax);
+  TString cutB = Form("%s&&Dpt>%f&&Dpt<%f",cut_bkg[channel].Data(),ptmin,ptmax);
+  TString cutG = Form("%s&&Gpt>%f&&Gpt<%f",cut_gen[channel].Data(),ptmin,ptmax);
   if(verbose)
     {
-      cout<<"  -- Cut applied"
+      cout<<"  -- Cut applied"<<endl;
       cout<<"cutS: "<<cutS<<endl;
       cout<<"cutB: "<<cutB<<endl;
       cout<<"cutG: "<<cutG<<endl;
     }
 
   TString ptstring = Form("(%.1f,%.1f)",ptmin,ptmax);
-  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Pt"<<" │ "<<setiosflags(ios::left)<<setw(26)<<ptstring<<" | "<<setiosflags(ios::left)<<setw(6)<<" "<<" |"<<endl;
-  cout<<" ╘════════════╧════════════════════════════╧════════╛"<<endl;
+  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Pt"<<" │ "<<setiosflags(ios::left)<<setw(46)<<ptstring<<" | "<<setiosflags(ios::left)<<setw(6)<<" "<<" |"<<endl;
+  cout<<" ╘════════════╧════════════════════════════════════════════════╧════════╛"<<endl;
   cout<<endl;
 
   //Fill histogram
-  TH1D* hmassS = new TH1D("hmassS","",50,1.7,2.3);
+  TH1D* hmassS = new TH1D("hmassS","",50,1.8,2.2);
   TH1D* hmassB = new TH1D("hmassB","",50,0.,10.);
   ntS->Project("hmassS","Dmass",cutS);
   ntB->Project("hmassB","Dmass",cutB);
@@ -185,6 +182,7 @@ void calRatio(Float_t* results)
   hmassS->GetXaxis()->SetTitle("Gen-matched D mass (GeV/c^{2})");
   hmassS->GetYaxis()->SetTitle("Entries");
   TCanvas* cmassS = new TCanvas("cmassS","",200,10,600,600);
+  hmassS->Sumw2();
   hmassS->Draw();
   TF1* fmass = new TF1("fmass","[0]*([3]*Gaus(x,[1],[2])+(1-[3])*Gaus(x,[1],[4]))");
   fmass->SetParLimits(2,0.005,0.05);
@@ -197,7 +195,6 @@ void calRatio(Float_t* results)
   fmass->SetParameter(4,setparam4);
   fmass->FixParameter(3,1);
   hmassS->Fit("fmass","","",1.7,2.3);
-  cmassS->SaveAs(Form("plots/plot_%s/Signal.pdf",channel.Data()));
   Float_t sigma = fmass->GetParameter(2);
 
   //Background
@@ -206,17 +203,16 @@ void calRatio(Float_t* results)
   Int_t nentriesB = hmassB->GetEntries();
   TCanvas* cmassB = new TCanvas("cmassB","",200,10,600,600);
   hmassB->Draw();
-  cmassB->SaveAs(Form("plots/plot_%s/Background.pdf",channel.Data()));
 
   //Calculate theory prediction
-  ifstream getdata("fonlls/fo_Dzero_pp_2.76_eta2.dat");
+  ifstream getdata(inputFonll[channel]);
   if(!getdata.is_open()) cout<<"Opening the file fails"<<endl;
   Float_t tem;
   Int_t nbin = 0;
 
   while(!getdata.eof())
     {
-      getdata>>pt[nbin]>>central[nbin]>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem;
+      getdata>>pt[nbin]>>central[nbin]>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem>>tem;
       if(pt[nbin]>=ptmin && pt[nbin]<=ptmax) nbin++;
     }
   TH1D* hfonll = new TH1D("hfonll","",nbin-1,pt);
@@ -224,6 +220,7 @@ void calRatio(Float_t* results)
     {
       hfonll->SetBinContent(i,central[i]);
     }
+  TCanvas* cfonll = new TCanvas("cfonll","",200,10,600,600);
   hfonll->Draw();
 
   //Efficiency correction
@@ -233,44 +230,27 @@ void calRatio(Float_t* results)
   ntG->Project("hgen","Gpt",cutG);
   ntS->Project("hrec","Dpt",cutS);
   heff->Divide(hrec,hgen,1.,1.,"B");
+  TCanvas* ceff = new TCanvas("ceff","",200,10,600,600);
+  heff->Draw();
   TH1D* htheoryreco = new TH1D("htheoryreco","",nbin-1,pt);
   htheoryreco->Multiply(heff,hfonll,1,1,"B");
 
   //Scale signal and background
   Double_t lumi = 13.9;//
-  Double_t prodfrac = 0.1;//
-  Double_t decaybrac = 0.677*0.0388;//D*(D0pi) * D0(kpi)
+  Double_t prodfrac = 0.223;//
+  Double_t decaybrac = decayChain[channel];
   Double_t deltapt = 0.25;
   Double_t yieldDstar = htheoryreco->Integral();
-  yieldDstar*=(1.e-9)*lumi*prodfrac*decaybrac*deltapt;
+  yieldDstar*=lumi*prodfrac*decaybrac*deltapt;
 
   results[0] = nentriesB*Nsigma*sigma/0.05;
   results[1] = yieldDstar;
   cout<<endl;
-  cout<<" ╒══════════════════════════════════════════════════╕"<<endl;
-  cout<<" |                   Weight Result                  |"<<endl;
-  cout<<" ├────────────┬────────────┬────────────┬───────────┤"<<endl;
-  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"Bkg #"<<" | "<<setiosflags(ios::left)<<setw(10)<<nentriesB<<" | "<<setiosflags(ios::left)<<setw(10)<<"Sig reg"<<" | "<<setiosflags(ios::left)<<setw(9)<<setprecision(3)<<sigma*Nsigma*2<<" |"<<endl;
-  cout<<" ├────────────┼────────────┼────────────┼───────────┤"<<endl;
-  cout<<" │ "<<setiosflags(ios::left)<<setw(10)<<"SigWeight"<<" | "<<setiosflags(ios::left)<<setw(10)<<yieldDstar<<" | "<<setiosflags(ios::left)<<setw(10)<<"BkgWeight"<<" | "<<setiosflags(ios::left)<<setw(9)<<nentriesB*Nsigma*sigma/0.05<<" |"<<endl;
-  cout<<" ╘════════════╧════════════╧════════════╧═══════════╛"<<endl;
+  cout<<" ╒══════════════════════════════════════════════════════════════════════╕"<<endl;
+  cout<<" |                             Weight Result                            |"<<endl;
+  cout<<" ├─────────────────┬─────────────────┬─────────────────┬────────────────┤"<<endl;
+  cout<<" │ "<<setiosflags(ios::left)<<setw(15)<<"Bkg #"<<" | "<<setiosflags(ios::left)<<setw(15)<<nentriesB<<" | "<<setiosflags(ios::left)<<setw(15)<<"Sig reg"<<" | "<<setiosflags(ios::left)<<setw(14)<<setprecision(3)<<sigma*Nsigma*2<<" |"<<endl;
+  cout<<" ├─────────────────┼─────────────────┼─────────────────┼────────────────┤"<<endl;
+  cout<<" │ "<<setiosflags(ios::left)<<setw(15)<<"SigWeight"<<" | "<<setiosflags(ios::left)<<setw(15)<<yieldDstar<<" | "<<setiosflags(ios::left)<<setw(15)<<"BkgWeight"<<" | "<<setiosflags(ios::left)<<setw(14)<<nentriesB*Nsigma*sigma/0.05<<" |"<<endl;
+  cout<<" ╞═════════════════╧═════════════════╧═════════════════╧════════════════╡"<<endl;
 }
-
-
-/*
-void GetCut(double eff)
-{
-  //find closest eff
-  int ind = 0; float deff=fabs(effS[0]-eff);
-  for (unsigned int i=0;i<cuts.size();i++)
-    {
-      if (fabs(effS[i]-eff)<deff)
-	{
-	  ind = i;
-	  deff = fabs(effS[i]-eff);
-	}
-    }
-  cout<<"Cut for signal eff. "<<effS[ind]<<" and bkg. rej. "<<effB[ind]<<":"<<endl;
-  cout<<cuts[ind]<<endl;
-}
-*/
