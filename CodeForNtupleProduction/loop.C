@@ -6,14 +6,14 @@ using namespace std;
 
 Bool_t istest = false;
 int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
+         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   if(istest)
     {
-      infile="/store/user/twang/DfinderRun2/pp_Pythia8_prompt_D0pt15p0_Pthat15_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212/DfinderMC_pp_20151229_dPt1tkPt1_D0Ds/finder_pp_29_1_Azv.root";
+      infile="/store/user/twang/DfinderRun2/Pythia8_prompt_D0pt0p0_Pthat0_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_PU_20151212/DfinderMC_PbPb_20151229_dPt1tkPt1_D0Ds/finder_PbPb_65_1_1FZ.root";
       outfile="test.root";
       REAL=false;
-      isPbPb=false;
+      isPbPb=true;
       checkMatching=true;
       iseos=true;
     }
@@ -31,7 +31,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");  
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
-  //TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
+  TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
   TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
 
   DntupleBranches     *Dntuple = new DntupleBranches;
@@ -78,22 +78,22 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   TTree* ntGen = new TTree("ntGen","");           Dntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
-  //TTree* ntSkim = skimroot->CloneTree(0);
-  //ntSkim->SetName("ntSkim");
+  TTree* ntSkim = skimroot->CloneTree(0);
+  ntSkim->SetName("ntSkim");
   TTree* ntHi = hiroot->CloneTree(0);
   ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
   cout<<"--- Check the number of events for three trees"<<endl;
   cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries();
-  //cout<<" "<<skimroot->GetEntries()<<endl;
+  cout<<" "<<skimroot->GetEntries()<<endl;
   cout<<endl;
   cout<<"--- Processing events"<<endl;
   for(int i=startEntries;i<endEntries;i++)
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
-      //skimroot->GetEntry(i);
+      skimroot->GetEntry(i);
       hiroot->GetEntry(i);
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
@@ -109,7 +109,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
             }
         }
       ntHlt->Fill();
-      //ntSkim->Fill();
+      ntSkim->Fill();
       ntHi->Fill();
       Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
       if(!REAL) Dntuple->fillDGenTree(ntGen, GenInfo, gskim);

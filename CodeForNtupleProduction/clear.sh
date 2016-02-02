@@ -4,3 +4,5 @@ rm *~
 rm *.d
 rm *.so
 rm *.pcm
+rm *.exe
+rm mylistfinal.txt
