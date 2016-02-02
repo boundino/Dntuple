@@ -1,10 +1,9 @@
-#include "doubleratioParameter.h"
+#include "doubleratioParameterPbPb.h"
 
-enum real{MC,Data,MC_MB,Data_MB} isData=Data_MB;
-const int nBins=3; Double_t ptBins[nBins+1]={5.,10.,15.,25.};
+enum real{MC,Data} isData=MC;
+const int nBins=1;  Double_t ptBins[nBins+1]={10.,70.};
 
-TString outputfilename = Form("outputfiles/outputfile%s.root",texData[isData].Data());
-void studydoubleratio(Bool_t doweight=true)
+void studydoubleratioPbPb(Bool_t doweight=true)
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -18,10 +17,10 @@ void studydoubleratio(Bool_t doweight=true)
   TF1* fitDstar3prongs (TTree* nt, Double_t ptmin, Double_t ptmax);
   TF1* fitDstar5prongs (TTree* nt, Double_t ptmin, Double_t ptmax);
 
-  TFile* infData3prong = new TFile(infnameData3p[isData].Data());
-  TFile* infData5prong = new TFile(infnameData5p[isData].Data());
-  TFile* infMC3prong = new TFile(infnameMC3p[isData].Data());
-  TFile* infMC5prong = new TFile(infnameMC5p[isData].Data());
+  TFile* infData3prong = new TFile(infnameData3p.Data());
+  TFile* infData5prong = new TFile(infnameData5p.Data());
+  TFile* infMC3prong = new TFile(infnameMC3p.Data());
+  TFile* infMC5prong = new TFile(infnameMC5p.Data());
 
   TTree* ntData3prong = (TTree*)infData3prong->Get("ntDD0kpipi");
   TTree* ntData5prong = (TTree*)infData5prong->Get("ntDD0kpipipipi");
@@ -38,8 +37,6 @@ void studydoubleratio(Bool_t doweight=true)
   TTree* HltTreeMC5prong = (TTree*)infMC5prong->Get("ntHlt");
   ntMC3prong->AddFriend(HltTreeMC3prong);
   ntMC5prong->AddFriend(HltTreeMC5prong);
-  ntGen3prong->AddFriend(HltTreeMC3prong);
-  ntGen5prong->AddFriend(HltTreeMC5prong);
 
   TH1D* hPt3prong = new TH1D("hPt3prong","",nBins,ptBins);
   TH1D* hPt5prong = new TH1D("hPt5prong","",nBins,ptBins);  
@@ -68,93 +65,75 @@ void studydoubleratio(Bool_t doweight=true)
       hPt5prong->SetBinContent(i+1,yieldData5prong/(ptBins[i+1]-ptBins[i]));
       hPt5prong->SetBinError(i+1,yieldData5prongErr/(ptBins[i+1]-ptBins[i]));
     }
-  ntMC3prong->Project("hPtMC3prong","Dpt",Form("%s&&%s",selmc3p[isData].Data(),triggerselection[isData].Data()));
+  /*
+  ntMC3prong->Project("hPtMC3prong","Dpt",selmc3p);
   divideBinWidth(hPtMC3prong);
-  ntGen3prong->Project("hPtGen3prong","Gpt",Form("%s&&%s",selgen3p.Data(),triggerselection[isData].Data()));
-  divideBinWidth(hPtGen3prong);
-  ntMC5prong->Project("hPtMC5prong","Dpt",Form("%s&&%s",selmc5p[isData].Data(),triggerselection[isData].Data()));
+  ntGen3prong->Project("hPtGen3prong","Gpt",selgen3p);
+  divideBinWidth(hPtGen3prong);  
+  ntMC5prong->Project("hPtMC5prong","Dpt",selmc5p);
   divideBinWidth(hPtMC5prong);
-  ntGen5prong->Project("hPtGen5prong","Gpt",Form("%s&&%s",selgen5p.Data(),triggerselection[isData].Data()));
-  divideBinWidth(hPtGen5prong);
+  ntGen5prong->Project("hPtGen5prong","Gpt",selgen5p);
+  divideBinWidth(hPtGen5prong);  
 
   TCanvas* cPt3prong =  new TCanvas("cPt3prong","",600,600);
   cPt3prong->SetLogy();
   hPt3prong->SetXTitle("D p_{T} (GeV/c)");
-  hPt3prong->SetYTitle(Form("%s Uncorrected 3-prong N(D*)/dp_{T}",texData[isData].Data()));
+  hPt3prong->SetYTitle("Uncorrected 3-prong N(D*)/dp_{T}");
   hPt3prong->Draw();
-  cPt3prong->SaveAs(Form("temp/c_%s_Pt3prong.pdf",texData[isData].Data()));
-  hPt3prong->Scale(scaleMC3p[isData]);
+  cPt3prong->SaveAs("plots/pbpb/cPt3prong.pdf");
   TCanvas* cPt5prong =  new TCanvas("cPt5prong","",600,600);
   cPt5prong->SetLogy();
   hPt5prong->SetXTitle("D p_{T} (GeV/c)");
-  hPt5prong->SetYTitle(Form("%s Uncorrected 5-prong N(D*)/dp_{T}",texData[isData].Data()));
+  hPt5prong->SetYTitle("Uncorrected 5-prong N(D*)/dp_{T}");
   hPt5prong->Draw();
-  cPt5prong->SaveAs(Form("temp/c_%s_Pt5prong.pdf",texData[isData].Data()));
-  hPt5prong->Scale(scaleMC5p[isData]);
-
-  TH1D* hRatio = (TH1D*)hPt5prong->Clone("hRatio");
-  hRatio->SetTitle(Form(";D p_{T} (GeV/c);%s Raw dN(D*)/dp_{T} 5/3 prong Ratio",texData[isData].Data()));
-  hRatio->Divide(hPt3prong);
-  TCanvas* cRatio = new TCanvas("cRatio","",600,600);
-  hRatio->Draw();
-  cRatio->SaveAs(Form("temp/c_%s_Ratio.pdf",texData[isData].Data()));
+  cPt5prong->SaveAs("plots/pbpb/cPt5prong.pdf");
 
   TH1D* hEff3prong = (TH1D*)hPtMC3prong->Clone("hEff3prong");
-  hEff3prong->SetTitle(Form(";D p_{T} (GeV/c);%s 3-prong Efficiency",texData[isData].Data()));
+  hEff3prong->SetTitle(";D p_{T} (GeV/c);3-prong Efficiency");
   hEff3prong->Divide(hPtGen3prong);
   TCanvas* cEff3prong = new TCanvas("cEff3prong","",600,600);
   hEff3prong->Draw();
-  cEff3prong->SaveAs("temp/cEff3prong.pdf");
+  cEff3prong->SaveAs("plots/pbpb/cEff3prong.pdf");
   TH1D* hEff5prong = (TH1D*)hPtMC5prong->Clone("hEff5prong");
-  hEff5prong->SetTitle(Form(";D p_{T} (GeV/c);%s 5-prong Efficiency",texData[isData].Data()));
+  hEff5prong->SetTitle(";D p_{T} (GeV/c);5-prong Efficiency");
   hEff5prong->Divide(hPtGen5prong);
   TCanvas* cEff5prong = new TCanvas("cEff5prong","",600,600);
   hEff5prong->Draw();
-  cEff5prong->SaveAs("temp/cEff5prong.pdf");
-  
+  cEff5prong->SaveAs("plots/pbpb/cEff5prong.pdf");
+
   TH1D* hPtCor3prong = (TH1D*)hPt3prong->Clone("hPtCor3prong");
-  hPtCor3prong->SetTitle(Form(";D p_{T} (GeV/c);%s Corrected 3-prong dN(D*)/dp_{T}",texData[isData].Data()));
+  hPtCor3prong->SetTitle(";D p_{T} (GeV/c);Corrected 3-prong dN(D*)/dp_{T}");
   hPtCor3prong->Divide(hEff3prong);
   TCanvas* cPtCor3prong = new TCanvas("cCor3prong","",600,600);
   cPtCor3prong->SetLogy();
-  hPtCor3prong->Draw("same");
-  cPtCor3prong->SaveAs(Form("temp/c_%s_PtCor3prong.pdf",texData[isData].Data()));
-  if(isData==0||isData==2)
-    {
-      hPtGen3prong->Draw("same hist");
-      TLegend* legPtCor3prong = myLegend(0.55,0.80,0.90,0.94);
-      legPtCor3prong->AddEntry(hPtCor3prong,"Corrected signal","pl");
-      legPtCor3prong->AddEntry(hPtGen3prong,"Generated D*","lf");
-      legPtCor3prong->Draw("same");
-    }
+  hPtCor3prong->Draw();
+  cPtCor3prong->SaveAs("plots/pbpb/cPtCor3prong.pdf");
   TH1D* hPtCor5prong = (TH1D*)hPt5prong->Clone("hPtCor3prong");
-  hPtCor5prong->SetTitle(Form(";D p_{T} (GeV/c);%s Corrected 5-prong dN(D*)/dp_{T}",texData[isData].Data()));
+  hPtCor5prong->SetTitle(";D p_{T} (GeV/c);Corrected 5-prong dN(D*)/dp_{T}");
   hPtCor5prong->Divide(hEff5prong);
   TCanvas* cPtCor5prong = new TCanvas("cCor5prong","",600,600);
   cPtCor5prong->SetLogy();
-  hPtCor5prong->Draw("same");
-  cPtCor5prong->SaveAs(Form("temp/c_%s_PtCor5prong.pdf",texData[isData].Data()));
-  if(isData==0||isData==2)
-    {
-      hPtGen5prong->Draw("same hist");
-      TLegend* legPtCor5prong = myLegend(0.55,0.80,0.90,0.94);
-      legPtCor5prong->AddEntry(hPtCor5prong,"Corrected signal","pl");
-      legPtCor5prong->AddEntry(hPtGen5prong,"Generated D*","lf");
-      legPtCor5prong->Draw("same");
-    }
+  hPtCor5prong->Draw();
+  cPtCor5prong->SaveAs("plots/pbpb/cPtCor5prong.pdf");
+
   TH1D* hRatioCor = (TH1D*)hPtCor5prong->Clone("hRatioCor");
-  hRatioCor->SetTitle(Form(";D p_{T} (GeV/c);%s Corrected dN(D*)/dp_{T} 5/3 prong Ratio",texData[isData].Data()));
+  hRatioCor->SetTitle(";D p_{T} (GeV/c);Ratio of dN(D*)/dp_{T} 5/3 prong");
   hRatioCor->Divide(hPtCor3prong);
   TCanvas* cRatioCor = new TCanvas("cRatioCor","",600,600);
   hRatioCor->Draw();
-  cRatioCor->SaveAs(Form("temp/c_%s_RatioCor.pdf",texData[isData].Data()));
+  cRatioCor->SaveAs("plots/pbpb/cRatioCor.pdf");
 
+  //
+  TH1D* hRatioData=(TH1D*)hPt5prong->Clone("hRatioData");
+  hRatioData->Divide(hPt3prong);
+  
   TFile *outputfile=new TFile(outputfilename.Data(),"recreate");
   outputfile->cd();
   hPt3prong->Write();
   hPt5prong->Write();
-  hRatio->Write();
+  hRatioData->Write();
   outputfile->Close();
+  */
 }
 
 void clean0(TH1D* h)
@@ -172,10 +151,8 @@ TF1* fitDstar3prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   
   TCanvas* c= new TCanvas(Form("c_3p_%d",count3p),"",600,600);
   TH1D* h = new TH1D(Form("h_3p_%d",count3p),"",60,0.140,0.160);
-  h->SetMinimum(-5.);
   TF1* f = new TF1(Form("f_3p_%d",count3p),"[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x+[5]*((1-[8])*TMath::Gaus(x,[6],[7])/(sqrt(2*3.14159)*[7])+[8]*TMath::Gaus(x,[6],[9])/(sqrt(2*3.14159)*[9]))",minmass3prong,maxmass3prong);
-
-  nt->Project(Form("h_3p_%d",count3p),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata3p[isData].Data(),triggerselection[isData].Data(),ptmin,ptmax));   
+  nt->Project(Form("h_3p_%d",count3p),"Dmass-DtktkResmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata3p.Data(),ptmin,ptmax));   
   
   f->SetLineColor(4);
   f->SetParameters(0,0,0,0,0,2.e+2,1.45491e-1,9.e-4,0.1,8.e-4);
@@ -191,10 +168,8 @@ TF1* fitDstar3prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   f->ReleaseParameter(7);
   f->ReleaseParameter(9);
   f->SetParLimits(6,0.144,0.147);
-  if(ptmin<29) f->SetParLimits(7,1.e-4,9.e-4);
-  else f->SetParLimits(7,2.e-4,9.e-4);
-  if(ptmin<29) f->SetParLimits(9,1.e-4,9.e-4);
-  else f->SetParLimits(9,2.e-4,9.e-4);
+  f->SetParLimits(7,1.e-4,9.e-4);
+  f->SetParLimits(9,1.e-4,9.e-4);
   h->Fit(Form("f_3p_%d",count3p),"LL","",0.142,0.148);
   h->Fit(Form("f_3p_%d",count3p),"LL","",0.142,0.16);
   h->Fit(Form("f_3p_%d",count3p),"LL","",0.142,0.16);
@@ -281,7 +256,7 @@ TF1* fitDstar3prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   tex->SetTextSize(0.04);
   tex->SetTextFont(42);
   tex->Draw();
-  tex = new TLatex(0.65,0.93, "PP #sqrt{s_{NN}} = 5.02 TeV");
+  tex = new TLatex(0.63,0.93, "PbPb #sqrt{s_{NN}} = 5.02 TeV");
   tex->SetNDC();
   tex->SetTextAlign(12);
   tex->SetTextSize(0.04);
@@ -298,7 +273,8 @@ TF1* fitDstar3prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   tex->SetTextSize(0.04);
   tex->Draw();
 
-  c->SaveAs(Form("temp/DMass_%s_3prongs-%d.pdf",texData[isData].Data(),count3p));
+  if(isData) c->SaveAs(Form("plots/pbpb/DMass_3prongsData-%d.pdf",count3p));
+  else c->SaveAs(Form("plots/pbpb/DMass_3prongsMC-%d.pdf",count3p));
   
   return mass;
 }
@@ -312,7 +288,7 @@ TF1* fitDstar5prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   TCanvas* c = new TCanvas(Form("c_5p_%d",count5p),"",600,600);
   TH1D* h = new TH1D(Form("h_5p_%d",count5p),"",60,0.140,0.160);
   TF1* f = new TF1(Form("f_5p_%d",count5p),"[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x+[5]*((1-[8])*TMath::Gaus(x,[6],[7])/(sqrt(2*3.14159)*[7])+[8]*TMath::Gaus(x,[6],[9])/(sqrt(2*3.14159)*[9]))",minmass3prong,maxmass3prong);
-  nt->Project(Form("h_5p_%d",count5p),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata5p[isData].Data(),triggerselection[isData].Data(),ptmin,ptmax));   
+  nt->Project(Form("h_5p_%d",count5p),"Dmass-DtktkResmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata5p.Data(),ptmin,ptmax));   
     
   f->SetLineColor(4);
   f->SetParameters(0,0,0,0,0,2e2,1.45491e-1,9e-4,0.1,8e-4);
@@ -344,7 +320,7 @@ TF1* fitDstar5prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   background->SetParameter(3,f->GetParameter(3));
   background->SetParameter(4,f->GetParameter(4));
   background->SetLineColor(4);
-  background->SetRange(minmass3prong,maxmass3prong);
+  background->SetRange(0.144,0.147);
   background->SetLineStyle(2);
   
   TF1* mass = new TF1(Form("fmass_5p_%d",count5p),"[0]*((1-[3])*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+[3]*TMath::Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
@@ -416,7 +392,7 @@ TF1* fitDstar5prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   tex->SetTextSize(0.04);
   tex->SetTextFont(42);
   tex->Draw();
-  tex = new TLatex(0.65,0.93, "PP #sqrt{s_{NN}} = 5.02 TeV");
+  tex = new TLatex(0.63,0.93, "PbPb #sqrt{s_{NN}} = 5.02 TeV");
   tex->SetNDC();
   tex->SetTextAlign(12);
   tex->SetTextSize(0.04);
@@ -433,7 +409,8 @@ TF1* fitDstar5prongs(TTree* nt, Double_t ptmin, Double_t ptmax)
   tex->SetTextSize(0.04);
   tex->Draw();
 
-  c->SaveAs(Form("temp/DMass_%s_5prongs-%d.pdf",texData[isData].Data(),count5p));
+  if (isData) c->SaveAs(Form("plots/pbpb/DMass_5prongsData-%d.pdf",count5p));
+  else c->SaveAs(Form("plots/pbpb/DMass_5prongsMC-%d.pdf",count5p));
   
   return mass;
 }
