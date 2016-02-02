@@ -1,6 +1,5 @@
-//const int nBins=1; double ptBins[nBins+1] = {1., 100.};
-//const int nBins=7; double ptBins[nBins+1] = {3., 4., 5., 10., 20., 40., 60., 100.};
-const int nBins=8; double ptBins[nBins+1] = {20.,25.,30.,35.,40.,50.,60.,80.,100.};
+const int nBins=7; double ptBins[nBins+1] = {10.,15.,20.,25.,30.,35.,50.,70.};
+//const int nBins=1; double ptBins[nBins+1] = {20.,30.};
 /*
 const int ntriggers=3;
 TString triggerHLTPP[ntriggers]={"HLT_DmesonPPTrackingGlobal_Dpt15_v1","HLT_DmesonPPTrackingGlobal_Dpt30_v1","HLT_DmesonPPTrackingGlobal_Dpt50_v1"};

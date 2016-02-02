@@ -1,6 +1,7 @@
 #include "../include/uti.h"
 #include "../include/parametersDstar.h"
 
+/*
 Double_t setparam0=100.;
 Double_t setparam1=2.010;
 Double_t setparam2=0.03;
@@ -8,8 +9,9 @@ Double_t setparam10=0.005;
 Double_t setparam8=0.1;
 Double_t setparam9=0.1;
 Double_t fixparam1=2.010;
-Double_t minhisto=1.90;
-Double_t maxhisto=2.20;
+*/
+Double_t minhisto=0.14;
+Double_t maxhisto=0.16;
 Double_t nbinsmasshisto=60;
 Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
@@ -18,12 +20,13 @@ TString seldata;
 TString selmc;
 TString collisionsystem;
 
-void fitDstar3p(TString inputdata="/data/wangj/Data2015/Dntuple/pp/ntD_EvtBase_20160104_DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p.root", 
-                TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpi/ntD_EvtBase_20151231_Dfinder_20151229_pp_Pythia8D0kpi_noweight.root", 
+void fitDstar3p(TString inputdata="/data/wangj/Data2015/Dntuple/pp/ntD_EvtBase_20160104_HeavyFlavor_DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p.root", 
+                //TString inputdata="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8D0kpi_noweight.root", 
+                TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8D0kpi_noweight.root", 
                 TString trgselection="1",  
-                TString cut="(Dy>-1.0&&Dy<1.0&&Dpt>1.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.) && (DtktkRes_chi2cl>0.052&&DtktkRes_alpha<0.068&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>0)", 
+                TString cut="(Dy>-1.0&&Dy<1.0)&&(Dpt>1.&&Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5) && (DtktkRes_chi2cl>0.043&&DtktkRes_alpha<0.069&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>0)", 
                 TString selmcgen="((GisSignal==9||GisSignal==10)&&(Gy>-1&&Gy<1))", 
-                Int_t isMC=0, 
+                Bool_t isMC=false,
                 Double_t luminosity=13.9, 
                 Int_t doweight=1, 
                 TString collsyst="PP", 
@@ -42,7 +45,7 @@ void fitDstar3p(TString inputdata="/data/wangj/Data2015/Dntuple/pp/ntD_EvtBase_2
   gStyle->SetTitleX(.0f);
 
   void clean0 (TH1D* h);
-  TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax);
+  TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax, Bool_t isMC);
 
   if(!doweight) weight="1";
   TFile* inf = new TFile(inputdata.Data());
@@ -67,7 +70,7 @@ void fitDstar3p(TString inputdata="/data/wangj/Data2015/Dntuple/pp/ntD_EvtBase_2
 
   for(int i=0;i<nBins;i++)
     {
-      TF1* f = fit(nt,ntMC,ptBins[i],ptBins[i+1]);
+      TF1* f = fit(nt,ntMC,ptBins[i],ptBins[i+1],isMC);
       double yield = f->Integral(minhisto,maxhisto)/binwidthmass;
       double yieldErr = f->Integral(minhisto,maxhisto)/binwidthmass*f->GetParError(0)/f->GetParameter(0);
       hPt->SetBinContent(i+1,yield/(ptBins[i+1]-ptBins[i]));
@@ -144,7 +147,7 @@ void clean0(TH1D* h)
     }
 }
 
-TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
+TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax, Bool_t isMC)
 {
   static int count=0;
   count++;
@@ -154,87 +157,92 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   TH1D* hMCSignal = new TH1D(Form("hMCSignal-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
   TH1D* hMCSwapped = new TH1D(Form("hMCSwapped-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
   
-  TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
+  TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*([12]*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10])+(1-[12])*Gaus(x,[1],[13])/(sqrt(2*3.14159)*[13])))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x+[11]*x*x*x*x", 0.14, 0.16);
+  f->SetLineColor(kRed);  
   
-  nt->Project(Form("h-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
-  ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),selmc.Data(),ptmin,ptmax));   
-  ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),selmc.Data(),ptmin,ptmax));   
+  nt->Project(Form("h-%d",count),"Dmass-DtktkResmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  ntMC->Project(Form("hMCSignal-%d",count),"Dmass-DtktkResmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),selmc.Data(),ptmin,ptmax));   
+  ntMC->Project(Form("hMCSwapped-%d",count),"Dmass-DtktkResmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),selmc.Data(),ptmin,ptmax));   
 
-  f->SetParLimits(4,-1000,1000);
-  f->SetParLimits(10,0.001,0.05);
-  f->SetParLimits(2,0.01,0.1);
-  f->SetParLimits(8,0.02,0.2);
-  f->SetParLimits(7,0,1);
+  f->FixParameter(7,1.);
+  f->FixParameter(1,0.145491);
+  f->FixParameter(2,2.e-3);
+  f->FixParameter(10,5.e-4);
+  f->FixParameter(13,1.e-4);
+  f->FixParameter(3,0.);
+  f->FixParameter(4,0.);
+  f->FixParameter(5,0.);
+  f->FixParameter(6,0.);
+  f->FixParameter(11,0.);
+  
   f->SetParLimits(9,0,1);
-  
-  f->SetParameter(0,setparam0);
-  f->SetParameter(1,setparam1);
-  f->SetParameter(2,setparam2);
-  f->SetParameter(10,setparam10);
-  f->SetParameter(9,setparam9);
-
-  f->FixParameter(8,setparam8);
-  f->FixParameter(7,1);
-  f->FixParameter(1,fixparam1);
-  f->FixParameter(3,0);
-  f->FixParameter(4,0);
-  f->FixParameter(5,0);
-  f->FixParameter(6,0);
-  h->GetEntries();
-  
-  hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-  hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
+  f->SetParLimits(12,0,1);
+  f->SetParLimits(0,0,1000000);
+  hMCSignal->Fit(Form("f%d",count),"LL");
+  hMCSignal->Fit(Form("f%d",count),"LL");
+  hMCSignal->Fit(Form("f%d",count),"LL","",0.142,0.155);
   f->ReleaseParameter(1);
-  hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  hMCSignal->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-  
+  f->ReleaseParameter(2);
+  f->ReleaseParameter(10);
+  f->ReleaseParameter(13);
+  f->SetParLimits(1,0.144,0.147);
+  if(isMC) f->SetParLimits(2,5.e-4,5.e-3);
+  else f->SetParLimits(2,5.e-4,7.e-3);
+  f->SetParLimits(10,1.e-4,2.e-3);
+  if(isMC) f->SetParLimits(13,5.e-5,5.e-4);
+  else if(ptmin<15) f->SetParLimits(13,6.e-4,3.e-4);
+  else if(ptmin>20) f->SetParLimits(13,5.e-5,4.e-4);
+  else f->SetParLimits(13,5.e-5,5.e-4);
+  hMCSignal->Fit(Form("f%d",count),"LL","",0.143,0.147);
+  hMCSignal->Fit(Form("f%d",count),"LL","",0.14,0.16);
+  hMCSignal->Fit(Form("f%d",count),"LL","",0.14,0.16);
+
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
   f->FixParameter(10,f->GetParameter(10));
+  f->FixParameter(13,f->GetParameter(13));
   f->FixParameter(9,f->GetParameter(9));
+  f->FixParameter(12,f->GetParameter(12));
   f->FixParameter(7,0);
-  f->ReleaseParameter(8);
-  f->SetParameter(8,setparam8);
-  
-  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  hMCSwapped->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-  
+  f->SetParLimits(8,2.e-4,2.e-3);
+
+  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,0.16);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,0.16);
+
   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
   f->FixParameter(8,f->GetParameter(8));
   f->ReleaseParameter(3);
   f->ReleaseParameter(4);
   f->ReleaseParameter(5);
   f->ReleaseParameter(6);
-
-  f->SetLineColor(kRed);
-  
-  h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-  h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
+  f->ReleaseParameter(11);
+  h->Fit(Form("f%d",count),"LL","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"LL","",minhisto,maxhisto);
   f->ReleaseParameter(1);
-  h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-  
-  TF1* background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
+  h->Fit(Form("f%d",count),"LL","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"LL","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"LL","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"LL","",minhisto,maxhisto);
+
+  TF1* background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x");
   background->SetParameter(0,f->GetParameter(3));
   background->SetParameter(1,f->GetParameter(4));
   background->SetParameter(2,f->GetParameter(5));
   background->SetParameter(3,f->GetParameter(6));
+  background->SetParameter(4,f->GetParameter(11));
   background->SetLineColor(4);
   background->SetLineStyle(2);
   
-  TF1* mass = new TF1(Form("fmass%d",count),"[0]*([3]*([4]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[4])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))");
-  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(9),f->GetParameter(10));
+  TF1* mass = new TF1(Form("fmass%d",count),"[0]*([3]*([4]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[4])*([6]*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])+(1-[6])*Gaus(x,[1],[7])/(sqrt(2*3.14159)*[7]))))");
+  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(9),f->GetParameter(10),f->GetParameter(12),f->GetParameter(13));
   mass->SetParError(0,f->GetParError(0));
   mass->SetParError(1,f->GetParError(1));
   mass->SetParError(2,f->GetParError(2));
   mass->SetParError(3,f->GetParError(7));
   mass->SetParError(4,f->GetParError(9));
   mass->SetParError(5,f->GetParError(10));
+  mass->SetParError(6,f->GetParError(12));
+  mass->SetParError(7,f->GetParError(13));
   mass->SetFillColor(kOrange-3);
   mass->SetFillStyle(3002);
   mass->SetLineColor(kOrange-3);
@@ -309,6 +317,13 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
 
   TLatex* tex;
 
+  tex = new TLatex(0.22,0.83,"|y| < 1.0");
+  tex->SetNDC();
+  tex->SetTextFont(42);
+  tex->SetTextSize(0.04);
+  tex->SetLineWidth(2);
+  tex->Draw();
+
   tex = new TLatex(0.22,0.78,Form("%.1f < p_{T} < %.1f GeV/c",ptmin,ptmax));
   tex->SetNDC();
   tex->SetTextFont(42);
@@ -316,7 +331,7 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   tex->SetLineWidth(2);
   tex->Draw();
 
-  tex = new TLatex(0.22,0.83,"|y| < 1.0");
+  tex = new TLatex(0.22,0.73,Form("N_{D} = %.0f #pm %.0f",yield,yieldErr));
   tex->SetNDC();
   tex->SetTextFont(42);
   tex->SetTextSize(0.04);
