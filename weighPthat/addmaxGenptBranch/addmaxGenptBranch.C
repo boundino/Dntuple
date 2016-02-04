@@ -40,7 +40,7 @@ int addmaxGenptBranch(TString ifname = "/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dze
       Float_t maxpt=0;
       for(Int_t k=0;k<Gsize;k++)
         {
-          if((GisSignal[k]==1||GisSignal[k]==2)&&Gpt[k]>maxpt) maxpt=Gpt[k];
+          if((GisSignal[k]==genSignal[0]||GisSignal[k]==genSignal[1])&&Gpt[k]>maxpt) maxpt=Gpt[k];
         }
       maxDgenpt = maxpt;
       newBr_maxDgenpt->Fill();
