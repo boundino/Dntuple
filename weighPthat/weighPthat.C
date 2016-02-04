@@ -52,6 +52,7 @@ int weighPthat(TString ifname = "",
         }
     }
   cout<<" -- Weight results"<<endl;
+  Float_t norm = crosssec[0]*1./nentries;
   for(Int_t j=0;j<nBins;j++)
     {
       if(nweight[j]==0)
@@ -59,7 +60,7 @@ int weighPthat(TString ifname = "",
           cout<<"    Error: Weight fails."<<endl;
           return 0;
         }
-      weight[j] = (crosssec[j]-crosssec[j+1])/nweight[j];
+      weight[j] = ((crosssec[j]-crosssec[j+1])/norm)/nweight[j];
       cout<<"    Pthat"<<setiosflags(ios::left)<<setw(3)<<pthatBin[j]<<": "<<weight[j]<<endl;
     }
 

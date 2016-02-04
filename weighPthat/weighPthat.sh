@@ -20,8 +20,8 @@ OUTPUTFILE="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160203_
 
 #Dzero nonprompt
 #sed '1iconst int nBins=6; float pthatBin[nBins]={0,5,10,15,30,50}; float crosssec[nBins+1]={2.370e+08,1.281e+07,1.318e+06,3.082e+05,1.662e+04,1.371e+03,0.}; int genSignal[2]={1,2};' weighPthat.C > weighPthat_tmp.C
-#INPUTFILE="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_nonprompt/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_nonprompt_D0_noweight.root"
-#OUTPUTFILE="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_nonprompt/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_nonprompt_D0_pthatweight.root"
+#INPUTFILE="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi_nonprompt/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_nonprompt_D0_dPt0tkPt0p5_noweight.root"
+#OUTPUTFILE="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi_nonprompt/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_nonprompt_D0_dPt0tkPt0p5_pthatweight.root"
 
 ##pbpb
 #Dzero
