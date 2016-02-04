@@ -6,14 +6,14 @@ using namespace std;
 
 Bool_t istest = false;
 int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
+         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   if(istest)
     {
-      infile="/store/user/twang/DfinderRun2/Pythia8_prompt_D0pt0p0_Pthat0_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_PU_20151212/DfinderMC_PbPb_20151229_dPt1tkPt1_D0Ds/finder_PbPb_65_1_1FZ.root";
+      infile="/store/user/twang/DfinderRun2/pp_Pythia8_nonprompt_D0pt0p0_Pthat0_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20160122/DfinderMC_pp_20160201_dPt1tkPt0p5_D0Dstar/finder_pp_14_1_AYJ.root";
       outfile="test.root";
       REAL=false;
-      isPbPb=true;
+      isPbPb=false;
       checkMatching=true;
       iseos=true;
     }
