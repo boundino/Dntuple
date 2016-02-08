@@ -1,11 +1,11 @@
 #include "uti.h"
 
-const int BINNUM=40;
-Double_t BINMIN=0.139;
-Double_t BINMAX=0.159;
+const int BINNUM=50;
+Double_t BINMIN=0.140;
+Double_t BINMAX=0.160;
 Double_t BINWID=(BINMAX-BINMIN)/BINNUM;
-Double_t minmass=0.142;
-Double_t maxmass=0.150;
+Double_t minmass=0.143;
+Double_t maxmass=0.148;
 
 #define SPE_NUM 4
 TString texData[SPE_NUM] = {"MC","Data","MC_MB","Data_MB"};
@@ -29,16 +29,18 @@ TString infnameMC5p[SPE_NUM] = {"/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kp
                                 "/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpipipi/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8D0kpipipi_dPt0tkPt0p5_pthatweight.root"};
 Float_t scaleMC3p[SPE_NUM] = {57175./0.0388,1.,54630./0.0388,1.};
 Float_t scaleMC5p[SPE_NUM] = {49938./0.0807,1.,62563./0.0807,1.};
-TString triggerselection[SPE_NUM] = {"1","1","1",
+TString triggerselectiondata[SPE_NUM] = {"1","1","1",
                                      "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)"};
+TString triggerselectionmc[SPE_NUM] = {"1","1","1","1"};
+
 TString prefilter3p[SPE_NUM] = {"Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5",
                                 "Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5",
-                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>3.&&Dpt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&Dpt>8.))&&abs(DtktkResmass-1.86486)<0.03",
-                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>3.&&Dpt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&Dpt>8.))&&abs(DtktkResmass-1.86486)<0.03"};
+                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>4.&&DtktkRespt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&DtktkRespt>8.))&&abs(DtktkResmass-1.86486)<0.04",
+                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>4.&&DtktkRespt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&DtktkRespt>8.))&&abs(DtktkResmass-1.86486)<0.04"};
 TString prefilter5p[SPE_NUM] = {"Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&DRestrk3Pt>1.&&DRestrk4Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5",
                                 "Dtrk1Pt>1.&&DRestrk1Pt>1.&&DRestrk2Pt>1.&&DRestrk3Pt>1.&&DRestrk4Pt>1.&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>2.5",
-                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&DRestrk3Pt>0.5&&DRestrk4Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>3.&&Dpt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&Dpt>8.))&&abs(DtktkResmass-1.86486)<0.03",
-                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&DRestrk3Pt>0.5&&DRestrk4Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>3.&&Dpt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&Dpt>8.))&&abs(DtktkResmass-1.86486)<0.03"};
+                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&DRestrk3Pt>0.5&&DRestrk4Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>4.&&DtktkRespt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&DtktkRespt>8.))&&abs(DtktkResmass-1.86486)<0.04",
+                                "Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&DRestrk3Pt>0.5&&DRestrk4Pt>0.5&&(((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>4.&&DtktkRespt<8.)||((DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>1.5&&DtktkRespt>8.))&&abs(DtktkResmass-1.86486)<0.04"};
 TString seldata3p[SPE_NUM] = {Form("%s&&abs(Dy)<1.&&DtktkRes_chi2cl>0.043&&DtktkRes_alpha<0.069&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>0.",prefilter3p[0].Data()),
                               Form("%s&&abs(Dy)<1.&&DtktkRes_chi2cl>0.043&&DtktkRes_alpha<0.069&&(DtktkRes_svpvDistance/DtktkRes_svpvDisErr)>0.",prefilter3p[1].Data()),
                               Form("%s&&abs(Dy)<1.",prefilter3p[2].Data()),
