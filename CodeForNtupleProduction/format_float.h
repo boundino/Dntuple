@@ -52,6 +52,7 @@
 #include <TString.h>
 #include <TNtuple.h>
 #include <TVector3.h>
+#include <TCanvas.h>
 
 #define ELECTRON_MASS 0.0005
 #define MUON_MASS   0.10565837
@@ -1003,7 +1004,7 @@ public:
     int     rftk4_MassHypo[MAX_XB];
     int     rftk5_MassHypo[MAX_XB];
    
-    void regTree(TTree *root, bool detailMode = false){//{{{
+    void regTree(TTree *root, bool detailMode = true){//{{{
         root->Branch("DInfo.size"             , &size          , "DInfo.size/I"			);
         root->Branch("DInfo.index"            , index          , "DInfo.index[DInfo.size]/I"		);
         root->Branch("DInfo.type"             , type           , "DInfo.type[DInfo.size]/I"	);
@@ -1110,7 +1111,7 @@ public:
         }
     }//}}}
     
-    void setbranchadd(TTree *root, bool detailMode = false){//{{{
+    void setbranchadd(TTree *root, bool detailMode = true){//{{{
         root->SetBranchAddress("DInfo.size"            ,&size        );
         root->SetBranchAddress("DInfo.index"           ,index       	);
         root->SetBranchAddress("DInfo.type"            ,type   	);

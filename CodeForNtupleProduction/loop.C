@@ -2,15 +2,15 @@ using namespace std;
 
 #include "loop.h"
 #include "format_float.h"
-#include "Dntuple.h"
+#include "Dntupletest.h"
 
-Bool_t istest = false;
+Bool_t istest = true;
 int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
          TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   if(istest)
     {
-      infile="/store/user/twang/DfinderRun2/pp_Pythia8_nonprompt_D0pt0p0_Pthat0_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20160122/DfinderMC_pp_20160201_dPt1tkPt0p5_D0Dstar/finder_pp_14_1_AYJ.root";
+      infile="/store/user/twang/DfinderRun2/pp_Pythia8D0kpipipi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_pp_20160209_dPt0tkPt0p5_D0Dstar/finder_pp_20_1_D4T.root";
       outfile="test.root";
       REAL=false;
       isPbPb=false;
