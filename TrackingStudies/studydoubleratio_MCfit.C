@@ -1,7 +1,7 @@
 #include "doubleratioParameter.h"
 
-enum real{MC,Data,MC_MB,Data_MB} isData=Data;
-const int nBins=5;  Double_t ptBins[nBins+1]={15.,20.,25.,30.,35.,50.};
+enum real{MC,Data,MC_MB,Data_MB} isData=Data_MB;
+const int nBins=1;  Double_t ptBins[nBins+1]={5., 10.};
 
 TString outputfilename = Form("outputfiles/outputfile%s.root",texData[isData].Data());
 void studydoubleratio(Bool_t doweight=true)
