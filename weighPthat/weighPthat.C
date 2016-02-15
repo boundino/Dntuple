@@ -35,6 +35,7 @@ int weighPthat(TString ifname = "",
       return 0;
     }
   Int_t nentries = ntGen->GetEntries();
+  Int_t ctentries = 0;
   cout<<" -- Calculating weights"<<endl;
   for(Int_t i=0;i<nentries;i++)
     {
@@ -46,13 +47,14 @@ int weighPthat(TString ifname = "",
         {
           if((GisSignal[k]==genSignal[0]||GisSignal[k]==genSignal[1])&&Gpt[k]>maxpt) maxpt=Gpt[k];
         }
+      if(pthat<(2.*maxpt)) ctentries++;//
       for(Int_t j=0;j<nBins;j++)
         {
           if(isInsidebin(pthat,maxpt,j)) nweight[j]++;
         }
     }
   cout<<" -- Weight results"<<endl;
-  Float_t norm = crosssec[0]*1./nentries;
+  Float_t norm = crosssec[0]*1./ctentries;//                                         
   for(Int_t j=0;j<nBins;j++)
     {
       if(nweight[j]==0)
@@ -107,7 +109,8 @@ Bool_t isInsidebin(Float_t xpthat, Float_t xmaxgenpt, Int_t i)
       cout<<"    Error: invalid input"<<endl;
       return false;
     }
-  if(i<(nBins-1)&&(xpthat>pthatBin[i]&&xmaxgenpt>pthatBin[i])&&!(xpthat>pthatBin[i+1]&&xmaxgenpt>pthatBin[i+1])) return true;
+  if(xpthat>(xmaxgenpt*2.)) return false; //
+  else if(i<(nBins-1)&&(xpthat>pthatBin[i]&&xmaxgenpt>pthatBin[i])&&!(xpthat>pthatBin[i+1]&&xmaxgenpt>pthatBin[i+1])) return true;
   else if(i==(nBins-1)&&xpthat>pthatBin[i]&&xmaxgenpt>pthatBin[i]) return true;
   else return false;
 }
