@@ -1,6 +1,6 @@
 #include "doubleratioParameter.h"
 
-enum real{MC,Data,MC_MB,Data_MB} isData=Data_MB;
+enum real{MC_MB,Data_MB} isData=MC_MB;
 //const int nBins=1;  Float_t ptBins[nBins+1]={7.,9.};
 const int nBins=4;  Float_t ptBins[nBins+1]={5.,8.,10.,12.,25.};
 
@@ -83,7 +83,7 @@ void fitDstar3p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
       TCanvas* cPtCor = new TCanvas("cCor","",600,600);
       cPtCor->SetLogy();
       hPtCor->Draw();
-      if(isData==MC||isData==MC_MB)
+      if(isData==MC_MB)
         {
           hPtGen->SetLineColor(kRed);
           hPtGen->Draw("same hist");
@@ -233,7 +233,7 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   background->Draw("same");
   f->Draw("same");
 
-  if(plotgenmatch&&(isData==MC||isData==MC_MB))
+  if(plotgenmatch&&(isData==MC_MB))
     {
       hMCSignalplot->SetMarkerSize(0.8);
       hMCSignalplot->SetMarkerColor(kMagenta+2);
