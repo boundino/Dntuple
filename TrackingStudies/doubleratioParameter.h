@@ -20,8 +20,8 @@ TString infnameMC3p[SPE_NUM] = {"/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kp
 TString infnameMC5p[SPE_NUM] = {"/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpipipi/ntD_EvtBase_20160210_Dfinder_20160209_pp_Pythia8D0kpipipi_dPt0tkPt0p5_pthatweight.root",
                                 "/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dstar_D0kpipipi/ntD_EvtBase_20160210_Dfinder_20160209_pp_Pythia8D0kpipipi_dPt0tkPt0p5_pthatweight.root"};
 
-Float_t scaleMC3p[SPE_NUM] = {279426./0.0388,1.};
-Float_t scaleMC5p[SPE_NUM] = {303663./0.0807,1.};
+Float_t scaleMC3p[SPE_NUM] = {0.0388,1.};
+Float_t scaleMC5p[SPE_NUM] = {0.0807,1.};
 
 TString triggerselectiondata[SPE_NUM] = {"1",
                                      "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)"};
