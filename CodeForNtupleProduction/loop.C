@@ -1,12 +1,12 @@
 using namespace std;
 
 #include "loop.h"
-#include "format_float.h"
-#include "Dntupletest.h"
+#include "format.h"
+#include "Dntuple.h"
 
-Bool_t istest = true;
+Bool_t istest = false;
 int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
+         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=true, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   if(istest)
     {
@@ -14,6 +14,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
       outfile="test.root";
       REAL=false;
       isPbPb=false;
+      skim=true;
       checkMatching=true;
       iseos=true;
     }
@@ -55,16 +56,16 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[12];
-  isDchannel[0] = 1; //k+pi-
-  isDchannel[1] = 1; //k-pi+
-  isDchannel[2] = 1; //k-pi+pi+
-  isDchannel[3] = 1; //k+pi-pi-
-  isDchannel[4] = 1; //k-pi-pi+pi+
-  isDchannel[5] = 1; //k+pi+pi-pi-
-  isDchannel[6] = 1; 
-  isDchannel[7] = 1; 
-  isDchannel[8] = 1; 
-  isDchannel[9] = 1; 
+  isDchannel[0] = 0;
+  isDchannel[1] = 0;
+  isDchannel[2] = 0;
+  isDchannel[3] = 0;
+  isDchannel[4] = 0;
+  isDchannel[5] = 0;
+  isDchannel[6] = 0; 
+  isDchannel[7] = 0; 
+  isDchannel[8] = 0; 
+  isDchannel[9] = 0; 
   isDchannel[10] = 1; 
   isDchannel[11] = 1;
 
