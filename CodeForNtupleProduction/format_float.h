@@ -52,7 +52,6 @@
 #include <TString.h>
 #include <TNtuple.h>
 #include <TVector3.h>
-#include <TCanvas.h>
 
 #define ELECTRON_MASS 0.0005
 #define MUON_MASS   0.10565837
@@ -83,36 +82,35 @@
 #define DSUBS_PDGID 431
 #define DSTAR_PDGID 413
 
-class EvtInfoBranches
-{ //{{{
- public:
-  int	    RunNo;
-  int	    EvtNo;
-  int	    BxNo;
-  int	    LumiNo;
-  int	    Orbit;
-  bool	    McFlag;
-  int       nBX;
-  int       BXPU[MAX_BX];
-  int       nPU[MAX_BX];
-  float     trueIT[MAX_BX];
-  //int     trgCount;                   //number of successfully triggered HLT path in the booking.
-  //int     nTrgBook;                   //N_TRIGGER_BOOKING
-  //char    trgBook[N_TRIGGER_BOOKINGS];//status of booked triggers
-  //int 	nHLT;                       //# of HLT of the event 
-  //bool    hltBits[N_TRIGGER_BOOKINGS];//is HLT of the event acceptted?
-  //std::vector<std::string> *hltnames;
-  //bool	hltflag[N_TRIGGER_NAMES]; //status of HLT
-  //int	nHLTm; //# of HLT hope to be matched
-  //char	hltflagm[N_TRIGGER_NAMES]; //status of HLT hope to be matched
-  float	PVx;
-  float	PVy;
-  float	PVz;
-  float	PVxE;
-  float	PVyE;
-  float	PVzE;
-  float	PVnchi2;
-  float	PVchi2;
+class EvtInfoBranches{ //{{{
+	public:
+		int	    RunNo;
+	    int	    EvtNo;
+	    int	    BxNo;
+	    int	    LumiNo;
+	    int	    Orbit;
+	    bool	McFlag;
+        int     nBX;
+        int     BXPU[MAX_BX];
+        int     nPU[MAX_BX];
+        float   trueIT[MAX_BX];
+        //int     trgCount;                   //number of successfully triggered HLT path in the booking.
+        //int     nTrgBook;                   //N_TRIGGER_BOOKING
+        //char    trgBook[N_TRIGGER_BOOKINGS];//status of booked triggers
+		//int 	nHLT;                       //# of HLT of the event 
+        //bool    hltBits[N_TRIGGER_BOOKINGS];//is HLT of the event acceptted?
+		//std::vector<std::string> *hltnames;
+		//bool	hltflag[N_TRIGGER_NAMES]; //status of HLT
+		//int	nHLTm; //# of HLT hope to be matched
+		//char	hltflagm[N_TRIGGER_NAMES]; //status of HLT hope to be matched
+		float	PVx;
+		float	PVy;
+		float	PVz;
+		float	PVxE;
+		float	PVyE;
+		float	PVzE;
+		float	PVnchi2;
+		float	PVchi2;
         float  BSx;
         float  BSy;
         float  BSz;
@@ -505,8 +503,9 @@ class TrackInfoBranches{//{{{
         int     geninfo_index[ MAX_TRACK];
         int     trackQuality [ MAX_TRACK];
         bool    highPurity   [ MAX_TRACK];
-        float  trkMVAVal    [ MAX_TRACK];
+        float   trkMVAVal    [ MAX_TRACK];
         int     trkAlgo      [ MAX_TRACK];
+        int   originalTrkAlgo[ MAX_TRACK];
 
         void regTree(TTree *root, bool detailMode = false){//{{{
             root->Branch("TrackInfo.size"           ,&size		    ,"TrackInfo.size/I"			);
@@ -536,6 +535,7 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/O");
             root->Branch("TrackInfo.trkMVAVal"      ,trkMVAVal      ,"TrackInfo.trkMVAVal[TrackInfo.size]/F");
             root->Branch("TrackInfo.trkAlgo"        ,trkAlgo        ,"TrackInfo.trkAlgo[TrackInfo.size]/I");
+            root->Branch("TrackInfo.originalTrkAlgo",originalTrkAlgo,"TrackInfo.originalTrkAlgo[TrackInfo.size]/I");
 
             if(detailMode){
             }
@@ -569,6 +569,7 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.highPurity"    , highPurity  );
             root->SetBranchAddress("TrackInfo.trkMVAVal"     , trkMVAVal  );
             root->SetBranchAddress("TrackInfo.trkAlgo"       , trkAlgo  );
+            root->SetBranchAddress("TrackInfo.originalTrkAlgo", originalTrkAlgo);
 
             if(detailMode){
             }
