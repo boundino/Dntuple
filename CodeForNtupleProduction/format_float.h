@@ -910,11 +910,11 @@ public:
     int	    index[MAX_XB];
     int     type[MAX_XB];
 
-    float	tktkRes_mass[MAX_XB];
+    float  tktkRes_mass[MAX_XB];
     float  tktkRes_pt[MAX_XB];
     float  tktkRes_eta[MAX_XB];
     float  tktkRes_phi[MAX_XB];
-    float	tktkRes_vtxX[MAX_XB];
+    float  tktkRes_vtxX[MAX_XB];
     float  tktkRes_vtxY[MAX_XB];
     float  tktkRes_vtxZ[MAX_XB];
     float  tktkRes_vtxXErr[MAX_XB];
@@ -923,11 +923,11 @@ public:
     float  tktkRes_vtxYXErr[MAX_XB];
     float  tktkRes_vtxZXErr[MAX_XB];
     float  tktkRes_vtxZYErr[MAX_XB];
-    float	tktkRes_vtxdof[MAX_XB];
-    float	tktkRes_vtxchi2[MAX_XB];
+    float  tktkRes_vtxdof[MAX_XB];
+    float  tktkRes_vtxchi2[MAX_XB];
     float  tktkRes_svpvDistance[MAX_XB];
     float  tktkRes_svpvDisErr[MAX_XB];
-	float  tktkRes_alpha[MAX_XB];
+    float  tktkRes_alpha[MAX_XB];
     float  tktkRes_rftk1_mass[MAX_XB];
     float  tktkRes_rftk1_pt[MAX_XB];
     float  tktkRes_rftk1_eta[MAX_XB];
@@ -944,12 +944,12 @@ public:
     float  tktkRes_rftk4_pt[MAX_XB];
     float  tktkRes_rftk4_eta[MAX_XB];
     float  tktkRes_rftk4_phi[MAX_XB];
-    int     tktkRes_rftk1_index[MAX_XB];
-    int     tktkRes_rftk2_index[MAX_XB];
-    int     tktkRes_rftk3_index[MAX_XB];
-    int     tktkRes_rftk4_index[MAX_XB];
+    int    tktkRes_rftk1_index[MAX_XB];
+    int    tktkRes_rftk2_index[MAX_XB];
+    int    tktkRes_rftk3_index[MAX_XB];
+    int    tktkRes_rftk4_index[MAX_XB];
 
-    float	mass[MAX_XB];
+    float  mass[MAX_XB];
     float  pt[MAX_XB];
     float  eta[MAX_XB];
     float  phi[MAX_XB];
@@ -962,7 +962,7 @@ public:
     float  svpvDistance_2D[MAX_XB];
     float  svpvDisErr_2D[MAX_XB];
     float  MaxDoca[MAX_XB];
-    float	vtxX[MAX_XB];
+    float  vtxX[MAX_XB];
     float  vtxY[MAX_XB];
     float  vtxZ[MAX_XB];
     float  vtxXErr[MAX_XB];
@@ -971,8 +971,8 @@ public:
     float  vtxYXErr[MAX_XB];
     float  vtxZXErr[MAX_XB];
     float  vtxZYErr[MAX_XB];
-    float	vtxdof[MAX_XB];
-    float	vtxchi2[MAX_XB];
+    float  vtxdof[MAX_XB];
+    float  vtxchi2[MAX_XB];
     float  rftk1_mass[MAX_XB];
     float  rftk1_pt[MAX_XB];
     float  rftk1_eta[MAX_XB];
@@ -993,6 +993,7 @@ public:
     float  rftk5_pt[MAX_XB];
     float  rftk5_eta[MAX_XB];
     float  rftk5_phi[MAX_XB];
+
     int     rftk1_index[MAX_XB];
     int     rftk2_index[MAX_XB];
     int     rftk3_index[MAX_XB];
@@ -1004,7 +1005,7 @@ public:
     int     rftk4_MassHypo[MAX_XB];
     int     rftk5_MassHypo[MAX_XB];
    
-    void regTree(TTree *root, bool detailMode = true){//{{{
+    void regTree(TTree *root, bool detailMode = false){//{{{
         root->Branch("DInfo.size"             , &size          , "DInfo.size/I"			);
         root->Branch("DInfo.index"            , index          , "DInfo.index[DInfo.size]/I"		);
         root->Branch("DInfo.type"             , type           , "DInfo.type[DInfo.size]/I"	);
@@ -1026,7 +1027,7 @@ public:
         root->Branch("DInfo.tktkRes_vtxchi2"       , tktkRes_vtxchi2           , "DInfo.tktkRes_vtxchi2[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_svpvDistance"  , tktkRes_svpvDistance      , "DInfo.tktkRes_svpvDistance[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_svpvDisErr"    , tktkRes_svpvDisErr        , "DInfo.tktkRes_svpvDisErr[DInfo.size]/F"	);
-		root->Branch("DInfo.tktkRes_alpha"         , tktkRes_alpha             , "DInfo.tktkRes_alpha[DInfo.size]/F" );
+	root->Branch("DInfo.tktkRes_alpha"         , tktkRes_alpha             , "DInfo.tktkRes_alpha[DInfo.size]/F" );
 
         root->Branch("DInfo.tktkRes_rftk1_index"   , tktkRes_rftk1_index       , "DInfo.tktkRes_rftk1_index[DInfo.size]/I");
         root->Branch("DInfo.tktkRes_rftk2_index"   , tktkRes_rftk2_index       , "DInfo.tktkRes_rftk2_index[DInfo.size]/I");
@@ -1111,7 +1112,7 @@ public:
         }
     }//}}}
     
-    void setbranchadd(TTree *root, bool detailMode = true){//{{{
+    void setbranchadd(TTree *root, bool detailMode = false){//{{{
         root->SetBranchAddress("DInfo.size"            ,&size        );
         root->SetBranchAddress("DInfo.index"           ,index       	);
         root->SetBranchAddress("DInfo.type"            ,type   	);
@@ -1133,8 +1134,8 @@ public:
         root->SetBranchAddress("DInfo.tktkRes_vtxZYErr"        ,tktkRes_vtxZYErr   );
         root->SetBranchAddress("DInfo.tktkRes_svpvDistance"    ,tktkRes_svpvDistance   	);
         root->SetBranchAddress("DInfo.tktkRes_svpvDisErr"      ,tktkRes_svpvDisErr   	);
-		root->SetBranchAddress("DInfo.tktkRes_alpha"           ,tktkRes_alpha    );
-
+	root->SetBranchAddress("DInfo.tktkRes_alpha"           ,tktkRes_alpha    );
+	
         root->SetBranchAddress("DInfo.tktkRes_rftk1_index"     ,tktkRes_rftk1_index   	);
         root->SetBranchAddress("DInfo.tktkRes_rftk2_index"     ,tktkRes_rftk2_index   	);
         root->SetBranchAddress("DInfo.tktkRes_rftk3_index"     ,tktkRes_rftk3_index   	);
