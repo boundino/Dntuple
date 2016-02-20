@@ -66,10 +66,12 @@ class DntupleBranches
   float   DlxyBS[MAX_XB];
   float   DlxyBSErr[MAX_XB];
   float   DMaxDoca[MAX_XB];
+  /*
   bool    Dmaxpt[MAX_XB];
   bool    Dmaxprob[MAX_XB];
   bool    DmaxptMatched[MAX_XB];
   bool    DmaxprobMatched[MAX_XB];
+  */
   //DInfo.trkInfo
   int     Dtrk1Idx[MAX_XB];
   int     Dtrk2Idx[MAX_XB];
@@ -248,10 +250,12 @@ class DntupleBranches
     dnt->Branch("DlxyBS",DlxyBS,"DlxyBS[Dsize]/F");
     dnt->Branch("DlxyBSErr",DlxyBSErr,"DlxyBSErr[Dsize]/F");
     dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/F");
+    /*
     dnt->Branch("Dmaxpt",Dmaxpt,"Dmaxpt[Dsize]/O");
     dnt->Branch("Dmaxprob",Dmaxprob,"Dmaxprob[Dsize]/O");
     dnt->Branch("DmaxptMatched",DmaxptMatched,"DmaxptMatched[Dsize]/O");
     dnt->Branch("DmaxprobMatched",DmaxprobMatched,"DmaxprobMatched[Dsize]/O");
+    */
     //DInfo.trkInfo
     dnt->Branch("Dtrk1Idx",Dtrk1Idx,"Dtrk1Idx[Dsize]/I");
     dnt->Branch("Dtrk2Idx",Dtrk2Idx,"Dtrk2Idx[Dsize]/I");
@@ -463,13 +467,16 @@ class DntupleBranches
     TLorentzVector* b4P = new TLorentzVector;
     fillTreeEvt(EvtInfo);
     int Dtypesize[6]={0,0,0,0,0,0};
+    /*
     int ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
     float pttem=0,ptMatchedtem=0,probtem=0,probMatchedtem=0;
+    */
     for(int t=0;t<12;t++)
       {
         if(t%2==0)
           {
             Dsize = 0;
+	    /*
             ptflag = -1;
             pttem = 0;
             ptMatchedflag = -1;
@@ -478,6 +485,7 @@ class DntupleBranches
             probtem = 0;
             probMatchedflag = -1;
             probMatchedtem = 0;
+	    */
           }
         if(isDchannel[t]==1)
           {
@@ -493,6 +501,7 @@ class DntupleBranches
                 if(DInfo->type[j]==(t+1))
                   {
                     fillDTree(bP,bVtx,b4P,j,Dtypesize[t/2],REAL,EvtInfo,VtxInfo,TrackInfo,DInfo,GenInfo);
+		    /*
                     if(DInfo->pt[j]>pttem)
                       {
                         ptflag = Dtypesize[t/2];
@@ -516,16 +525,19 @@ class DntupleBranches
                             probMatchedtem = TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j]);
                           }
                       }
+		    */
                     Dtypesize[t/2]++;
                   }
               }
+	    /*
             if(t%2==1)
               {
                 if(ptflag>=0) Dmaxpt[ptflag] = true;
                 if(probflag>=0) Dmaxprob[probflag] = true;
                 if(ptMatchedflag>=0) DmaxptMatched[ptMatchedflag] = true;
                 if(probMatchedflag>=0) DmaxprobMatched[probMatchedflag] = true;
-              }	      
+              }
+	    */	      
             if(t==1)       ntD1->Fill();
             else if(t==3)  ntD2->Fill();
             else if(t==5)  ntD3->Fill();
@@ -759,11 +771,12 @@ class DntupleBranches
     DlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
     DlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->vtxYErr[j]);
     DMaxDoca[typesize] = DInfo->MaxDoca[j];
+    /*
     Dmaxpt[typesize] = false;
     Dmaxprob[typesize] = false;
     DmaxptMatched[typesize] = false;
     DmaxprobMatched[typesize] = false;
-    
+    */
     //DInfo.trkInfo
     float trk1mass,trk2mass,trk3mass,trk4mass;
     if(DInfo->type[j]==1||DInfo->type[j]==2||DInfo->type[j]==3||DInfo->type[j]==4||DInfo->type[j]==5||DInfo->type[j]==6)
