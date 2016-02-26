@@ -3,8 +3,7 @@
 
 void pthatmaxgpt(Bool_t ifweigh=true)
 {
-  const int nBins=50; Float_t minBin=0,maxBin=100;  TFile* inf = new TFile("/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root");
-  //const int nBins=50; Float_t minBin=0,maxBin=60;  TFile* inf = new TFile("/data/wangj/debug/weighPthat/addmaxGenptBranch/Dzero/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_addmaxgenpt_0.root");
+  const int nBins=50; Float_t minBin=0,maxBin=100;  TFile* inf = new TFile("/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_prompt_D0_dPt0tkPt0p5_pthatweight.root");
   TTree* ntHi = (TTree*)inf->Get("ntHi");
 
   Int_t nentries = ntHi->GetEntries();
@@ -14,6 +13,7 @@ void pthatmaxgpt(Bool_t ifweigh=true)
   if(ifweigh) ntHi->SetBranchAddress("pthatweight",&pthatweight);
   Float_t pthat;       ntHi->SetBranchAddress("pthat",&pthat);
   Float_t maxDgenpt;   ntHi->SetBranchAddress("maxDgenpt",&maxDgenpt);
+  cout<<nentries<<endl;
   for(Int_t i=0;i<nentries;i++)
     {
       ntHi->GetEntry(i);
