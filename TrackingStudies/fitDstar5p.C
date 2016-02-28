@@ -1,10 +1,11 @@
 #include "doubleratioParameter.h"
 
-enum real{MC_MB,Data_MB} isData=MC_MB;
+enum real{MC_MB,Data_MB,MC,Data} isData=MC;
 //const int nBins=1;  Float_t ptBins[nBins+1]={10.,12.};
-const int nBins=4;  Float_t ptBins[nBins+1]={5.,8.,10.,12.,25.};
+//const int nBins=4;  Float_t ptBins[nBins+1]={5.,8.,10.,12.,25.};
+const int nBins=6;  Float_t ptBins[nBins+1]={5.,7.,9.,11.,15.,20.,25.};
 
-void fitDstar5p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
+void fitDstar5p(Bool_t onlyfit=false, Bool_t genmatchpoint=true)
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -25,7 +26,7 @@ void fitDstar5p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
   
   ntData->AddFriend("ntHlt");
-  if(isData!=Data_MB) ntData->AddFriend("ntHi");
+  if(isData!=Data_MB&&isData!=Data) ntData->AddFriend("ntHi");
   ntMC->AddFriend("ntHlt");
   ntMC->AddFriend("ntHi");
   ntGen->AddFriend("ntHlt");
@@ -83,7 +84,7 @@ void fitDstar5p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
       TCanvas* cPtCor = new TCanvas("cCor","",600,600);
       cPtCor->SetLogy();
       hPtCor->Draw();
-      if(isData==MC_MB)
+      if(isData==MC_MB||isData==MC)
         {
           hPtGen->SetLineColor(kRed);
           hPtGen->Draw("same hist");
@@ -119,21 +120,26 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   TH1D* hMCSignal = new TH1D(Form("hMCSignal_5p_%.0f_%.0f",ptmin,ptmax),"",BINNUM,BINMIN,BINMAX);
   TH1D* hMCSignalplot = new TH1D(Form("hMCSignalplot_5p_%.0f_%.0f",ptmin,ptmax),"",BINNUM,BINMIN,BINMAX);
   TH1D* hMCSwapped = new TH1D(Form("hMCSwapped_5p_%.0f_%.0f",ptmin,ptmax),"",BINNUM,BINMIN,BINMAX);
+  TH1D* hMCSwappedplot = new TH1D(Form("hMCSwappedplot_5p_%.0f_%.0f",ptmin,ptmax),"",BINNUM,BINMIN,BINMAX);
 
-  TF1* f = new TF1(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"[0]*([4]*([6]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[6])*(Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))+(1-[4])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))+[10]*((1-exp((0.13957-x)/[7]))*pow(x/0.13957,[8])+[9]*(x/0.13957-1))",BINMIN,BINMAX);
+  TF1* f = new TF1(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"[0]*([4]*([6]*([12]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[12])*Gaus(x,[1],[11])/(sqrt(2*3.14159)*[11]))+(1-[6])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5]))+(1-[4])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))+[10]*((1-exp((0.13957-x)/[7]))*pow(x/0.13957,[8])+[9]*(x/0.13957-1))",BINMIN,BINMAX);
   nt->Project(Form("h_5p_%.0f_%.0f",ptmin,ptmax),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f&&Dpt<%f)",weightdata[isData].Data(),seldata5p[isData].Data(),triggerselectiondata[isData].Data(),ptmin,ptmax));
   ntMC->Project(Form("hMCSignal_5p_%.0f_%.0f",ptmin,ptmax),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f&&Dpt<%f)",weightmc[isData].Data(),selmc5p[isData].Data(),triggerselectionmc[isData].Data(),ptmin,ptmax));
   ntMC->Project(Form("hMCSwapped_5p_%.0f_%.0f",ptmin,ptmax),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f&&Dpt<%f)",weightmc[isData].Data(),selswp5p[isData].Data(),triggerselectionmc[isData].Data(),ptmin,ptmax));
   for(int ibin=0;ibin<BINNUM;ibin++) hMCSignalplot->SetBinContent(ibin+1,hMCSignal->GetBinContent(ibin+1));
+  for(int ibin=0;ibin<BINNUM;ibin++) hMCSwappedplot->SetBinContent(ibin+1,hMCSwapped->GetBinContent(ibin+1));
   f->FixParameter(4,1.);
   f->FixParameter(1,0.145491);
   f->FixParameter(10,0);
 
   f->SetParLimits(0,0,1.e+5);
   f->SetParLimits(6,0,1.);
-  f->SetParLimits(2,1.e-4,1.e-3);
-  f->SetParameter(2,2.e-4);
-  f->SetParLimits(5,5.e-4,2.e-3);
+  f->SetParLimits(12,0,1.);
+  f->SetParLimits(2,3.e-4,1.e-3);
+  f->SetParameter(2,5.e-4);
+  f->SetParLimits(11,1.6e-4,3.e-4);//1.5e-4 keyong
+  f->SetParameter(11,2.e-4);
+  f->SetParLimits(5,1.e-3,1.6e-3);
   f->SetParameter(5,1.e-3);
   hMCSignal->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"LL","",BINMIN,BINMAX);
   hMCSignal->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"LL","",BINMIN,BINMAX);
@@ -141,16 +147,21 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   f->SetParLimits(1,minmass,maxmass);
   hMCSignal->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"LL","",minmass,maxmass);
   hMCSignal->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"LL","",minmass,maxmass);
- 
+
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
   f->FixParameter(5,f->GetParameter(5));
+  f->FixParameter(11,f->GetParameter(11));
   f->FixParameter(6,f->GetParameter(6));
+  f->FixParameter(12,f->GetParameter(12));
   f->FixParameter(4,0);
   f->SetParLimits(3,2.e-4,2.e-3);
+  f->SetParameter(3,1.e-3);
 
   hMCSwapped->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"L q","",BINMIN,BINMAX);
   hMCSwapped->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"L q","",BINMIN,BINMAX);
+  hMCSwapped->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"L q","",minmass,maxmass);
+  hMCSwapped->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"L q","",minmass,maxmass);
 
   f->FixParameter(4,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
   f->FixParameter(3,f->GetParameter(3));
@@ -159,11 +170,11 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   f->SetParameter(7,1.6e-3);
   f->SetParLimits(8,0.,15.);
   f->SetParameter(8,0.35);
-  f->SetParLimits(9,-1.e+1,2.e+1);
+  f->SetParLimits(9,-2.e+1,2.e+1);
   f->SetParameter(9,13.);
 
   f->ReleaseParameter(10);
-  f->SetParLimits(10,0,1.e+5);
+  f->SetParLimits(10,0,1.e+6);
 
   h->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"LL","",BINMIN,BINMAX);
   h->Fit(Form("f_5p_%.0f_%.0f",ptmin,ptmax),"LL","",BINMIN,BINMAX);
@@ -180,9 +191,9 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   background->SetLineColor(4);
   background->SetLineWidth(3);
   background->SetLineStyle(2);
-  
-  TF1* mass = new TF1(Form("fmass_5p_%.0f_%.0f",ptmin,ptmax),"[0]*[3]*([5]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[5])*Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
-  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(4),f->GetParameter(5),f->GetParameter(6));
+
+  TF1* mass = new TF1(Form("fmass_5p_%.0f_%.0f",ptmin,ptmax),"[0]*[3]*([5]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*Gaus(x,[1],[6])/(sqrt(2*3.14159)*[6]))+(1-[5])*Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
+  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(4),f->GetParameter(5),f->GetParameter(6),f->GetParameter(11),f->GetParameter(12));
   mass->SetParError(0,f->GetParError(0));
   mass->SetParError(1,f->GetParError(1));
   mass->SetParError(2,f->GetParError(2));
@@ -204,7 +215,7 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   massSwap->SetLineColor(kGreen+4);
   massSwap->SetLineWidth(3);
   massSwap->SetLineStyle(1);
-  
+
   h->SetXTitle("M_{K#pi#pi#pi#pi}-M_{K#pi#pi#pi} (GeV/c^{2})");
   h->SetYTitle("Entries / (0.4 MeV/c^{2})");
   h->SetStats(0);
@@ -233,12 +244,16 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   background->Draw("same");
   f->Draw("same");
 
-  if(plotgenmatch&&(isData==MC_MB))
+  if(plotgenmatch&&(isData==MC_MB||isData==MC))
     {
       hMCSignalplot->SetMarkerSize(0.8);
       hMCSignalplot->SetMarkerColor(kMagenta+2);
       hMCSignalplot->Draw("psame");
+      hMCSwappedplot->SetMarkerSize(0.8);
+      hMCSwappedplot->SetMarkerColor(kGray+2);
+      hMCSwappedplot->Draw("psame");
     }
+
   Double_t yield = mass->Integral(BINMIN,BINMAX)/BINWID;
   Double_t yieldErr = mass->Integral(BINMIN,BINMAX)/BINWID*mass->GetParError(0)/mass->GetParameter(0);
   cout<<mass->GetParameter(0)<<" "<<mass->Integral(BINMIN,BINMAX)<<endl;

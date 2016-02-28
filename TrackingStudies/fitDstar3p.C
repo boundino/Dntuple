@@ -1,10 +1,10 @@
 #include "doubleratioParameter.h"
 
-enum real{MC_MB,Data_MB} isData=MC_MB;
+enum real{MC_MB,Data_MB,MC,Data} isData=Data;
 //const int nBins=1;  Float_t ptBins[nBins+1]={7.,9.};
-const int nBins=4;  Float_t ptBins[nBins+1]={5.,8.,10.,12.,25.};
+const int nBins=6;  Float_t ptBins[nBins+1]={5.,7.,9.,11.,15.,20.,25.};
 
-void fitDstar3p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
+void fitDstar3p(Bool_t onlyfit=false, Bool_t genmatchpoint=true)
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -25,7 +25,7 @@ void fitDstar3p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
   
   ntData->AddFriend("ntHlt");
-  if(isData!=Data_MB) ntData->AddFriend("ntHi");
+  if(isData!=Data_MB&&isData!=Data) ntData->AddFriend("ntHi");
   ntMC->AddFriend("ntHlt");
   ntMC->AddFriend("ntHi");
   ntGen->AddFriend("ntHlt");
@@ -83,7 +83,7 @@ void fitDstar3p(Bool_t onlyfit=false, Bool_t genmatchpoint=false)
       TCanvas* cPtCor = new TCanvas("cCor","",600,600);
       cPtCor->SetLogy();
       hPtCor->Draw();
-      if(isData==MC_MB)
+      if(isData==MC_MB||isData==MC)
         {
           hPtGen->SetLineColor(kRed);
           hPtGen->Draw("same hist");
@@ -233,7 +233,7 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Float_t ptmax, Bool_t plotg
   background->Draw("same");
   f->Draw("same");
 
-  if(plotgenmatch&&(isData==MC_MB))
+  if(plotgenmatch&&(isData==MC_MB||isData==MC))
     {
       hMCSignalplot->SetMarkerSize(0.8);
       hMCSignalplot->SetMarkerColor(kMagenta+2);
