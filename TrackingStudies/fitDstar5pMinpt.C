@@ -1,6 +1,7 @@
 #include "doubleratioParameter.h"
 
 enum real{MC_MB,Data_MB,MC,Data} isData=MC;
+//const int nBins=5;  Float_t ptBins[nBins]={15.,18.,21.,24.,27.}; Float_t ptBinsPlus[nBins+1]={15.,18.,21.,24.,27.,30.};
 const int nBins=10;  Float_t ptBins[nBins]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.}; Float_t ptBinsPlus[nBins+1]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.};
 
 void fitDstar5pMinpt(Bool_t genmatchpoint=true)
@@ -100,8 +101,8 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   f->SetParLimits(12,0,1.);
   f->SetParLimits(2,3.e-4,1.e-3);
   f->SetParameter(2,5.e-4);
-  f->SetParLimits(11,1.6e-4,3.e-4);//1.5e-4 keyong
-  f->SetParameter(11,2.e-4);
+  f->SetParLimits(11,2.4e-4,3.e-4);
+  f->SetParameter(11,2.7e-4);
   f->SetParLimits(5,1.e-3,1.6e-3);
   f->SetParameter(5,1.e-3);
   hMCSignal->Fit(Form("f_5p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
