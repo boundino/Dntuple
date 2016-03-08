@@ -3,6 +3,7 @@
 const int BINNUM=50;
 Double_t BINMIN=0.140;
 Double_t BINMAX=0.160;
+//Double_t BINMAX=0.154;
 Double_t BINWID=(BINMAX-BINMIN)/BINNUM;
 Double_t minmass=0.143;
 Double_t maxmass=0.148;
