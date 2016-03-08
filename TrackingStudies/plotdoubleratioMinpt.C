@@ -2,10 +2,10 @@
 
 const int BIN_NUM=10;
 
-TString outputfilename3pMC = "outputfiles/output_3p_MC_Minpt.root";
-TString outputfilename3pDa = "outputfiles/output_3p_Data_Minpt.root";
-TString outputfilename5pMC = "outputfiles/output_5p_MC_Minpt.root";
-TString outputfilename5pDa = "outputfiles/output_5p_Data_Minpt.root";
+TString outputfilename3pMC = "outputfiles/output_3p_MC_Minpt_tketa1.root";
+TString outputfilename3pDa = "outputfiles/output_3p_Data_Minpt_tketa1.root";
+TString outputfilename5pMC = "outputfiles/output_5p_MC_Minpt_tketa1.root";
+TString outputfilename5pDa = "outputfiles/output_5p_Data_Minpt_tketa1.root";
 
 int plotdoubleratioMinpt()
 { 
@@ -84,6 +84,7 @@ int plotdoubleratioMinpt()
   TCanvas* cRatio = new TCanvas("cRatio","",600,600);
   hempty->Draw();
   gRatio->Draw("psame");
+  cRatio->SaveAs("plots/pp/cRatio.pdf");
 
   Float_t aTrkEff[BIN_NUM],aTrkEffErr[BIN_NUM];
   for(int i=0;i<BIN_NUM;i++)
@@ -109,6 +110,7 @@ int plotdoubleratioMinpt()
   TCanvas* cTrkEff = new TCanvas("cTrkEff","",600,600);
   hemptyTrkEff->Draw();
   gTrkEff->Draw("psame");
+  cTrkEff->SaveAs("plots/pp/cTrkEff.pdf");
 
   return 1;
 }

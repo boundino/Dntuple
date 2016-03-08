@@ -4,7 +4,7 @@ enum real{MC_MB,Data_MB,MC,Data} isData=MC;
 //const int nBins=5;  Float_t ptBins[nBins]={15.,18.,21.,24.,27.}; Float_t ptBinsPlus[nBins+1]={15.,18.,21.,24.,27.,30.};
 const int nBins=10;  Float_t ptBins[nBins]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.}; Float_t ptBinsPlus[nBins+1]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.};
 
-void fitDstar5pMinpt(Bool_t genmatchpoint=true)
+void fitDstar5pMinpt(Bool_t genmatchpoint=false, Bool_t saveoutputfile=false)
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -60,13 +60,16 @@ void fitDstar5pMinpt(Bool_t genmatchpoint=true)
   TGraphErrors* gGen = new TGraphErrors(nBins,ptBins,aGen,aZero,aGenErr);
   gGen->SetName("gGen");
 
-  TFile* outputfile = new TFile(Form("outputfiles/output_5p_%s_Minpt.root",texData[isData].Data()),"recreate");
-  outputfile->cd();
-  gPt->Write();
-  gGen->Write();
-  hPt->Write();
-  hGen->Write();
-  outputfile->Close();
+  if(saveoutputfile)
+    {
+      TFile* outputfile = new TFile(Form("outputfiles/output_5p_%s_Minpt.root",texData[isData].Data()),"recreate");
+      outputfile->cd();
+      gPt->Write();
+      gGen->Write();
+      hPt->Write();
+      hGen->Write();
+      outputfile->Close();
+    }
 }
 
 void clean0(TH1D* h)

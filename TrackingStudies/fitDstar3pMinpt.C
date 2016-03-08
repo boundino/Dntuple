@@ -1,6 +1,6 @@
 #include "doubleratioParameter.h"
 
-enum real{MC_MB,Data_MB,MC,Data} isData=MC;
+enum real{MC_MB,Data_MB,MC,Data} isData=Data;
 const int nBins=10;  Float_t ptBins[nBins]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.}; Float_t ptBinsPlus[nBins+1]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.};
 
 void fitDstar3pMinpt(Bool_t genmatchpoint=false)
