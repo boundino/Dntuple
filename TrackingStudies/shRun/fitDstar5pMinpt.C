@@ -1,10 +1,9 @@
+using namespace std;
 #include "doubleratioParameter.h"
 
-enum real{MC_MB,Data_MB,MC,Data} isData=MC;
-//const int nBins=5;  Float_t ptBins[nBins]={15.,18.,21.,24.,27.}; Float_t ptBinsPlus[nBins+1]={15.,18.,21.,24.,27.,30.};
 const int nBins=10;  Float_t ptBins[nBins]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.}; Float_t ptBinsPlus[nBins+1]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.};
 
-void fitDstar5pMinpt(Bool_t genmatchpoint=true)
+void fitDstar5pMinpt(TString condition="default",Bool_t genmatchpoint=true)
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -14,18 +13,12 @@ void fitDstar5pMinpt(Bool_t genmatchpoint=true)
   gStyle->SetPadBottomMargin(0.145);
   gStyle->SetTitleX(.0f);
 
-  void clean0(TH1D* h);  
-  TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch);
+  TF1* fitDstar(Float_t ptmin, TString cdt, Bool_t plotgenmatch);
 
-  TFile* infData = new TFile(infnameData5p[isData].Data());
   TFile* infMC = new TFile(infnameMC5p[isData].Data());
-
-  TTree* ntData = (TTree*)infData->Get("ntDD0kpipipipi");
   TTree* ntMC = (TTree*)infMC->Get("ntDD0kpipipipi");
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
   
-  ntData->AddFriend("ntHlt");
-  if(isData!=Data_MB&&isData!=Data) ntData->AddFriend("ntHi");
   ntMC->AddFriend("ntHlt");
   ntMC->AddFriend("ntHi");
   ntGen->AddFriend("ntHlt");
@@ -39,7 +32,7 @@ void fitDstar5pMinpt(Bool_t genmatchpoint=true)
 
   for(int i=0;i<nBins;i++)
     {
-      TF1* fData = fitDstar(ntData,ntMC,ptBins[i],genmatchpoint);
+      TF1* fData = fitDstar(ptBins[i],condition,genmatchpoint);
       Float_t yieldData = fData->Integral(BINMIN,BINMAX)/BINWID;
       Float_t yieldDataErr = fData->Integral(BINMIN,BINMAX)/BINWID*fData->GetParError(0)/fData->GetParameter(0);      
       aPt[i] = yieldData;
@@ -60,7 +53,7 @@ void fitDstar5pMinpt(Bool_t genmatchpoint=true)
   TGraphErrors* gGen = new TGraphErrors(nBins,ptBins,aGen,aZero,aGenErr);
   gGen->SetName("gGen");
 
-  TFile* outputfile = new TFile(Form("outputfiles/output_5p_%s_Minpt.root",texData[isData].Data()),"recreate");
+  TFile* outputfile = new TFile(Form("outputfiles/output_pp_%s_5p_%s.root",condition.Data(),texData[isData].Data()),"recreate");
   outputfile->cd();
   gPt->Write();
   gGen->Write();
@@ -69,32 +62,27 @@ void fitDstar5pMinpt(Bool_t genmatchpoint=true)
   outputfile->Close();
 }
 
-void clean0(TH1D* h)
-{
-  for (int i=1;i<=h->GetNbinsX();i++)
-    {
-      if(h->GetBinContent(i)==0) h->SetBinError(i,1);
-    }
-}
-
-TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
+TF1* fitDstar(Float_t ptmin, TString cdt, Bool_t plotgenmatch)
 {
   TCanvas* c = new TCanvas(Form("c_5p_%.0f",ptmin),"",600,600);
-  TH1D* h = new TH1D(Form("h_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSignal = new TH1D(Form("hMCSignal_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSignalplot = new TH1D(Form("hMCSignalplot_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSwapped = new TH1D(Form("hMCSwapped_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSwappedplot = new TH1D(Form("hMCSwappedplot_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
+  TFile* infile = new TFile(Form("saveHistSinglept/fmass/fmass_pp_%s_5p_%s_%.0f.root",cdt.Data(),texData[isData].Data(),ptmin));
+  TH1D* h = (TH1D*)infile->Get("h");                    h->SetName(Form("h_5p_%.0f",ptmin));
+  TH1D* hMCSignal = (TH1D*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_5p_%.0f",ptmin));
+  TH1D* hMCSwapped = (TH1D*)infile->Get("hMCSwapped");  hMCSwapped->SetName(Form("hMCSwapped_5p_%.0f",ptmin));
 
-  TF1* f = new TF1(Form("f_5p_%.0f",ptmin),"[0]*([4]*([6]*([12]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[12])*Gaus(x,[1],[11])/(sqrt(2*3.14159)*[11]))+(1-[6])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5]))+(1-[4])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))+[10]*((1-exp((0.13957-x)/[7]))*pow(x/0.13957,[8])+[9]*(x/0.13957-1))",BINMIN,BINMAX);
-  nt->Project(Form("h_5p_%.0f",ptmin),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f)",weightdata[isData].Data(),seldata5p[isData].Data(),triggerselectiondata[isData].Data(),ptmin));
-  ntMC->Project(Form("hMCSignal_5p_%.0f",ptmin),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f)",weightmc[isData].Data(),selmc5p[isData].Data(),triggerselectionmc[isData].Data(),ptmin));
-  ntMC->Project(Form("hMCSwapped_5p_%.0f",ptmin),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f)",weightmc[isData].Data(),selswp5p[isData].Data(),triggerselectionmc[isData].Data(),ptmin));
+  TH1D* hMCSignalplot = new TH1D(Form("hMCSignalplot_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
+  TH1D* hMCSwappedplot = new TH1D(Form("hMCSwappedplot_5p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
   for(int ibin=0;ibin<BINNUM;ibin++) hMCSignalplot->SetBinContent(ibin+1,hMCSignal->GetBinContent(ibin+1));
   for(int ibin=0;ibin<BINNUM;ibin++) hMCSwappedplot->SetBinContent(ibin+1,hMCSwapped->GetBinContent(ibin+1));
+
+  TF1* f = new TF1(Form("f_5p_%.0f",ptmin),"[0]*([4]*([6]*([12]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[12])*Gaus(x,[1],[11])/(sqrt(2*3.14159)*[11]))+(1-[6])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5]))+(1-[4])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))+[10]*((1-exp((0.13957-x)/[7]))*pow(x/0.13957,[8])+[9]*(x/0.13957-1))",BINMIN,BINMAX);
+
   f->FixParameter(4,1.);
   f->FixParameter(1,0.145491);
   f->FixParameter(10,0);
+  f->FixParameter(7,1);
+  f->FixParameter(8,0);
+  f->FixParameter(9,0);
 
   f->SetParLimits(0,0,1.e+5);
   f->SetParLimits(6,0,1.);
@@ -130,24 +118,29 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   f->FixParameter(4,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
   f->FixParameter(3,f->GetParameter(3));
 
+  f->ReleaseParameter(7);
   f->SetParLimits(7,5.e-4,1.e-2);
   f->SetParameter(7,1.6e-3);
+  f->ReleaseParameter(8);
   f->SetParLimits(8,0.,15.);
   f->SetParameter(8,0.35);
+  f->ReleaseParameter(9);
   f->SetParLimits(9,-2.e+1,2.e+1);
   f->SetParameter(9,13.);
-
   f->ReleaseParameter(10);
   f->SetParLimits(10,0,1.e+6);
+  f->SetParameter(10,1.e+2);
 
   h->Fit(Form("f_5p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
-  h->Fit(Form("f_5p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
+  //h->Fit(Form("f_5p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
 
+  /*
   f->ReleaseParameter(1);
   f->SetParLimits(1,minmass,maxmass);
   f->SetParameter(1,f->GetParameter(1));
   h->Fit(Form("f_5p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
   h->Fit(Form("f_5p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
+  */
 
   TF1* background = new TF1(Form("background_5p_%.0f",ptmin),"[3]*((1-exp((0.13957-x)/[0]))*pow(x/0.13957,[1])+[2]*(x/0.13957-1))");
   background->SetParameters(f->GetParameter(7),f->GetParameter(8),f->GetParameter(9),f->GetParameter(10));
@@ -265,7 +258,21 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   tex->SetTextSize(0.04);
   tex->Draw();
 
-  c->SaveAs(Form("plots/pp/fitDstar5p/DMass_%s_%.0f.pdf",texData[isData].Data(),ptmin));
+  c->SaveAs(Form("plots/fits/DMass_pp_%s_5p_%s_%.0f.pdf",cdt.Data(),texData[isData].Data(),ptmin));
 
   return mass;
+}
+
+int main(int argc, char *argv[])
+{
+  if(argc!=2)
+    {
+      std::cout << "Wrong number of inputs" << std::endl;
+      return 1;
+    }
+  else
+    {
+      fitDstar5pMinpt(argv[1]);
+      return 0;
+    }
 }

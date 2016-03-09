@@ -1,9 +1,9 @@
+using namespace std;
 #include "doubleratioParameter.h"
 
-enum real{MC_MB,Data_MB,MC,Data} isData=MC;
 const int nBins=10;  Float_t ptBins[nBins]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.}; Float_t ptBinsPlus[nBins+1]={5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.};
 
-void fitDstar3pMinpt(Bool_t genmatchpoint=false)
+void fitDstar3pMinpt(TString condition="default")
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -13,18 +13,12 @@ void fitDstar3pMinpt(Bool_t genmatchpoint=false)
   gStyle->SetPadBottomMargin(0.145);
   gStyle->SetTitleX(.0f);
 
-  void clean0(TH1D* h);  
-  TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch);
+  TF1* fitDstar(Float_t ptmin, TString cdt);
 
-  TFile* infData = new TFile(infnameData3p[isData].Data());
   TFile* infMC = new TFile(infnameMC3p[isData].Data());
-
-  TTree* ntData = (TTree*)infData->Get("ntDD0kpipi");
   TTree* ntMC = (TTree*)infMC->Get("ntDD0kpipi");
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
   
-  ntData->AddFriend("ntHlt");
-  if(isData!=Data_MB||isData!=Data) ntData->AddFriend("ntHi");
   ntMC->AddFriend("ntHlt");
   ntMC->AddFriend("ntHi");
   ntGen->AddFriend("ntHlt");
@@ -38,7 +32,7 @@ void fitDstar3pMinpt(Bool_t genmatchpoint=false)
 
   for(int i=0;i<nBins;i++)
     {
-      TF1* fData = fitDstar(ntData,ntMC,ptBins[i],genmatchpoint);
+      TF1* fData = fitDstar(ptBins[i],condition);
       Float_t yieldData = fData->Integral(BINMIN,BINMAX)/BINWID;
       Float_t yieldDataErr = fData->Integral(BINMIN,BINMAX)/BINWID*fData->GetParError(0)/fData->GetParameter(0);
       aPt[i] = yieldData;
@@ -59,7 +53,7 @@ void fitDstar3pMinpt(Bool_t genmatchpoint=false)
   TGraphErrors* gGen = new TGraphErrors(nBins,ptBins,aGen,aZero,aGenErr);
   gGen->SetName("gGen");
 
-  TFile* outputfile = new TFile(Form("outputfiles/output_3p_%s_Minpt.root",texData[isData].Data()),"recreate");
+  TFile* outputfile = new TFile(Form("outputfiles/output_pp_%s_3p_%s.root",condition.Data(),texData[isData].Data()),"recreate");
   outputfile->cd();
   gPt->Write();
   gGen->Write();
@@ -68,27 +62,16 @@ void fitDstar3pMinpt(Bool_t genmatchpoint=false)
   outputfile->Close();
 }
 
-void clean0(TH1D* h)
-{
-  for (int i=1;i<=h->GetNbinsX();i++)
-    {
-      if(h->GetBinContent(i)==0) h->SetBinError(i,1);
-    }
-}
-
-TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
+TF1* fitDstar(Float_t ptmin,TString cdt)
 {
   TCanvas* c = new TCanvas(Form("c_3p_%.0f",ptmin),"",600,600);
-  TH1D* h = new TH1D(Form("h_3p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSignal = new TH1D(Form("hMCSignal_3p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSignalplot = new TH1D(Form("hMCSignalplot_3p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
-  TH1D* hMCSwapped = new TH1D(Form("hMCSwapped_3p_%.0f",ptmin),"",BINNUM,BINMIN,BINMAX);
+  TFile* infile = new TFile(Form("saveHistSinglept/fmass/fmass_pp_%s_3p_%s_%.0f.root",cdt.Data(),texData[isData].Data(),ptmin));
+  TH1D* h = (TH1D*)infile->Get("h");                    h->SetName(Form("h_3p_%.0f",ptmin));
+  TH1D* hMCSignal = (TH1D*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_3p_%.0f",ptmin));
+  TH1D* hMCSwapped = (TH1D*)infile->Get("hMCSwapped");  hMCSwapped->SetName(Form("hMCSwapped_3p_%.0f",ptmin));
 
   TF1* f = new TF1(Form("f_3p_%.0f",ptmin),"[0]*([4]*([6]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[6])*(Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))+(1-[4])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))+[10]*((1-exp((0.13957-x)/[7]))*pow(x/0.13957,[8])+[9]*(x/0.13957-1))",BINMIN,BINMAX);
-  nt->Project(Form("h_3p_%.0f",ptmin),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f)",weightdata[isData].Data(),seldata3p[isData].Data(),triggerselectiondata[isData].Data(),ptmin));
-  ntMC->Project(Form("hMCSignal_3p_%.0f",ptmin),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f)",weightmc[isData].Data(),selmc3p[isData].Data(),triggerselectionmc[isData].Data(),ptmin));
-  ntMC->Project(Form("hMCSwapped_3p_%.0f",ptmin),"Dmass-DtktkResmass",Form("%s*(%s&&%s&&Dpt>%f)",weightmc[isData].Data(),selswp3p[isData].Data(),triggerselectionmc[isData].Data(),ptmin));
-  for(int ibin=0;ibin<BINNUM;ibin++) hMCSignalplot->SetBinContent(ibin+1,hMCSignal->GetBinContent(ibin+1));
+
   f->FixParameter(4,1.);
   f->FixParameter(1,0.145491);
   f->FixParameter(10,0.);
@@ -106,7 +89,6 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   hMCSignal->Fit(Form("f_3p_%.0f",ptmin),"LL","",minmass,maxmass);
   hMCSignal->Fit(Form("f_3p_%.0f",ptmin),"LL","",minmass,maxmass);
 
- 
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
   f->FixParameter(5,f->GetParameter(5));
@@ -132,11 +114,13 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   h->Fit(Form("f_3p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
   h->Fit(Form("f_3p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
 
-  //f->ReleaseParameter(1);
-  //f->SetParLimits(1,minmass,maxmass);
-  //f->SetParameter(1,f->GetParameter(1));
-  //h->Fit(Form("f_3p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
-  //h->Fit(Form("f_3p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
+  /*
+  f->ReleaseParameter(1);
+  f->SetParLimits(1,minmass,maxmass);
+  f->SetParameter(1,f->GetParameter(1));
+  h->Fit(Form("f_3p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
+  h->Fit(Form("f_3p_%.0f",ptmin),"LL","",BINMIN,BINMAX);
+  */
 
   TF1* background = new TF1(Form("background_3p_%.0f",ptmin),"[3]*((1-exp((0.13957-x)/[0]))*pow(x/0.13957,[1])+[2]*(x/0.13957-1))");
   background->SetParameters(f->GetParameter(7),f->GetParameter(8),f->GetParameter(9),f->GetParameter(10));
@@ -197,13 +181,6 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   background->Draw("same");
   f->Draw("same");
 
-  if(plotgenmatch&&(isData==MC_MB))
-    {
-      hMCSignalplot->SetMarkerSize(0.8);
-      hMCSignalplot->SetMarkerColor(kMagenta+2);
-      hMCSignalplot->Draw("psame");
-    }
-
   Float_t yield = mass->Integral(BINMIN,BINMAX)/BINWID;
   Float_t yieldErr = mass->Integral(BINMIN,BINMAX)/BINWID*mass->GetParError(0)/mass->GetParameter(0);
   cout<<mass->GetParameter(0)<<" "<<mass->Integral(BINMIN,BINMAX)<<endl;
@@ -251,7 +228,21 @@ TF1* fitDstar(TTree* nt, TTree* ntMC, Float_t ptmin, Bool_t plotgenmatch)
   tex->SetTextSize(0.04);
   tex->Draw();
 
-  c->SaveAs(Form("plots/pp/fitDstar3p/DMass_%s_%.0f.pdf",texData[isData].Data(),ptmin));
+  c->SaveAs(Form("plots/fits/DMass_pp_%s_3p_%s_%.0f.pdf",cdt.Data(),texData[isData].Data(),ptmin));
 
   return mass;
+}
+
+int main(int argc, char *argv[])
+{
+  if(argc!=2)
+    {
+      std::cout << "Wrong number of inputs" << std::endl;
+      return 1;
+    }
+  else
+    {
+      fitDstar3pMinpt(argv[1]);
+      return 0;
+    }
 }
