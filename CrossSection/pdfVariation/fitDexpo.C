@@ -186,40 +186,93 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   leg->AddEntry(background,"Combinatorial","l");
   leg->Draw("same");
 
-  TLatex Tl;
-  Tl.SetNDC();
-  Tl.SetTextAlign(12);
-  Tl.SetTextSize(0.04);
-  Tl.SetTextFont(42);
-  Tl.DrawLatex(0.18,0.93, "#scale[1.25]{CMS} Preliminary");
-  Tl.DrawLatex(0.65,0.93, Form("%s #sqrt{s_{NN}} = 5.02 TeV",collisionsystem.Data()));
+  TLatex* texCms = new TLatex(0.18,0.93, "#scale[1.25]{CMS} Preliminary");
+  texCms->SetNDC();
+  texCms->SetTextAlign(12);
+  texCms->SetTextSize(0.04);
+  texCms->SetTextFont(42);
+  texCms->Draw();
 
-  TLatex* tex;
+  TLatex* texCol = new TLatex(0.96,0.93, Form("%s #sqrt{s_{NN}} = 5.02 TeV",collisionsystem.Data()));
+  texCol->SetNDC();
+  texCol->SetTextAlign(32);
+  texCol->SetTextSize(0.04);
+  texCol->SetTextFont(42);
+  texCol->Draw();
 
-  tex = new TLatex(0.22,0.78,Form("%.1f < p_{T} < %.1f GeV/c",ptmin,ptmax));
-  tex->SetNDC();
-  tex->SetTextFont(42);
-  tex->SetTextSize(0.04);
-  tex->SetLineWidth(2);
-  tex->Draw();
+  TLatex* texPt = new TLatex(0.22,0.78,Form("%.1f < p_{T} < %.1f GeV/c",ptmin,ptmax));
+  texPt->SetNDC();
+  texPt->SetTextFont(42);
+  texPt->SetTextSize(0.04);
+  texPt->SetLineWidth(2);
+  texPt->Draw();
 
-  tex = new TLatex(0.22,0.83,"|y| < 1.0");
-  tex->SetNDC();
-  tex->SetTextFont(42);
-  tex->SetTextSize(0.04);
-  tex->SetLineWidth(2);
-  tex->Draw();
+  TLatex* texY = new TLatex(0.22,0.83,"|y| < 1.0");
+  texY->SetNDC();
+  texY->SetTextFont(42);
+  texY->SetTextSize(0.04);
+  texY->SetLineWidth(2);
+  texY->Draw();
 
-  tex = new TLatex(0.22,0.73,Form("N_{D} = %.0f #pm %.0f",yield,yieldErr));
-  tex->SetNDC();
-  tex->SetTextFont(42);
-  tex->SetTextSize(0.04);
-  tex->SetLineWidth(2);
-  tex->Draw();
+  TLatex* texYield = new TLatex(0.22,0.73,Form("N_{D} = %.0f #pm %.0f",yield,yieldErr));
+  texYield->SetNDC();
+  texYield->SetTextFont(42);
+  texYield->SetTextSize(0.04);
+  texYield->SetLineWidth(2);
+  texYield->Draw();
 
-  if(nBins==1) c->SaveAs(Form("plotFits/DMass_expo_%s_inclusive_%.0f_%.0f.pdf",collisionsystem.Data(),ptmin,ptmax));
-  else c->SaveAs(Form("plotFits/DMass_expo_%s_%.0f_%.0f.pdf",collisionsystem.Data(),ptmin,ptmax));
+  c->SaveAs(Form("plotFits/DMass_expo_%s_%.0f_%.0f.pdf",collisionsystem.Data(),ptmin,ptmax));
   
+  TCanvas* cPull = new TCanvas(Form("cPull_%.0f_%.0f",ptmin,ptmax),"",600,700);
+  TH1D* hPull = (TH1D*)h->Clone("hPull");
+  for(int i=0;i<h->GetNbinsX();i++)
+    {
+      Double_t nfit = f->Integral(h->GetBinLowEdge(i+1),h->GetBinLowEdge(i+1)+h->GetBinWidth(i+1))/h->GetBinWidth(i+1);
+      hPull->SetBinContent(i+1,(h->GetBinContent(i+1)-nfit)/h->GetBinError(i+1));
+      hPull->SetBinError(i+1,0);
+    }
+  hPull->SetMinimum(-4.);
+  hPull->SetMaximum(4.);
+  hPull->SetYTitle("Pull");
+  hPull->GetXaxis()->SetTitleOffset(1.);
+  hPull->GetYaxis()->SetTitleOffset(0.65);
+  hPull->GetXaxis()->SetLabelOffset(0.007);
+  hPull->GetYaxis()->SetLabelOffset(0.007);
+  hPull->GetXaxis()->SetTitleSize(0.12);
+  hPull->GetYaxis()->SetTitleSize(0.12);
+  hPull->GetXaxis()->SetLabelSize(0.1);
+  hPull->GetYaxis()->SetLabelSize(0.1);
+  hPull->GetYaxis()->SetNdivisions(504);
+  TLine* lPull = new TLine(1.7, 0, 2., 0);
+  lPull->SetLineWidth(1);
+  lPull->SetLineStyle(7);
+  lPull->SetLineColor(1);
+  TPad* pFit = new TPad("pFit","",0,0.3,1,1);
+  pFit->SetBottomMargin(0);
+  pFit->Draw();
+  pFit->cd();
+  h->Draw("e");
+  background->Draw("same");
+  mass->Draw("same");
+  massSwap->Draw("same");
+  f->Draw("same");
+  leg->Draw("same");
+  texCms->Draw();
+  texCol->Draw();
+  texPt->Draw();
+  texY->Draw();
+  texYield->Draw();
+  cPull->cd();
+  TPad* pPull = new TPad("pPull","",0,0,1,0.3);
+  pPull->SetTopMargin(0);
+  pPull->SetBottomMargin(0.3);
+  pPull->Draw();
+  pPull->cd();
+  hPull->Draw("p");
+  lPull->Draw();
+  cPull->cd();
+  cPull->SaveAs(Form("plotFits/DMass_expo_%s_%.0f_%.0f_Pull.pdf",collisionsystem.Data(),ptmin,ptmax));
+
   return mass;
 }
 
