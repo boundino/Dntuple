@@ -107,6 +107,17 @@ void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_
   hDoubleRatio->Divide(hMCRatio);
   hDoubleRatio->Draw();
 
+  cout<<endl;
+  cout<<"\\hline"<<endl;
+  cout<<"Cut on "<<vartex<<" & $Yield^{i}_{Data}(cut)/Yield^{i}_{Data}(nocut)$ & $Yield^{i}_{MC}(cut)/Yield^{i}_{MC}(nocut)$ & Ratio (Data/MC) \\\\"<<endl;
+  cout<<"\\hline"<<endl;
+  for(int i=0;i<varbins;i++)
+    {
+      cout<<setiosflags(ios::fixed)<<setprecision(2)<<(varmin+i*varstep)<<" & ";
+      cout<<setiosflags(ios::fixed)<<setprecision(3)<<hDaRatio->GetBinContent(i+1)<<" $\\pm$ "<<hDaRatio->GetBinError(i+1)<<" & "<<hMCRatio->GetBinContent(i+1)<<" $\\pm$ "<<hMCRatio->GetBinError(i+1)<<" & "<<hDoubleRatio->GetBinContent(i+1)<<" $\\pm$ "<<hDoubleRatio->GetBinError(i+1)<<" \\\\"<<endl;
+    }
+  cout<<"\\hline"<<endl;
+  cout<<endl;
   Float_t aDoubleRatio[varbins],aDoubleRatioErr[varbins],aX[varbins],aZero[varbins];
   for(int i=0;i<varbins;i++)
     {
