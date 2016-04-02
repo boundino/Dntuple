@@ -31,11 +31,14 @@ void fitDdefault(TString collsyst="PbPb", TString outputfile="outfMasshisto/mass
   gStyle->SetTitleX(.0f);
 
   TF1* fit (double ptmin, double ptmax);
-
+  ofstream fout(Form("outYield/default_%s.dat",collsyst.Data()));
   for(int i=0;i<nBins;i++)
     {
       TF1* f = fit(ptBins[i],ptBins[i+1]);
+      Double_t yield = f->Integral(minhisto,maxhisto)/binwidthmass;
+      fout<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<yield<<endl;
     }
+  fout.close();
 }
 
 TF1* fit(Double_t ptmin, Double_t ptmax)
@@ -231,7 +234,11 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   for(int i=0;i<h->GetNbinsX();i++)
     {
       Double_t nfit = f->Integral(h->GetBinLowEdge(i+1),h->GetBinLowEdge(i+1)+h->GetBinWidth(i+1))/h->GetBinWidth(i+1);
-      hPull->SetBinContent(i+1,(h->GetBinContent(i+1)-nfit)/h->GetBinError(i+1));
+      if(h->GetBinError(i+1)==0)
+        {
+          hPull->SetBinContent(i+1,0.);
+        }
+      else hPull->SetBinContent(i+1,(h->GetBinContent(i+1)-nfit)/h->GetBinError(i+1));
       hPull->SetBinError(i+1,0);
     }
   hPull->SetMinimum(-4.);
