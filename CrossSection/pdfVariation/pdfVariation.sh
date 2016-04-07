@@ -7,26 +7,32 @@ DOSAVEHISTPPMB=0
 DOSAVEHISTPbPbMB=0
 
 #
-DOFITDEFAULTPP=1
-DOFITDEFAULTPbPb=1
-DOFITDEFAULTPPMB=1
-DOFITDEFAULTPbPbMB=1
+DOFITDEFAULTNEWPP=0
+DOFITDEFAULTNEWPbPb=0
+DOFITDEFAULTNEWPPMB=0
+DOFITDEFAULTNEWPbPbMB=0
 
-DOFITFLOATWIDPP=1
-DOFITFLOATWIDPbPb=1
-DOFITFLOATWIDPPMB=1
-DOFITFLOATWIDPbPbMB=1
+DOFITINCREASEWIDPP=0
+DOFITINCREASEWIDPbPb=0
+DOFITINCREASEWIDPPMB=0
+DOFITINCREASEWIDPbPbMB=0
 
-DOFITPOLY2PP=1
-DOFITPOLY2PbPb=1
-DOFITPOLY2PPMB=1
-DOFITPOLY2PbPbMB=1
+DOFITDECREASEWIDPP=0
+DOFITDECREASEWIDPbPb=0
+DOFITDECREASEWIDPPMB=0
+DOFITDECREASEWIDPbPbMB=0
+
+DOFITPOLY2PP=0
+DOFITPOLY2PbPb=0
+DOFITPOLY2PPMB=0
+DOFITPOLY2PbPbMB=0
 
 DOFITEXPO2PP=1
 DOFITEXPO2PbPb=1
 DOFITEXPO2PPMB=1
 DOFITEXPO2PbPbMB=1
 
+#
 DOFITPOLY1PP=0
 DOFITPOLY1PbPb=0
 DOFITPOLY1PPMB=0
@@ -36,6 +42,17 @@ DOFITEXPOPP=0
 DOFITEXPOPbPb=0
 DOFITEXPOPPMB=0
 DOFITEXPOPbPbMB=0
+
+DOFITDEFAULTPP=0
+DOFITDEFAULTPbPb=0
+DOFITDEFAULTPPMB=0
+DOFITDEFAULTPbPbMB=0
+
+DOFITFLOATWIDPP=0
+DOFITFLOATWIDPbPb=0
+DOFITFLOATWIDPPMB=0
+DOFITFLOATWIDPbPbMB=0
+
 
 ##
 
@@ -84,6 +101,18 @@ g++ fitDdefault.C $(root-config --cflags --libs) -g -o fitDdefault.exe
 rm fitDdefault.exe
 fi
 
+if [ $DOFITDEFAULTNEWPP -eq 1 ]; then
+g++ fitDdefaultnew.C $(root-config --cflags --libs) -g -o fitDdefaultnew.exe 
+./fitDdefaultnew.exe "$LABELPP"
+rm fitDdefaultnew.exe
+fi
+
+if [ $DOFITDEFAULTNEWPbPb -eq 1 ]; then
+g++ fitDdefaultnew.C $(root-config --cflags --libs) -g -o fitDdefaultnew.exe 
+./fitDdefaultnew.exe "$LABELPbPb"
+rm fitDdefaultnew.exe
+fi
+
 if [ $DOFITFLOATWIDPP -eq 1 ]; then
 g++ fitDfloatwid.C $(root-config --cflags --libs) -g -o fitDfloatwid.exe 
 ./fitDfloatwid.exe "$LABELPP"
@@ -94,6 +123,30 @@ if [ $DOFITFLOATWIDPbPb -eq 1 ]; then
 g++ fitDfloatwid.C $(root-config --cflags --libs) -g -o fitDfloatwid.exe 
 ./fitDfloatwid.exe "$LABELPbPb"
 rm fitDfloatwid.exe
+fi
+
+if [ $DOFITINCREASEWIDPP -eq 1 ]; then
+g++ fitDincreasewid.C $(root-config --cflags --libs) -g -o fitDincreasewid.exe 
+./fitDincreasewid.exe "$LABELPP"
+rm fitDincreasewid.exe
+fi
+
+if [ $DOFITINCREASEWIDPbPb -eq 1 ]; then
+g++ fitDincreasewid.C $(root-config --cflags --libs) -g -o fitDincreasewid.exe 
+./fitDincreasewid.exe "$LABELPbPb"
+rm fitDincreasewid.exe
+fi
+
+if [ $DOFITDECREASEWIDPP -eq 1 ]; then
+g++ fitDdecreasewid.C $(root-config --cflags --libs) -g -o fitDdecreasewid.exe 
+./fitDdecreasewid.exe "$LABELPP"
+rm fitDdecreasewid.exe
+fi
+
+if [ $DOFITDECREASEWIDPbPb -eq 1 ]; then
+g++ fitDdecreasewid.C $(root-config --cflags --libs) -g -o fitDdecreasewid.exe 
+./fitDdecreasewid.exe "$LABELPbPb"
+rm fitDdecreasewid.exe
 fi
 
 if [ $DOFITPOLY2PP -eq 1 ]; then
@@ -192,6 +245,18 @@ g++ fitDdefault.C $(root-config --cflags --libs) -g -o fitDdefault.exe
 rm fitDdefault.exe
 fi
 
+if [ $DOFITDEFAULTNEWPPMB -eq 1 ]; then
+g++ fitDdefaultnew.C $(root-config --cflags --libs) -g -o fitDdefaultnew.exe 
+./fitDdefaultnew.exe "$LABELPPMB"
+rm fitDdefaultnew.exe
+fi
+
+if [ $DOFITDEFAULTNEWPbPbMB -eq 1 ]; then
+g++ fitDdefaultnew.C $(root-config --cflags --libs) -g -o fitDdefaultnew.exe 
+./fitDdefaultnew.exe "$LABELPbPbMB"
+rm fitDdefaultnew.exe
+fi
+
 if [ $DOFITFLOATWIDPPMB -eq 1 ]; then
 g++ fitDfloatwid.C $(root-config --cflags --libs) -g -o fitDfloatwid.exe 
 ./fitDfloatwid.exe "$LABELPPMB"
@@ -202,6 +267,30 @@ if [ $DOFITFLOATWIDPbPbMB -eq 1 ]; then
 g++ fitDfloatwid.C $(root-config --cflags --libs) -g -o fitDfloatwid.exe 
 ./fitDfloatwid.exe "$LABELPbPbMB"
 rm fitDfloatwid.exe
+fi
+
+if [ $DOFITINCREASEWIDPPMB -eq 1 ]; then
+g++ fitDincreasewid.C $(root-config --cflags --libs) -g -o fitDincreasewid.exe 
+./fitDincreasewid.exe "$LABELPPMB"
+rm fitDincreasewid.exe
+fi
+
+if [ $DOFITINCREASEWIDPbPbMB -eq 1 ]; then
+g++ fitDincreasewid.C $(root-config --cflags --libs) -g -o fitDincreasewid.exe 
+./fitDincreasewid.exe "$LABELPbPbMB"
+rm fitDincreasewid.exe
+fi
+
+if [ $DOFITDECREASEWIDPPMB -eq 1 ]; then
+g++ fitDdecreasewid.C $(root-config --cflags --libs) -g -o fitDdecreasewid.exe 
+./fitDdecreasewid.exe "$LABELPPMB"
+rm fitDdecreasewid.exe
+fi
+
+if [ $DOFITDECREASEWIDPbPbMB -eq 1 ]; then
+g++ fitDdecreasewid.C $(root-config --cflags --libs) -g -o fitDdecreasewid.exe 
+./fitDdecreasewid.exe "$LABELPbPbMB"
+rm fitDdecreasewid.exe
 fi
 
 if [ $DOFITPOLY2PPMB -eq 1 ]; then

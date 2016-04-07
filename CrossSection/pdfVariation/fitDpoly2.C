@@ -50,7 +50,7 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   TH1D* h = (TH1D*)infile->Get("h");                    h->SetName(Form("h_%.0f_%.0f",ptmin,ptmax));
   TH1D* hMCSignal = (TH1D*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_%.0f_%.0f",ptmin,ptmax));
   TH1D* hMCSwapped = (TH1D*)infile->Get("hMCSwapped");  hMCSwapped->SetName(Form("hMCSwapped_%.0f_%.0f",ptmin,ptmax));
-  TF1* f = new TF1(Form("f_%.0f_%.0f",ptmin,ptmax),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x", 1.7, 2.0);
+  TF1* f = new TF1(Form("f_%.0f_%.0f",ptmin,ptmax),"[0]*([7]*([9]*Gaus(x,[1],[2]*(1+[11]))/(sqrt(2*3.14159)*[2]*(1+[11]))+(1-[9])*Gaus(x,[1],[10]*(1+[11]))/(sqrt(2*3.14159)*[10]*(1+[11])))+(1-[7])*Gaus(x,[1],[8]*(1+[11]))/(sqrt(2*3.14159)*[8]*(1+[11])))+[3]+[4]*x+[5]*x*x", 1.7, 2.0);
 
   f->SetParLimits(4,-1000,1000);
   f->SetParLimits(10,0.001,0.05);
@@ -71,6 +71,7 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   f->FixParameter(3,0);
   f->FixParameter(4,0);
   f->FixParameter(5,0);
+  f->FixParameter(11,0);
   h->GetEntries();
   
   hMCSignal->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"q","",minhisto,maxhisto);
@@ -78,7 +79,7 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   f->ReleaseParameter(1);
   hMCSignal->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
   hMCSignal->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
-  hMCSignal->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L m","",minhisto,maxhisto);
+  hMCSignal->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L m q","",minhisto,maxhisto);
   
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
@@ -91,7 +92,7 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   hMCSwapped->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
   hMCSwapped->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
   hMCSwapped->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
-  hMCSwapped->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L m","",minhisto,maxhisto);
+  hMCSwapped->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L m q","",minhisto,maxhisto);
   
   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
   f->FixParameter(8,f->GetParameter(8));
@@ -104,8 +105,9 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"q","",minhisto,maxhisto);
   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
-  //f->ReleaseParameter(2);                                     // you need to release these two parameters if you want to perform studies on the sigma shape
-  //f->ReleaseParameter(10);                                   // you need to release these two parameters if you want to perform studies on the sigma shape
+  f->SetParLimits(1,1.86,1.87);
+  f->ReleaseParameter(11);
+  f->SetParLimits(11,-1,1);
   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
@@ -119,8 +121,8 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   background->SetRange(minhisto,maxhisto);
   background->SetLineStyle(2);
   
-  TF1* mass = new TF1(Form("fmass_%.0f_%.0f",ptmin,ptmax),"[0]*([3]*([4]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[4])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))");
-  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(9),f->GetParameter(10));
+  TF1* mass = new TF1(Form("fmass_%.0f_%.0f",ptmin,ptmax),"[0]*([3]*([4]*Gaus(x,[1],[2]*(1+[6]))/(sqrt(2*3.14159)*[2]*(1+[6]))+(1-[4])*Gaus(x,[1],[5]*(1+[6]))/(sqrt(2*3.14159)*[5]*(1+[6]))))");
+  mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(9),f->GetParameter(10),f->GetParameter(11));
   mass->SetParError(0,f->GetParError(0));
   mass->SetParError(1,f->GetParError(1));
   mass->SetParError(2,f->GetParError(2));
@@ -133,8 +135,8 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   mass->SetLineWidth(3);
   mass->SetLineStyle(2);
   
-  TF1* massSwap = new TF1(Form("fmassSwap_%.0f_%.0f",ptmin,ptmax),"[0]*(1-[2])*Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3])");
-  massSwap->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(7),f->GetParameter(8));
+  TF1* massSwap = new TF1(Form("fmassSwap_%.0f_%.0f",ptmin,ptmax),"[0]*(1-[2])*Gaus(x,[1],[3]*(1+[4]))/(sqrt(2*3.14159)*[3]*(1+[4]))");
+  massSwap->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(7),f->GetParameter(8),f->GetParameter(11));
   massSwap->SetParError(0,f->GetParError(0));
   massSwap->SetParError(1,f->GetParError(1));
   massSwap->SetParError(2,f->GetParError(7));
