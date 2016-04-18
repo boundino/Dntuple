@@ -298,7 +298,7 @@ void CombineRAA(TString fileMB="ROOTfilesCent10/outputRAAMB.root", TString file=
       ent_theoryCharged->SetTextSize(0.043);//0.03
     }
   
-  TLatex* texSystnorm = new TLatex(0.23,0.70,"T_{AA}, BR, lumi.");
+  TLatex* texSystnorm = new TLatex(0.23,0.70,"T_{AA} and lumi.");
   texSystnorm->SetNDC();
   texSystnorm->SetTextColor(1);
   texSystnorm->SetTextFont(42);
