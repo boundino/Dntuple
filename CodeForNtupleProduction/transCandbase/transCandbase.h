@@ -1,0 +1,115 @@
+using namespace std;
+#include "format.h"
+
+int     Dsize;
+float   Dmass[MAX_XB];
+float   Dpt[MAX_XB];
+float   Deta[MAX_XB];
+float   Dphi[MAX_XB];
+float   Dy[MAX_XB];
+float   Dchi2ndf[MAX_XB];
+float   Dchi2cl[MAX_XB];
+float   Ddtheta[MAX_XB];
+float   Dlxy[MAX_XB];
+float   Dalpha[MAX_XB];
+float   DsvpvDistance[MAX_XB];
+float   DsvpvDisErr[MAX_XB];
+float   DlxyBS[MAX_XB];
+float   DlxyBSErr[MAX_XB];
+
+float   Dtrk1Pt[MAX_XB];
+float   Dtrk2Pt[MAX_XB];
+float   Dtrk1Eta[MAX_XB];
+float   Dtrk2Eta[MAX_XB];
+float   Dtrk1Phi[MAX_XB];
+float   Dtrk2Phi[MAX_XB];
+float   Dtrk1Y[MAX_XB];
+float   Dtrk2Y[MAX_XB];
+float   Dtrk1PtErr[MAX_XB];
+float   Dtrk2PtErr[MAX_XB];
+float   Dtrk1EtaErr[MAX_XB];
+float   Dtrk2EtaErr[MAX_XB];
+float   Dtrk1PhiErr[MAX_XB];
+float   Dtrk2PhiErr[MAX_XB];
+float   Dtrk1Dxy[MAX_XB];
+float   Dtrk2Dxy[MAX_XB];
+float   Dtrk1D0Err[MAX_XB];
+float   Dtrk2D0Err[MAX_XB];
+float   Dtrk1PixelHit[MAX_XB];
+float   Dtrk2PixelHit[MAX_XB];
+float   Dtrk1StripHit[MAX_XB];
+float   Dtrk2StripHit[MAX_XB];
+float   Dtrk1nStripLayer[MAX_XB];
+float   Dtrk2nStripLayer[MAX_XB];
+float   Dtrk1nPixelLayer[MAX_XB];
+float   Dtrk2nPixelLayer[MAX_XB];
+float   Dtrk1Chi2ndf[MAX_XB];
+float   Dtrk2Chi2ndf[MAX_XB];
+int     Dtrk1Algo[MAX_XB];
+int     Dtrk2Algo[MAX_XB];
+int     Dtrk1OriginalAlgo[MAX_XB];
+int     Dtrk2OriginalAlgo[MAX_XB];
+bool    Dtrk1highPurity[MAX_XB];
+bool    Dtrk2highPurity[MAX_XB];
+int     Dtrk1Quality[MAX_XB];
+int     Dtrk2Quality[MAX_XB];
+
+float   Dgen[MAX_XB];
+
+void setDBranchAddress(TTree* dnt)
+{
+  dnt->Branch("Dsize",&Dsize);
+  dnt->Branch("Dmass",Dmass,"Dmass[Dsize]/F");
+  dnt->Branch("Dpt",Dpt,"Dpt[Dsize]/F");
+  dnt->Branch("Deta",Deta,"Deta[Dsize]/F");
+  dnt->Branch("Dphi",Dphi,"Dphi[Dsize]/F");
+  dnt->Branch("Dy",Dy,"Dy[Dsize]/F");
+  dnt->Branch("Dchi2ndf",Dchi2ndf,"Dchi2ndf[Dsize]/F");
+  dnt->Branch("Dchi2cl",Dchi2cl,"Dchi2cl[Dsize]/F");
+  dnt->Branch("Ddtheta",Ddtheta,"Ddtheta[Dsize]/F");
+  dnt->Branch("Dlxy",Dlxy,"Dlxy[Dsize]/F");
+  dnt->Branch("Dalpha",Dalpha,"Dalpha[Dsize]/F");
+  dnt->Branch("DsvpvDistance",DsvpvDistance,"DsvpvDistance[Dsize]/F");
+  dnt->Branch("DsvpvDisErr",DsvpvDisErr,"DsvpvDisErr[Dsize]/F");
+  dnt->Branch("DlxyBS",DlxyBS,"DlxyBS[Dsize]/F");
+  dnt->Branch("DlxyBSErr",DlxyBSErr,"DlxyBSErr[Dsize]/F");
+
+  dnt->Branch("Dtrk1Pt",Dtrk1Pt,"Dtrk1Pt[Dsize]/F");
+  dnt->Branch("Dtrk2Pt",Dtrk2Pt,"Dtrk2Pt[Dsize]/F");
+  dnt->Branch("Dtrk1Eta",Dtrk1Eta,"Dtrk1Eta[Dsize]/F");
+  dnt->Branch("Dtrk2Eta",Dtrk2Eta,"Dtrk2Eta[Dsize]/F");
+  dnt->Branch("Dtrk1Phi",Dtrk1Phi,"Dtrk1Phi[Dsize]/F");
+  dnt->Branch("Dtrk2Phi",Dtrk2Phi,"Dtrk2Phi[Dsize]/F");
+  dnt->Branch("Dtrk1Y",Dtrk1Y,"Dtrk1Y[Dsize]/F");
+  dnt->Branch("Dtrk2Y",Dtrk2Y,"Dtrk2Y[Dsize]/F");
+  dnt->Branch("Dtrk1PtErr",Dtrk1PtErr,"Dtrk1PtErr[Dsize]/F");
+  dnt->Branch("Dtrk2PtErr",Dtrk2PtErr,"Dtrk2PtErr[Dsize]/F");
+  dnt->Branch("Dtrk1EtaErr",Dtrk1EtaErr,"Dtrk1EtaErr[Dsize]/F");
+  dnt->Branch("Dtrk2EtaErr",Dtrk2EtaErr,"Dtrk2EtaErr[Dsize]/F");
+  dnt->Branch("Dtrk1PhiErr",Dtrk1PhiErr,"Dtrk1PhiErr[Dsize]/F");
+  dnt->Branch("Dtrk2PhiErr",Dtrk2PhiErr,"Dtrk2PhiErr[Dsize]/F");
+  dnt->Branch("Dtrk1Dxy",Dtrk1Dxy,"Dtrk1Dxy[Dsize]/F");
+  dnt->Branch("Dtrk2Dxy",Dtrk2Dxy,"Dtrk2Dxy[Dsize]/F");
+  dnt->Branch("Dtrk1D0Err",Dtrk1D0Err,"Dtrk1D0Err[Dsize]/F");
+  dnt->Branch("Dtrk2D0Err",Dtrk2D0Err,"Dtrk2D0Err[Dsize]/F");
+  dnt->Branch("Dtrk1PixelHit",Dtrk1PixelHit,"Dtrk1PixelHit[Dsize]/F");
+  dnt->Branch("Dtrk2PixelHit",Dtrk2PixelHit,"Dtrk2PixelHit[Dsize]/F");
+  dnt->Branch("Dtrk1StripHit",Dtrk1StripHit,"Dtrk1StripHit[Dsize]/F");
+  dnt->Branch("Dtrk2StripHit",Dtrk2StripHit,"Dtrk2StripHit[Dsize]/F");
+  dnt->Branch("Dtrk1nStripLayer",Dtrk1nStripLayer,"Dtrk1nStripLayer[Dsize]/F");
+  dnt->Branch("Dtrk2nStripLayer",Dtrk2nStripLayer,"Dtrk2nStripLayer[Dsize]/F");
+  dnt->Branch("Dtrk1nPixelLayer",Dtrk1nPixelLayer,"Dtrk1nPixelLayer[Dsize]/F");
+  dnt->Branch("Dtrk2nPixelLayer",Dtrk2nPixelLayer,"Dtrk2nPixelLayer[Dsize]/F");
+  dnt->Branch("Dtrk1Chi2ndf",Dtrk1Chi2ndf,"Dtrk1Chi2ndf[Dsize]/F");
+  dnt->Branch("Dtrk2Chi2ndf",Dtrk2Chi2ndf,"Dtrk2Chi2ndf[Dsize]/F");
+  dnt->Branch("Dtrk1Algo",Dtrk1Algo,"Dtrk1Algo[Dsize]/I");
+  dnt->Branch("Dtrk2Algo",Dtrk2Algo,"Dtrk2Algo[Dsize]/I");
+  dnt->Branch("Dtrk1OriginalAlgo",Dtrk1OriginalAlgo,"Dtrk1OriginalAlgo[Dsize]/I");
+  dnt->Branch("Dtrk2OriginalAlgo",Dtrk2OriginalAlgo,"Dtrk2OriginalAlgo[Dsize]/I");
+  dnt->Branch("Dtrk1highPurity",Dtrk1highPurity,"Dtrk1highPurity[Dsize]/O");
+  dnt->Branch("Dtrk2highPurity",Dtrk2highPurity,"Dtrk2highPurity[Dsize]/O");
+  dnt->Branch("Dtrk1Quality",Dtrk1Quality,"Dtrk1Quality[Dsize]/I");
+  dnt->Branch("Dtrk2Quality",Dtrk2Quality,"Dtrk2Quality[Dsize]/I");
+
+  dnt->Branch("Dgen",Dgen,"Dgen[Dsize]/F");
+}
