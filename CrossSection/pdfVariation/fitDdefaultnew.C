@@ -2,25 +2,28 @@ using namespace std;
 #include "uti.h"
 #include "parameters.h"
 
-Double_t setparam0=100.;
-Double_t setparam1=1.865;
-Double_t setparam2=0.03;
-Double_t setparam10=0.005;
-Double_t setparam8=0.1;
-Double_t setparam9=0.1;
-Double_t fixparam1=1.865;
-Double_t minhisto=1.7;
-Double_t maxhisto=2.0;
-Double_t nbinsmasshisto=60;
-Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
+Float_t setparam0=100.;
+Float_t setparam1=1.865;
+Float_t setparam2=0.03;
+Float_t setparam10=0.005;
+Float_t setparam8=0.1;
+Float_t setparam9=0.1;
+Float_t fixparam1=1.865;
+Float_t minhisto=1.7;
+Float_t maxhisto=2.0;
+Float_t nbinsmasshisto=60;
+Float_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
 TString collisionsystem;
 TString infname;
+Float_t centmin,centmax;
 
-void fitDdefaultnew(TString collsyst="PbPb", TString outputfile="outfMasshisto/mass")
+void fitDdefaultnew(TString collsyst="PbPb", Float_t centMin=0, Float_t centMax=100, TString outputfile="outfMasshisto/mass")
 {
   collisionsystem = collsyst;
   infname = outputfile;
+  centmin = centMin;
+  centmax = centMax;
 
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -30,24 +33,27 @@ void fitDdefaultnew(TString collsyst="PbPb", TString outputfile="outfMasshisto/m
   gStyle->SetPadBottomMargin(0.145);
   gStyle->SetTitleX(.0f);
 
-  TF1* fit (double ptmin, double ptmax);
-  ofstream fout(Form("outYield/defaultnew_%s.dat",collsyst.Data()));
+  TF1* fit(Float_t ptmin, Float_t ptmax);
+  ofstream fout(Form("outYield/defaultnew_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax));
+  ofstream falpha(Form("outAlpha/defaultnew_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax));
   for(int i=0;i<nBins;i++)
     {
       TF1* f = fit(ptBins[i],ptBins[i+1]);
-      Double_t yield = f->Integral(minhisto,maxhisto)/binwidthmass;
+      Float_t yield = f->Integral(minhisto,maxhisto)/binwidthmass;
       fout<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<yield<<endl;
+      falpha<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<f->GetParameter(6)<<" "<<f->GetParError(6)<<endl;
     }
+  falpha.close();
   fout.close();
 }
 
-TF1* fit(Double_t ptmin, Double_t ptmax)
+TF1* fit(Float_t ptmin, Float_t ptmax)
 {
   TCanvas* c = new TCanvas(Form("c_%.0f_%.0f",ptmin,ptmax),"",600,600);
-  TFile* infile = new TFile(Form("%s_%s_%.0f_%.0f.root",infname.Data(),collisionsystem.Data(),ptmin,ptmax));
-  TH1D* h = (TH1D*)infile->Get("h");                    h->SetName(Form("h_%.0f_%.0f",ptmin,ptmax));
-  TH1D* hMCSignal = (TH1D*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_%.0f_%.0f",ptmin,ptmax));
-  TH1D* hMCSwapped = (TH1D*)infile->Get("hMCSwapped");  hMCSwapped->SetName(Form("hMCSwapped_%.0f_%.0f",ptmin,ptmax));
+  TFile* infile = new TFile(Form("%s_%s_cent_%.0f_%.0f_pt_%.0f_%.0f.root",infname.Data(),collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
+  TH1F* h = (TH1F*)infile->Get("h");                    h->SetName(Form("h_%.0f_%.0f",ptmin,ptmax));
+  TH1F* hMCSignal = (TH1F*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_%.0f_%.0f",ptmin,ptmax));
+  TH1F* hMCSwapped = (TH1F*)infile->Get("hMCSwapped");  hMCSwapped->SetName(Form("hMCSwapped_%.0f_%.0f",ptmin,ptmax));
   TF1* f = new TF1(Form("f_%.0f_%.0f",ptmin,ptmax),"[0]*([7]*([9]*Gaus(x,[1],[2]*(1+[11]))/(sqrt(2*3.14159)*[2]*(1+[11]))+(1-[9])*Gaus(x,[1],[10]*(1+[11]))/(sqrt(2*3.14159)*[10]*(1+[11])))+(1-[7])*Gaus(x,[1],[8]*(1+[11]))/(sqrt(2*3.14159)*[8]*(1+[11])))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
 
   f->SetParLimits(4,-1000,1000);
@@ -130,6 +136,7 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   mass->SetParError(3,f->GetParError(7));
   mass->SetParError(4,f->GetParError(9));
   mass->SetParError(5,f->GetParError(10));
+  mass->SetParError(6,f->GetParError(11));
   mass->SetFillColor(kOrange-3);
   mass->SetFillStyle(3002);
   mass->SetLineColor(kOrange-3);
@@ -177,8 +184,8 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   massSwap->Draw("same");
   f->Draw("same");
   
-  Double_t yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
-  Double_t yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+  Float_t yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
+  Float_t yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
   
   std::cout<<"YIELD="<<yield<<std::endl;
 
@@ -229,13 +236,13 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   texYield->SetLineWidth(2);
   texYield->Draw();
 
-  c->SaveAs(Form("plotFits/DMass_defaultnew_%s_%.0f_%.0f.pdf",collisionsystem.Data(),ptmin,ptmax));
+  c->SaveAs(Form("plotFits/DMass_defaultnew_%s_cent_%.0f_%.0f_pt_%.0f_%.0f.pdf",collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
   
   TCanvas* cPull = new TCanvas(Form("cPull_%.0f_%.0f",ptmin,ptmax),"",600,700);
-  TH1D* hPull = (TH1D*)h->Clone("hPull");
+  TH1F* hPull = (TH1F*)h->Clone("hPull");
   for(int i=0;i<h->GetNbinsX();i++)
     {
-      Double_t nfit = f->Integral(h->GetBinLowEdge(i+1),h->GetBinLowEdge(i+1)+h->GetBinWidth(i+1))/h->GetBinWidth(i+1);
+      Float_t nfit = f->Integral(h->GetBinLowEdge(i+1),h->GetBinLowEdge(i+1)+h->GetBinWidth(i+1))/h->GetBinWidth(i+1);
       if(h->GetBinError(i+1)==0)
         {
           hPull->SetBinContent(i+1,0.);
@@ -283,7 +290,7 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
   hPull->Draw("p");
   lPull->Draw();
   cPull->cd();
-  cPull->SaveAs(Form("plotFits/DMass_defaultnew_%s_%.0f_%.0f_Pull.pdf",collisionsystem.Data(),ptmin,ptmax));
+  cPull->SaveAs(Form("plotFits/DMass_defaultnew_%s_cent_%.0f_%.0f_pt_%.0f_%.0f_Pull.pdf",collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
   
   return mass;
 }
@@ -291,15 +298,20 @@ TF1* fit(Double_t ptmin, Double_t ptmax)
 
 int main(int argc, char *argv[])
 {
-  if((argc != 2))
-  {
-    std::cout << "Wrong number of inputs" << std::endl;
-    return 1;
-  }
-  else
+  if(argc==4)
+    {
+      fitDdefaultnew(argv[1],atof(argv[2]),atof(argv[3]));
+      return 0;
+    }
+  else if(argc==2)
     {
       fitDdefaultnew(argv[1]);
       return 0;
+    }
+  else
+    {
+      std::cout << "Wrong number of inputs" << std::endl;
+      return 1;
     }
 }
 
