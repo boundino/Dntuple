@@ -37,7 +37,7 @@ void NuclearModificationFactor(TString inputPP="CrossSectionFONLLPPMB.root", TSt
   for(int i=0;i<nBins;i++)
   {
     yr[i] = hNuclearModification->GetBinContent(i+1);
-    double systematic=0.01*systematicsForRAA(hNuclearModification->GetBinCenter(i+1),0.,0.);
+    double systematic=0.01*systematicsForRAA(hNuclearModification->GetBinCenter(i+1),centMin,centMax,0.,0.);
     yrlow[i] = hNuclearModification->GetBinContent(i+1)*systematic;
     yrhigh[i] =hNuclearModification->GetBinContent(i+1)*systematic;
   }

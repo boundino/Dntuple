@@ -1,6 +1,7 @@
 #include "uti.h"
 #include "parameters.h"
 #include "TLegendEntry.h"
+#include "../Systematics/systematics.C"
 
 void CombineCrossSections(TString fileMB="ROOTfiles/CrossSectionFONLLPPMB.root", TString file="ROOTfiles/CrossSectionFONLLPP.root", Int_t isPbPb=1, Float_t centMin=0., Float_t centMax=100., Int_t isMerged=1)
 {
@@ -143,6 +144,16 @@ void CombineCrossSections(TString fileMB="ROOTfiles/CrossSectionFONLLPPMB.root",
   texY->SetTextSize(0.045);
   texY->SetLineWidth(2);
   texY->Draw();
+
+  Float_t systnorm;
+  if(isPbPb==1) systnorm = normalizationUncertaintyForPbPb(centMin,centMax);
+  else systnorm = normalizationUncertaintyForPP();
+  TLatex* texSystnorm = new TLatex(0.55,0.61,Form("Global uncert. %.1f%s",systnorm,texper.Data()));
+  texSystnorm->SetNDC();
+  texSystnorm->SetTextFont(42);
+  texSystnorm->SetTextSize(0.045);
+  texSystnorm->SetLineWidth(2);
+  texSystnorm->Draw();
 
   TLegend *legendSigma=new TLegend(0.54,0.66,0.87,0.77,"");//0.5100806,0.5868644,0.8084677,0.7605932
   legendSigma->SetBorderSize(0);
