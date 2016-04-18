@@ -5,16 +5,15 @@ using namespace std;
 #include "Dntuple.h"
 
 Bool_t istest = false;
-int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=true, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
+int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   if(istest)
     {
-      infile="/store/user/twang/DfinderRun2/pp_Pythia8D0kpipipi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_pp_20160209_dPt0tkPt0p5_D0Dstar/finder_pp_20_1_D4T.root";
+      infile="/store/group/phys_heavyions/HeavyFlavourRun2/DfinderRun2/MC_revised/Pythia8D0kpi_Dstarpt0p0_Pthat0_TuneCUETP8M1_5020GeV_GEN_SIM_PU_20160229/DfinderMC_PbPb_20160328_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_62_1_9Rs.root";
       outfile="test.root";
       REAL=false;
-      isPbPb=false;
-      skim=true;
+      isPbPb=true;
+      skim=false;
       checkMatching=true;
       iseos=true;
     }
@@ -53,19 +52,20 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
-  TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
+  TFile *outf = TFile::Open(Form("%s", outfile.Data()),"recreate");
+  //TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[12];
-  isDchannel[0] = 0;
-  isDchannel[1] = 0;
-  isDchannel[2] = 0;
-  isDchannel[3] = 0;
-  isDchannel[4] = 0;
-  isDchannel[5] = 0;
-  isDchannel[6] = 0; 
-  isDchannel[7] = 0; 
-  isDchannel[8] = 0; 
-  isDchannel[9] = 0; 
+  isDchannel[0] = 1;
+  isDchannel[1] = 1;
+  isDchannel[2] = 1;
+  isDchannel[3] = 1;
+  isDchannel[4] = 1;
+  isDchannel[5] = 1;
+  isDchannel[6] = 1; 
+  isDchannel[7] = 1; 
+  isDchannel[8] = 1; 
+  isDchannel[9] = 1; 
   isDchannel[10] = 1; 
   isDchannel[11] = 1;
 
