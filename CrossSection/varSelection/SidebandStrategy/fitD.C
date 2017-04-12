@@ -11,7 +11,9 @@ TString infname;
 TString varname;
 TString vartex;
 Int_t isLarger;
-void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_t varmin=0.5, Float_t varmax=2,TString vartex_="", Int_t isLarger_=1, TString outputfile="outfMasshisto/mass")
+Float_t centmin,centmax;
+
+void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_t varmin=0.5, Float_t varmax=2, TString vartex_="", Int_t isLarger_=1, Float_t centMin=0, Float_t centMax=100, TString outputfile="outfMasshisto/mass")
 {
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -29,6 +31,8 @@ void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_
   varname=varname_;
   vartex=vartex_;
   isLarger=isLarger_;
+  centmin = centMin;
+  centmax = centMax;
 
   Float_t varstep;
   if(varbins==1) varstep = 0.5;
@@ -43,7 +47,7 @@ void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_
   for(float i=0;i<varbins+1;i++)
     {
       tMC = "MC";
-      TFile* infile = new TFile(Form("%s_%s_%s_%s_%.0f.root",infname.Data(),collisionsystem.Data(),varname.Data(),tMC.Data(),i));
+      TFile* infile = new TFile(Form("%s_%s_cent_%.0f_%.0f_%s_%s_%.0f.root",infname.Data(),collisionsystem.Data(),centmin,centmax,varname.Data(),tMC.Data(),i));
       TH1D* hDaSigreg = (TH1D*)infile->Get("hDaSigreg");    hDaSigreg->SetName(Form("hDaSigreg_%s_%.0f",tMC.Data(),i));
       TH1D* hDaSidbnd = (TH1D*)infile->Get("hDaSidbnd");    hDaSidbnd->SetName(Form("hDaSidbnd_%s_%.0f",tMC.Data(),i));
       TH1D* hMCSignal = (TH1D*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_%s_%.0f",tMC.Data(),i));
@@ -127,7 +131,7 @@ void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_
       aZero[i] = 0;
     }
   TGraphErrors* gDoubleRatio = new TGraphErrors(varbins,aX,aDoubleRatio,aZero,aDoubleRatioErr);
-  TH2F* hemptyDoubleRatio = new TH2F("hemptyDoubleRatio","",20,varmin-0.5*varstep,varmax+0.5*varstep,10.,0.,2.);
+  TH2F* hemptyDoubleRatio = new TH2F("hemptyDoubleRatio","",20,varmin-0.5*varstep,varmax+0.5*varstep,10.,0.8,1.2);
   hemptyDoubleRatio->GetXaxis()->SetTitle(Form("%s",vartex.Data()));
   hemptyDoubleRatio->GetYaxis()->SetTitle("(Yield^{Data}_{Cuts}/Yield^{Data}_{NoCuts})/(Yield^{MC}_{Cuts}/Yield^{MC}_{NoCuts})");
   hemptyDoubleRatio->GetXaxis()->SetTitleOffset(1.0);
@@ -160,9 +164,9 @@ void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_
   lDoubleRatio->Draw();
   texCms->Draw();
   texCol->Draw();
-  cDoubleRatio->SaveAs(Form("plotRatios/%s_%s_DoubleRatio.pdf",collisionsystem.Data(),varname.Data()));
+  cDoubleRatio->SaveAs(Form("plotRatios/%s_cent_%.0f_%.0f_%s_DoubleRatio.pdf",collisionsystem.Data(),centmin,centmax,varname.Data()));
 
-  TFile* outf = new TFile(Form("outfDoubleratio/f%s_%s_DoubleRatio.root",collisionsystem.Data(),varname.Data()),"recreate");
+  TFile* outf = new TFile(Form("outfDoubleratio/f%s_cent_%.0f_%.0f_%s_DoubleRatio.root",collisionsystem.Data(),centmin,centmax,varname.Data()),"recreate");
   outf->cd();
   hDoubleRatio->Write();
   outf->Close();
@@ -170,15 +174,20 @@ void fitD(TString collsyst="PbPb", TString varname_="", Int_t varbins=10, Float_
 
 int main(int argc, char *argv[])
 {
-  if(argc!=8)
+  if(argc==10)
     {
-      std::cout << "Wrong number of inputs" << std::endl;
-      return 1;
+      fitD(argv[1],argv[2],atoi(argv[3]),atof(argv[4]),atof(argv[5]),argv[6],atoi(argv[7]),atof(argv[8]),atof(argv[9]));
+      return 0;
     }
-  else
+  else if(argc==8)
     {
       fitD(argv[1],argv[2],atoi(argv[3]),atof(argv[4]),atof(argv[5]),argv[6],atoi(argv[7]));
       return 0;
+    }
+  else
+    {
+      std::cout << "Wrong number of inputs" << std::endl;
+      return 1;
     }
 }
 
